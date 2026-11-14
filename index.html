@@ -2058,6 +2058,41 @@ window.sendAssistantPrompt=function(){return false;};
   <p>Administration générale de la plateforme</p>
   <div id="platform-admin-content"></div>
 </div>
-  
+<script>
+(async function () {
+  const client = window.supabase.createClient(
+    'https://ephuckzavbssojhptoou.supabase.co',
+    'sb_publishable_kygTNScWMCiAlJAG0Y0qfg_IBez4iLj'
+  );
+
+  async function verifier(session) {
+    if (!session) return;
+
+    const { error } = await client.functions.invoke(
+      'ramasys-platform-admin',
+      { body: { action: 'overview' } }
+    );
+
+    if (error) {
+      console.error('Erreur Super Administration :', error);
+      return;
+    }
+
+    const panel = document.getElementById('platform-admin-panel');
+    if (panel) {
+      panel.style.display = 'block';
+      document.getElementById('platform-admin-content').textContent =
+        'Accès Super Administrateur autorisé.';
+    }
+  }
+
+  const { data } = await client.auth.getSession();
+  await verifier(data.session);
+
+  client.auth.onAuthStateChange((event, session) => {
+    verifier(session);
+  });
+})();
+</script>
 </body>
 </html>
