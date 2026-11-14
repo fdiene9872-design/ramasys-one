@@ -577,6 +577,28 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
     window.scrollTo({top:0,behavior:'smooth'});
   }));
 })();
+  // Vérification du Super Administrateur RAMASYS One
+(async function () {
+  if (!supabaseClient) return;
+
+  const panel = document.getElementById('platform-admin-panel');
+  if (!panel) return;
+
+  try {
+    const { data, error } = await supabaseClient.functions.invoke(
+      'ramasys-platform-admin',
+      { body: { action: 'overview' } }
+    );
+
+    if (error) throw error;
+
+    panel.style.display = 'block';
+    document.getElementById('platform-admin-content').textContent =
+      'Accès Super Administrateur autorisé.';
+  } catch (error) {
+    console.log('Accès Super Administrateur non activé pour cette session.');
+  }
+})();
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0"></script>
@@ -2030,5 +2052,12 @@ window.sendAssistantPrompt=function(){return false;};
 })();
 </script>
 
+<!-- RAMASYS ONE - SUPER ADMIN -->
+<div id="platform-admin-panel" style="display:none;">
+  <h2>RAMASYS One – Super Administration</h2>
+  <p>Administration générale de la plateforme</p>
+  <div id="platform-admin-content"></div>
+</div>
+  
 </body>
 </html>
