@@ -1192,12 +1192,7 @@ if (supabaseClient) {
   supabaseClient.auth.getSession().then(({data,error}) => {
     if (error) { showMessage('Vérification de session impossible : ' + error.message, true); return; }
     handleSupabaseSession(data.session);
-    // Contrôle du Super Administrateur RAMASYS
-if (data.session) {
-  const { error } = await supabaseClient.functions.invoke(
-    'ramasys-platform-admin',
-    { body: { action: 'overview' } }
-  );
+});
 
   if (!error) {
     const panel = document.getElementById('platform-admin-panel');
