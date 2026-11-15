@@ -2099,6 +2099,30 @@ window.sendAssistantPrompt=function(){return false;};
 #platform-admin-panel .ra-save:disabled{opacity:.55;cursor:wait}
 #platform-admin-panel .ra-empty{padding:24px;text-align:center;color:var(--ra-muted)}
 @media(max-width:760px){#platform-admin-panel{padding:16px 12px 36px}#platform-admin-panel .ra-top{align-items:flex-start;padding:17px;flex-direction:column}#platform-admin-panel .ra-logo{width:82px;height:60px}#platform-admin-panel .ra-stats{grid-template-columns:1fr}#platform-admin-panel .ra-stat{padding:18px}#platform-admin-panel .ra-nav{display:grid;grid-template-columns:1fr 1fr}#platform-admin-panel .ra-nav button{padding:11px 8px!important}}
+
+#platform-admin-panel .ra-stats{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+#platform-admin-panel .ra-toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:0 0 14px}
+#platform-admin-panel .ra-toolbar input,#platform-admin-panel .ra-form-grid input,#platform-admin-panel .ra-form-grid select{width:100%;border:1px solid #dce8df;border-radius:10px;padding:10px 12px;background:#fff;color:#173b2c;font:inherit;box-sizing:border-box}
+#platform-admin-panel .ra-toolbar input{max-width:360px}
+#platform-admin-panel .ra-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:14px 0}
+#platform-admin-panel .ra-form-grid label{display:grid;gap:6px;color:#557365;font-size:12px;font-weight:750}
+#platform-admin-panel .ra-action{border:0;border-radius:9px;background:#087a43;color:#fff;padding:9px 12px;font-size:12px;font-weight:800;cursor:pointer;margin:2px}
+#platform-admin-panel .ra-action:hover{background:#063d2c}
+#platform-admin-panel .ra-action.secondary{background:#eaf5eb;color:#145b37;border:1px solid #d3e7d7}
+#platform-admin-panel .ra-action.danger{background:#b83232;color:#fff}
+#platform-admin-panel .ra-action:disabled{opacity:.45;cursor:not-allowed}
+#platform-admin-panel .ra-state{display:inline-flex;align-items:center;border-radius:999px;padding:6px 10px;font-size:11px;font-weight:800;white-space:nowrap}
+#platform-admin-panel .ra-state.active{background:#e6f5e9;color:#087a43}
+#platform-admin-panel .ra-state.pending{background:#fff4df;color:#9a5b08}
+#platform-admin-panel .ra-state.suspended{background:#fdeaea;color:#a32727}
+#platform-admin-panel .ra-detail{margin-top:18px;padding:22px;background:#fff;border:1px solid var(--ra-line);border-radius:20px;box-shadow:0 10px 28px rgba(5,62,43,.05)}
+#platform-admin-panel .ra-detail h3{margin:0 0 8px;color:var(--ra-deep)}
+#platform-admin-panel .ra-detail p{color:var(--ra-muted);font-size:13px}
+#platform-admin-panel .ra-pager{display:flex;gap:10px;align-items:center;justify-content:flex-end;margin-top:14px}
+#platform-admin-panel .ra-muted{color:var(--ra-muted);font-size:12px}
+#platform-admin-panel .ra-audit-action{font-weight:800;color:#0b6740}
+#platform-admin-panel .ra-note{margin:12px 0;padding:12px 14px;border-radius:12px;background:#fff6e9;border:1px solid #f2dfbf;color:#81520d;font-size:12px;line-height:1.5}
+@media(max-width:620px){#platform-admin-panel .ra-form-grid{grid-template-columns:1fr}#platform-admin-panel .ra-toolbar input{max-width:none;width:100%}}
 </style>
 <div id="platform-admin-panel" style="display:none;">
  <div class="ra-shell">
@@ -2110,6 +2134,7 @@ window.sendAssistantPrompt=function(){return false;};
    <button class="active" type="button" data-platform-section="overview">▦ &nbsp;Vue d’ensemble</button>
    <button type="button" data-platform-section="list_organizations">▣ &nbsp;Organisations</button>
    <button type="button" data-platform-section="list_users">♙ &nbsp;Utilisateurs</button>
+   <button type="button" data-platform-section="list_audit_logs">▤ &nbsp;Journal d’audit</button>
   </nav>
   <div id="platform-admin-message" role="status" aria-live="polite"></div>
   <div id="platform-admin-content"><p class="ra-empty">Chargement de votre centre de contrôle…</p></div>
@@ -2117,9 +2142,18 @@ window.sendAssistantPrompt=function(){return false;};
 </div>
 
 <script>
-/* Console Super Administrateur — les actions sensibles restent exécutées côté Edge Function. */
+/* Console Super Administrateur — toutes les actions sensibles passent par l’Edge Function. */
 const RAMASYS_PLATFORM_FUNCTION = SUPABASE_URL + '/functions/v1/ramasys-platform-admin';
 const platformAdminSafe = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let platformAdminUsersPage = 1;
+let platformAdminUserQuery = '';
+let platformAdminUserFilter = 'all';
+const platformAdminDate = value => value ? new Date(value).toLocaleString('fr-FR') : '—';
+const platformAdminState = status => {
+  const labels = {active:'Active',pending:'En attente',suspended:'Suspendue'};
+  const key = ['active','pending','suspended'].includes(status) ? status : 'pending';
+  return '<span class="ra-state '+key+'">'+(labels[key] || key)+'</span>';
+};
 async function callPlatformAdmin(payload) {
   const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
   if (sessionError || !sessionData.session?.access_token) throw new Error('Session expirée. Reconnectez-vous.');
@@ -2136,56 +2170,170 @@ async function callPlatformAdmin(payload) {
   if (!response.ok) throw new Error(result.error || ('Erreur serveur HTTP ' + response.status));
   return result;
 }
+function platformAdminNotify(text, warning=false) {
+  const el = document.getElementById('platform-admin-message');
+  if (el) { el.textContent = text || ''; el.style.color = warning ? '#a34b20' : '#087a43'; }
+}
+function platformAdminAuditAction(action) {
+  return ({
+    'organization.status_changed':'Changement du statut d’une organisation',
+    'organization.updated':'Modification d’une organisation',
+    'user.suspended':'Suspension d’un compte',
+    'user.reactivated':'Réactivation d’un compte'
+  })[action] || action || 'Action administrative';
+}
+async function showPlatformOrganizationDetails(id) {
+  const panel = document.getElementById('ra-org-details');
+  if (!panel) return;
+  panel.innerHTML = '<p class="ra-empty">Chargement de la fiche organisation…</p>';
+  try {
+    const result = await callPlatformAdmin({action:'get_organization', organization_id:id});
+    const o = result.organization || {};
+    const members = result.members || [];
+    panel.innerHTML = '<div class="ra-section-title"><div><h2>Fiche de l’organisation</h2><p>Consultez et mettez à jour les informations générales et les adhésions.</p></div>'+platformAdminState(o.status)+'</div>'+
+      '<form id="ra-org-edit-form" data-org-id="'+platformAdminSafe(o.id)+'">'+
+      '<div class="ra-form-grid">'+
+      '<label>Nom de l’organisation<input name="name" required value="'+platformAdminSafe(o.name)+'"></label>'+
+      '<label>Type d’organisation<input name="organization_type" value="'+platformAdminSafe(o.organization_type)+'"></label>'+
+      '<label>Pays<input name="country" value="'+platformAdminSafe(o.country)+'"></label>'+
+      '<label>Adresse e-mail<input name="email" type="email" value="'+platformAdminSafe(o.email)+'"></label>'+
+      '<label>Téléphone<input name="phone" value="'+platformAdminSafe(o.phone)+'"></label>'+
+      '<label>Site web<input name="website" type="url" value="'+platformAdminSafe(o.website)+'"></label></div>'+
+      '<button class="ra-action" type="submit">Enregistrer les informations</button></form>'+
+      '<h3 style="margin-top:24px">Membres rattachés ('+members.length+')</h3>'+
+      '<div class="ra-table-wrap"><table><thead><tr><th>Compte</th><th>Rôle</th><th>Statut de l’adhésion</th><th>Depuis le</th></tr></thead><tbody>'+
+      (members.length ? members.map(m=>'<tr><td>'+platformAdminSafe(m.email)+'</td><td>'+platformAdminSafe(m.role)+'</td><td>'+platformAdminState(m.status)+'</td><td>'+platformAdminSafe(m.created_at ? new Date(m.created_at).toLocaleDateString('fr-FR') : '—')+'</td></tr>').join('') : '<tr><td colspan="4">Aucun membre rattaché.</td></tr>')+
+      '</tbody></table></div>';
+    const form = panel.querySelector('#ra-org-edit-form');
+    form?.addEventListener('submit', async event => {
+      event.preventDefault();
+      const submit = form.querySelector('button[type="submit"]');
+      const values = Object.fromEntries(new FormData(form).entries());
+      submit.disabled = true; submit.textContent = 'Enregistrement…';
+      try {
+        const saved = await callPlatformAdmin({action:'update_organization', organization_id:o.id, ...values});
+        await loadPlatformAdminSection('list_organizations');
+        await showPlatformOrganizationDetails(o.id);
+        platformAdminNotify(saved.audit_warning ? 'Organisation mise à jour. Attention : le journal d’audit n’a pas pu enregistrer cette action.' : 'Les informations de l’organisation ont été mises à jour.');
+      } catch (e) { platformAdminNotify(e.message, true); submit.disabled = false; submit.textContent = 'Enregistrer les informations'; }
+    });
+    panel.scrollIntoView({behavior:'smooth', block:'start'});
+  } catch (e) {
+    panel.innerHTML = '<div class="ra-note">'+platformAdminSafe(e.message)+'</div>';
+  }
+}
 async function loadPlatformAdminSection(section) {
   const content = document.getElementById('platform-admin-content');
-  const message = document.getElementById('platform-admin-message');
   if (!content) return;
-  message.textContent = 'Chargement…';
+  platformAdminNotify('Chargement…');
   content.innerHTML = '';
-  document.querySelectorAll('[data-platform-section]').forEach(b => {
-    b.classList.toggle('active', b.dataset.platformSection === section);
-  });
+  document.querySelectorAll('[data-platform-section]').forEach(b => b.classList.toggle('active', b.dataset.platformSection === section));
   try {
-    const result = await callPlatformAdmin({action: section});
-    message.textContent = '';
+    const payload = {action:section};
+    if (section === 'list_users') Object.assign(payload, {page:platformAdminUsersPage, per_page:100});
+    if (section === 'list_audit_logs') payload.limit = 100;
+    const result = await callPlatformAdmin(payload);
+    platformAdminNotify('');
+
     if (section === 'overview') {
       const stats = result.stats || {};
       const tiles = [
-        ['Organisations', stats.organizations ?? 0],
-        ['Utilisateurs', stats.users ?? 0],
-        ['Adhésions actives', stats.active_memberships ?? 0]
+        ['Organisations', stats.organizations ?? 0, '▣'],
+        ['Comptes utilisateurs', stats.users ?? 0, '♙'],
+        ['Adhésions actives', stats.active_memberships ?? 0, '✓'],
+        ['Comptes suspendus', stats.suspended_users ?? 0, '⛔'],
+        ['E-mails non confirmés', stats.unconfirmed_users ?? 0, '✉']
       ];
-      content.innerHTML = '<div class="ra-section-title"><div><h2>Vue d’ensemble</h2><p>Les indicateurs clés de votre plateforme en un coup d’œil.</p></div></div>' +
-        '<div class="ra-stats">' + tiles.map(([label,value],i) => '<section class="ra-stat"><span class="ra-stat-icon">'+['▣','♙','✓'][i]+'</span><div class="ra-stat-label">'+label+'</div><div class="ra-stat-value">'+platformAdminSafe(value)+'</div></section>').join('') + '</div>' +
-        '<section class="ra-panel"><h3>Répartition des organisations par statut</h3><div class="ra-status-list">'+Object.entries(stats.organizations_by_status || {}).map(([k,v]) => '<span class="ra-status">'+platformAdminSafe(({active:'Actives',pending:'En attente',suspended:'Suspendues'}[k]||k))+' <b>'+platformAdminSafe(v)+'</b></span>').join('')+'</div></section>';
-    } else if (section === 'list_organizations') {
+      const activities = result.recent_activity || [];
+      content.innerHTML = '<div class="ra-section-title"><div><h2>Vue d’ensemble</h2><p>Les indicateurs clés et les dernières opérations de votre plateforme.</p></div></div>'+
+        '<div class="ra-stats">'+tiles.map(([label,value,icon])=>'<section class="ra-stat"><span class="ra-stat-icon">'+icon+'</span><div class="ra-stat-label">'+label+'</div><div class="ra-stat-value">'+platformAdminSafe(value)+'</div></section>').join('')+'</div>'+
+        '<section class="ra-panel"><h3>Répartition des organisations par statut</h3><div class="ra-status-list">'+Object.entries(stats.organizations_by_status || {}).map(([k,v])=>'<span class="ra-status">'+platformAdminSafe(({active:'Actives',pending:'En attente',suspended:'Suspendues'}[k]||k))+' <b>'+platformAdminSafe(v)+'</b></span>').join('')+'</div></section>'+
+        '<section class="ra-panel"><h3>Activité administrative récente</h3><div class="ra-table-wrap"><table><thead><tr><th>Date</th><th>Administrateur</th><th>Action</th><th>Élément concerné</th></tr></thead><tbody>'+
+        (activities.length ? activities.map(a=>'<tr><td>'+platformAdminSafe(platformAdminDate(a.created_at))+'</td><td>'+platformAdminSafe(a.actor_email)+'</td><td class="ra-audit-action">'+platformAdminSafe(platformAdminAuditAction(a.action))+'</td><td>'+platformAdminSafe(a.target_label || a.target_type)+'</td></tr>').join('') : '<tr><td colspan="4">Aucune action administrative enregistrée.</td></tr>')+
+        '</tbody></table></div></section>';
+    }
+
+    else if (section === 'list_organizations') {
       const rows = result.organizations || [];
-      content.innerHTML = '<div class="ra-section-title"><div><h2>Organisations</h2><p>'+rows.length+' structure(s) enregistrée(s) sur la plateforme.</p></div></div><div class="ra-table-wrap"><table><thead><tr><th align="left">Organisation</th><th>Type</th><th>Pays</th><th>Membres actifs</th><th>Statut</th><th>Action</th></tr></thead><tbody>' +
-        rows.map(o => '<tr><td style="padding:10px;border-top:1px solid #e4ece6;">'+platformAdminSafe(o.name)+'</td><td>'+platformAdminSafe(o.organization_type)+'</td><td>'+platformAdminSafe(o.country)+'</td><td align="center">'+platformAdminSafe(o.active_members_count)+'</td><td><select data-org-status="'+platformAdminSafe(o.id)+'"><option value="active" '+(o.status==='active'?'selected':'')+'>Active</option><option value="pending" '+(o.status==='pending'?'selected':'')+'>En attente</option><option value="suspended" '+(o.status==='suspended'?'selected':'')+'>Suspendue</option></select></td><td><button class="ra-save" type="button" data-save-org="'+platformAdminSafe(o.id)+'">Enregistrer</button></td></tr>').join('') +
-        '</tbody></table></div>';
-      content.querySelectorAll('[data-save-org]').forEach(button => button.addEventListener('click', async () => {
-        const id = button.dataset.saveOrg;
-        const status = content.querySelector('[data-org-status="'+CSS.escape(id)+'"]').value;
-        button.disabled = true;
-        try { await callPlatformAdmin({action:'update_organization_status', organization_id:id, status}); message.textContent = 'Statut de l’organisation mis à jour.'; }
-        catch(e) { message.textContent = e.message; }
-        finally { button.disabled = false; }
+      content.innerHTML = '<div class="ra-section-title"><div><h2>Gestion des organisations</h2><p>'+rows.length+' structure(s) enregistrée(s). Consultez les fiches, modifiez les informations ou gérez le statut.</p></div></div>'+
+        '<div class="ra-table-wrap"><table><thead><tr><th>Organisation</th><th>Type / pays</th><th>Membres</th><th>Administrateurs</th><th>Statut</th><th>Actions</th></tr></thead><tbody>'+
+        (rows.length ? rows.map(o=>'<tr><td><strong>'+platformAdminSafe(o.name)+'</strong><div class="ra-muted">'+platformAdminSafe(o.email || 'E-mail non renseigné')+'</div></td><td>'+platformAdminSafe(o.organization_type)+'<div class="ra-muted">'+platformAdminSafe(o.country)+'</div></td><td>'+platformAdminSafe(o.active_members_count)+' actifs / '+platformAdminSafe(o.members_count)+' total</td><td>'+platformAdminSafe(o.admins_count)+'</td><td>'+platformAdminState(o.status)+'</td><td><button class="ra-action secondary" type="button" data-org-details="'+platformAdminSafe(o.id)+'">Fiche / modifier</button><div style="margin-top:5px"><select data-org-status="'+platformAdminSafe(o.id)+'"><option value="active" '+(o.status==='active'?'selected':'')+'>Active</option><option value="pending" '+(o.status==='pending'?'selected':'')+'>En attente</option><option value="suspended" '+(o.status==='suspended'?'selected':'')+'>Suspendue</option></select><button class="ra-action" type="button" data-save-org="'+platformAdminSafe(o.id)+'">Appliquer</button></div></td></tr>').join('') : '<tr><td colspan="6">Aucune organisation enregistrée.</td></tr>')+
+        '</tbody></table></div><section class="ra-detail" id="ra-org-details"><p class="ra-empty">Sélectionnez « Fiche / modifier » pour consulter les informations et les membres d’une organisation.</p></section>';
+      content.querySelectorAll('[data-org-details]').forEach(button=>button.addEventListener('click',()=>showPlatformOrganizationDetails(button.dataset.orgDetails)));
+      content.querySelectorAll('[data-save-org]').forEach(button=>button.addEventListener('click',async()=>{
+        const id=button.dataset.saveOrg;
+        const select=content.querySelector('[data-org-status="'+CSS.escape(id)+'"]');
+        if (!select) return;
+        const status=select.value;
+        if (!window.confirm('Confirmer le passage de cette organisation au statut « '+status+' » ?')) return;
+        button.disabled=true;
+        try {
+          const saved=await callPlatformAdmin({action:'update_organization_status',organization_id:id,status});
+          await loadPlatformAdminSection('list_organizations');
+          platformAdminNotify(saved.audit_warning ? 'Statut modifié, mais le journal d’audit n’a pas pu enregistrer cette action.' : 'Le statut de l’organisation a été mis à jour.');
+        } catch(e) { platformAdminNotify(e.message,true); button.disabled=false; }
       }));
-    } else if (section === 'list_users') {
+    }
+
+    else if (section === 'list_users') {
       const users = result.users || [];
-      content.innerHTML = '<div class="ra-section-title"><div><h2>Utilisateurs</h2><p>'+users.length+' compte(s) utilisateur(s) recensé(s).</p></div></div><div class="ra-table-wrap"><table><thead><tr><th align="left">Adresse e-mail</th><th>Compte confirmé</th><th>Dernière connexion</th><th>Création</th></tr></thead><tbody>' +
-        users.map(u => '<tr><td style="padding:10px;border-top:1px solid #e4ece6;">'+platformAdminSafe(u.email)+'</td><td align="center">'+(u.email_confirmed?'Oui':'Non')+'</td><td align="center">'+platformAdminSafe(u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString('fr-FR') : '—')+'</td><td align="center">'+platformAdminSafe(u.created_at ? new Date(u.created_at).toLocaleDateString('fr-FR') : '—')+'</td></tr>').join('') +
+      const filtered = users.filter(u => {
+        const q=platformAdminUserQuery.toLowerCase();
+        const matchText=!q || String(u.email||'').toLowerCase().includes(q);
+        const matchState=platformAdminUserFilter==='all' || (platformAdminUserFilter==='suspended' && u.is_suspended) || (platformAdminUserFilter==='active' && !u.is_suspended) || (platformAdminUserFilter==='admins' && u.is_platform_admin);
+        return matchText && matchState;
+      });
+      content.innerHTML = '<div class="ra-section-title"><div><h2>Suivi et gestion des utilisateurs</h2><p>Comptes Auth, confirmation, connexions, organisations rattachées et statut.</p></div></div>'+
+        '<div class="ra-toolbar"><input id="ra-user-search" type="search" placeholder="Rechercher une adresse e-mail…" value="'+platformAdminSafe(platformAdminUserQuery)+'"><select id="ra-user-filter"><option value="all">Tous les comptes</option><option value="active">Comptes actifs</option><option value="suspended">Comptes suspendus</option><option value="admins">Super administrateurs</option></select></div>'+
+        '<div class="ra-table-wrap"><table><thead><tr><th>Compte</th><th>Confirmation</th><th>Dernière connexion</th><th>Création</th><th>Organisations</th><th>Adhésions actives</th><th>Statut</th><th>Gestion</th></tr></thead><tbody>'+
+        (filtered.length ? filtered.map(u=>'<tr data-user-email="'+platformAdminSafe(u.email).toLowerCase()+'" data-user-suspended="'+String(Boolean(u.is_suspended))+'" data-user-admin="'+String(Boolean(u.is_platform_admin))+'"><td><strong>'+platformAdminSafe(u.email)+'</strong><div class="ra-muted">'+(u.is_platform_admin?'Compte administrateur protégé':'Utilisateur RAMASYS')+'</div></td><td>'+(u.email_confirmed?'<span class="ra-state active">Confirmé</span>':'<span class="ra-state pending">Non confirmé</span>')+'</td><td>'+platformAdminSafe(platformAdminDate(u.last_sign_in_at))+'</td><td>'+platformAdminSafe(u.created_at?new Date(u.created_at).toLocaleDateString('fr-FR'):'—')+'</td><td>'+platformAdminSafe(u.organizations_count)+'</td><td>'+platformAdminSafe(u.active_memberships_count)+'</td><td>'+(u.is_suspended?'<span class="ra-state suspended">Suspendu</span>':'<span class="ra-state active">Actif</span>')+'</td><td><button class="ra-action '+(u.is_suspended?'':'danger')+'" type="button" data-user-status="'+platformAdminSafe(u.id)+'" data-next-status="'+(u.is_suspended?'active':'suspended')+'" '+(u.is_platform_admin?'disabled title="Les comptes Super Administrateur sont protégés"':'')+'>'+(u.is_platform_admin?'Protégé':(u.is_suspended?'Réactiver':'Suspendre'))+'</button></td></tr>').join('') : '<tr><td colspan="8">Aucun utilisateur ne correspond à ce filtre sur cette page.</td></tr>')+
+        '</tbody></table></div>'+
+        '<div class="ra-pager"><button class="ra-action secondary" id="ra-users-prev" '+(platformAdminUsersPage<=1?'disabled':'')+'>Précédent</button><span class="ra-muted">Page '+platformAdminUsersPage+' · '+users.length+' compte(s) chargé(s)</span><button class="ra-action secondary" id="ra-users-next" '+(!result.has_more?'disabled':'')+'>Suivant</button></div>'+
+        '<div class="ra-note">La suspension bloque les nouvelles connexions, mais ne révoque pas les sessions déjà ouvertes. Les jetons d’accès déjà émis peuvent rester valides jusqu’à leur expiration.</div>';
+      const search=content.querySelector('#ra-user-search');
+      const applyUserFilters=()=>{
+        platformAdminUserQuery=search?.value||'';
+        platformAdminUserFilter=filter?.value||'all';
+        const q=platformAdminUserQuery.toLowerCase();
+        content.querySelectorAll('tbody tr[data-user-email]').forEach(row=>{
+          const matchText=!q||row.dataset.userEmail.includes(q);
+          const matchState=platformAdminUserFilter==='all'||(platformAdminUserFilter==='suspended'&&row.dataset.userSuspended==='true')||(platformAdminUserFilter==='active'&&row.dataset.userSuspended==='false')||(platformAdminUserFilter==='admins'&&row.dataset.userAdmin==='true');
+          row.hidden=!(matchText&&matchState);
+        });
+      };
+      search?.addEventListener('input',applyUserFilters);
+      const filter=content.querySelector('#ra-user-filter'); if(filter){filter.value=platformAdminUserFilter;filter.addEventListener('change',applyUserFilters);}
+      content.querySelector('#ra-users-prev')?.addEventListener('click',()=>{platformAdminUsersPage=Math.max(1,platformAdminUsersPage-1);loadPlatformAdminSection('list_users');});
+      content.querySelector('#ra-users-next')?.addEventListener('click',()=>{platformAdminUsersPage++;loadPlatformAdminSection('list_users');});
+      content.querySelectorAll('[data-user-status]').forEach(button=>button.addEventListener('click',async()=>{
+        const id=button.dataset.userStatus, status=button.dataset.nextStatus;
+        const verb=status==='suspended'?'suspendre':'réactiver';
+        if (!window.confirm('Confirmer que vous souhaitez '+verb+' ce compte utilisateur ?')) return;
+        button.disabled=true;
+        try {
+          const changed=await callPlatformAdmin({action:'update_user_status',user_id:id,status});
+          await loadPlatformAdminSection('list_users');
+          platformAdminNotify((status==='suspended'?'Compte suspendu.':'Compte réactivé.')+(changed.audit_warning?' Attention : journal d’audit non enregistré.':''),Boolean(changed.audit_warning));
+        } catch(e) { platformAdminNotify(e.message,true); button.disabled=false; }
+      }));
+    }
+
+    else if (section === 'list_audit_logs') {
+      const logs=result.logs||[];
+      content.innerHTML='<div class="ra-section-title"><div><h2>Journal des actions administratives</h2><p>'+logs.length+' événement(s) récent(s), du plus récent au plus ancien. Les modifications sont conservées côté serveur.</p></div></div>'+
+        '<div class="ra-table-wrap"><table><thead><tr><th>Date et heure</th><th>Administrateur</th><th>Action</th><th>Élément concerné</th><th>Détails</th></tr></thead><tbody>'+
+        (logs.length?logs.map(l=>'<tr><td>'+platformAdminSafe(platformAdminDate(l.created_at))+'</td><td>'+platformAdminSafe(l.actor_email||'—')+'</td><td class="ra-audit-action">'+platformAdminSafe(platformAdminAuditAction(l.action))+'</td><td>'+platformAdminSafe(l.target_label||l.target_id||'—')+'<div class="ra-muted">'+platformAdminSafe(l.target_type)+'</div></td><td>'+platformAdminSafe(JSON.stringify(l.details||{}))+'</td></tr>').join(''):'<tr><td colspan="5">Aucune action enregistrée pour le moment.</td></tr>')+
         '</tbody></table></div>';
     }
   } catch (error) {
-    message.textContent = error.message || 'Erreur lors du chargement de la console.';
-    content.innerHTML = '<div class="ra-panel ra-empty">La console n’a pas pu charger les données. Vérifiez la connexion et réessayez.</div>'; 
+    platformAdminNotify(error.message || 'Erreur lors du chargement de la console.', true);
+    content.innerHTML = '<div class="ra-panel ra-empty">La console n’a pas pu charger les données. Vérifiez la connexion et réessayez.</div>';
     console.error('RAMASYS Super Admin:', error);
   }
 }
-document.querySelectorAll('[data-platform-section]').forEach(button => button.addEventListener('click', () => loadPlatformAdminSection(button.dataset.platformSection)));
-document.getElementById('platform-admin-refresh')?.addEventListener('click', () => {
-  const active = document.querySelector('[data-platform-section].btn:not(.secondary)')?.dataset.platformSection || 'overview';
+document.querySelectorAll('[data-platform-section]').forEach(button=>button.addEventListener('click',()=>loadPlatformAdminSection(button.dataset.platformSection)));
+document.getElementById('platform-admin-refresh')?.addEventListener('click',()=>{
+  const active=document.querySelector('[data-platform-section].active')?.dataset.platformSection||'overview';
   loadPlatformAdminSection(active);
 });
 </script>
