@@ -1192,19 +1192,11 @@ if (supabaseClient) {
   supabaseClient.auth.getSession().then(({data,error}) => {
     if (error) { showMessage('Vérification de session impossible : ' + error.message, true); return; }
     handleSupabaseSession(data.session);
-});
-
-  if (!error) {
-    const panel = document.getElementById('platform-admin-panel');
-    if (panel) {
-      panel.style.display = 'block';
-      document.getElementById('platform-admin-content').textContent =
-        'Accès Super Administrateur autorisé.';
-    }
-  }
-}
   });
-} else { showAuth(); showMessage('Connexion Supabase indisponible : la bibliothèque JavaScript n’a pas été chargée.', true); }
+} else {
+  showAuth();
+  showMessage('Connexion Supabase indisponible : la bibliothèque JavaScript n’a pas été chargée.', true);
+}
 
 document.getElementById('create-organization-button').addEventListener('click', async () => {
   const name=document.getElementById('org-name').value.trim();
