@@ -1168,17 +1168,38 @@ let ramasysWorkspaceLoadInProgress = false;
 async function handleSupabaseSession(session) {
   if (window.RAMASYS_LOCAL_MODE) return;
   const user = session?.user;
+  const adminPanel = document.getElementById('platform-admin-panel');
   if (!user) {
     ramasysWorkspaceUserId = null; currentOrganizationId = null; currentOrganizationRole = null; currentOrganizationData = null;
     const signOut = document.getElementById('ramasys-signout'); if (signOut) signOut.style.display = 'none';
+    if (adminPanel) adminPanel.style.display = 'none';
     showAuth(); return;
   }
-  if (ramasysWorkspaceUserId === user.id && !ramasysWorkspaceLoadInProgress && appScreen.style.display !== 'none') return;
   if (ramasysWorkspaceLoadInProgress) return;
-  ramasysWorkspaceLoadInProgress = true; ramasysWorkspaceUserId = user.id;
-  try { await loadUserWorkspace(user); }
-  catch (error) { console.error('Chargement de l’espace RAMASYS impossible:', error); showAuth(); showMessage('Impossible de charger votre espace : ' + (error.message || error), true); }
-  finally { ramasysWorkspaceLoadInProgress = false; }
+  ramasysWorkspaceLoadInProgress = true;
+  ramasysWorkspaceUserId = user.id;
+  try {
+    const { data: isAdmin, error: adminCheckError } = await supabaseClient.rpc('is_platform_admin');
+    if (adminCheckError) throw new Error('Vérification Super Administrateur impossible : ' + adminCheckError.message);
+    if (isAdmin === true) {
+      renderAuthenticatedUser(user);
+      appScreen.style.display = 'none';
+      authScreen.classList.remove('active');
+      document.getElementById('organization-setup-screen').classList.remove('active');
+      if (adminPanel) adminPanel.style.display = 'block';
+      await loadPlatformAdminSection('overview');
+      return;
+    }
+    if (adminPanel) adminPanel.style.display = 'none';
+    await loadUserWorkspace(user);
+  } catch (error) {
+    console.error('Chargement de l’espace RAMASYS impossible:', error);
+    if (adminPanel) adminPanel.style.display = 'none';
+    showAuth();
+    showMessage('Impossible de charger votre espace : ' + (error.message || error), true);
+  } finally {
+    ramasysWorkspaceLoadInProgress = false;
+  }
 }
 
 if (supabaseClient) {
@@ -2035,11 +2056,94 @@ window.sendAssistantPrompt=function(){return false;};
 </script>
 
 <!-- RAMASYS ONE - SUPER ADMIN -->
-<div id="platform-admin-panel" style="display:none;">
-  <h2>RAMASYS One – Super Administration</h2>
-  <p>Administration générale de la plateforme</p>
-  <div id="platform-admin-content"></div>
+<div id="platform-admin-panel" style="display:none;max-width:1400px;margin:32px auto;padding:24px;font-family:inherit;color:#18352a;">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;border-bottom:1px solid #dce8df;padding-bottom:18px;">
+    <div><div style="font-size:12px;letter-spacing:2px;color:#16834A;font-weight:700;">RAMASYS ONE</div><h1 style="margin:6px 0;">Super Administration</h1><p style="margin:0;color:#61766a;">Administration générale de la plateforme</p></div>
+    <button id="platform-admin-refresh" class="btn secondary" type="button">Actualiser</button>
+  </div>
+  <nav style="display:flex;gap:8px;flex-wrap:wrap;margin:20px 0;">
+    <button class="btn" type="button" data-platform-section="overview">Vue d’ensemble</button>
+    <button class="btn secondary" type="button" data-platform-section="list_organizations">Organisations</button>
+    <button class="btn secondary" type="button" data-platform-section="list_users">Utilisateurs</button>
+  </nav>
+  <div id="platform-admin-message" role="status" style="margin:12px 0;color:#a33;"></div>
+  <div id="platform-admin-content"><p>Chargement de la console d’administration…</p></div>
 </div>
+
+<script>
+/* Console Super Administrateur — les actions sensibles restent exécutées côté Edge Function. */
+const RAMASYS_PLATFORM_FUNCTION = SUPABASE_URL + '/functions/v1/ramasys-platform-admin';
+const platformAdminSafe = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function callPlatformAdmin(payload) {
+  const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+  if (sessionError || !sessionData.session?.access_token) throw new Error('Session expirée. Reconnectez-vous.');
+  const response = await fetch(RAMASYS_PLATFORM_FUNCTION, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_PUBLISHABLE_KEY,
+      'Authorization': 'Bearer ' + sessionData.session.access_token
+    },
+    body: JSON.stringify(payload)
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(result.error || ('Erreur serveur HTTP ' + response.status));
+  return result;
+}
+async function loadPlatformAdminSection(section) {
+  const content = document.getElementById('platform-admin-content');
+  const message = document.getElementById('platform-admin-message');
+  if (!content) return;
+  message.textContent = 'Chargement…';
+  content.innerHTML = '';
+  document.querySelectorAll('[data-platform-section]').forEach(b => {
+    b.classList.toggle('btn', b.dataset.platformSection === section);
+    b.classList.toggle('secondary', b.dataset.platformSection !== section);
+  });
+  try {
+    const result = await callPlatformAdmin({action: section});
+    message.textContent = '';
+    if (section === 'overview') {
+      const stats = result.stats || {};
+      const tiles = [
+        ['Organisations', stats.organizations ?? 0],
+        ['Utilisateurs', stats.users ?? 0],
+        ['Adhésions actives', stats.active_memberships ?? 0]
+      ];
+      content.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;">' +
+        tiles.map(([label,value]) => '<section style="background:#f4f8f4;border:1px solid #dce8df;border-radius:12px;padding:20px;"><div style="color:#61766a;font-size:14px;">'+label+'</div><div style="font-size:30px;font-weight:700;margin-top:8px;">'+platformAdminSafe(value)+'</div></section>').join('') +
+        '</div><section style="margin-top:18px;background:#fff;border:1px solid #dce8df;border-radius:12px;padding:18px;"><h3>Organisations par statut</h3><p>'+Object.entries(stats.organizations_by_status || {}).map(([k,v]) => platformAdminSafe(k)+ ' : '+platformAdminSafe(v)).join(' · ')+'</p></section>';
+    } else if (section === 'list_organizations') {
+      const rows = result.organizations || [];
+      content.innerHTML = '<h2>Organisations ('+rows.length+')</h2><div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;"><thead><tr><th align="left">Organisation</th><th>Type</th><th>Pays</th><th>Membres actifs</th><th>Statut</th><th>Action</th></tr></thead><tbody>' +
+        rows.map(o => '<tr><td style="padding:10px;border-top:1px solid #e4ece6;">'+platformAdminSafe(o.name)+'</td><td>'+platformAdminSafe(o.organization_type)+'</td><td>'+platformAdminSafe(o.country)+'</td><td align="center">'+platformAdminSafe(o.active_members_count)+'</td><td><select data-org-status="'+platformAdminSafe(o.id)+'"><option value="active" '+(o.status==='active'?'selected':'')+'>Active</option><option value="pending" '+(o.status==='pending'?'selected':'')+'>En attente</option><option value="suspended" '+(o.status==='suspended'?'selected':'')+'>Suspendue</option></select></td><td><button class="btn secondary" type="button" data-save-org="'+platformAdminSafe(o.id)+'">Enregistrer</button></td></tr>').join('') +
+        '</tbody></table></div>';
+      content.querySelectorAll('[data-save-org]').forEach(button => button.addEventListener('click', async () => {
+        const id = button.dataset.saveOrg;
+        const status = content.querySelector('[data-org-status="'+CSS.escape(id)+'"]').value;
+        button.disabled = true;
+        try { await callPlatformAdmin({action:'update_organization_status', organization_id:id, status}); message.textContent = 'Statut de l’organisation mis à jour.'; }
+        catch(e) { message.textContent = e.message; }
+        finally { button.disabled = false; }
+      }));
+    } else if (section === 'list_users') {
+      const users = result.users || [];
+      content.innerHTML = '<h2>Utilisateurs ('+users.length+')</h2><div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;"><thead><tr><th align="left">Adresse e-mail</th><th>Compte confirmé</th><th>Dernière connexion</th><th>Création</th></tr></thead><tbody>' +
+        users.map(u => '<tr><td style="padding:10px;border-top:1px solid #e4ece6;">'+platformAdminSafe(u.email)+'</td><td align="center">'+(u.email_confirmed?'Oui':'Non')+'</td><td align="center">'+platformAdminSafe(u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString('fr-FR') : '—')+'</td><td align="center">'+platformAdminSafe(u.created_at ? new Date(u.created_at).toLocaleDateString('fr-FR') : '—')+'</td></tr>').join('') +
+        '</tbody></table></div>';
+    }
+  } catch (error) {
+    message.textContent = error.message || 'Erreur lors du chargement de la console.';
+    content.innerHTML = '<p>La console n’a pas pu charger les données. Vérifiez la fonction Supabase et réessayez.</p>';
+    console.error('RAMASYS Super Admin:', error);
+  }
+}
+document.querySelectorAll('[data-platform-section]').forEach(button => button.addEventListener('click', () => loadPlatformAdminSection(button.dataset.platformSection)));
+document.getElementById('platform-admin-refresh')?.addEventListener('click', () => {
+  const active = document.querySelector('[data-platform-section].btn:not(.secondary)')?.dataset.platformSection || 'overview';
+  loadPlatformAdminSection(active);
+});
+</script>
 
 </body>
 </html>
