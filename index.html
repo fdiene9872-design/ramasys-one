@@ -494,12 +494,12 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
  </div>
  <div class="content-grid">
   <div class="panel"><h3>Fiche d'identité</h3><div class="form-grid">
-   <label>Nom de l'organisation<input id="org-profile-name" value="" /></label><label>Sigle<input placeholder="Sigle" disabled /></label>
-   <label>Forme juridique<input placeholder="Association, SASU, GIE..." disabled /></label><label>Numéro d'enregistrement<input placeholder="Récépissé / RCCM" disabled /></label>
-   <label>Pays<input id="org-profile-country" value="" /></label><label>Ville / commune<input placeholder="Ville ou commune" disabled /></label>
+   <label>Nom de l'organisation<input id="org-profile-name" value="" /></label><label>Sigle<input id="org-profile-acronym" maxlength="40" placeholder="Sigle" /></label>
+   <label>Forme juridique<input id="org-profile-legal-form" maxlength="100" placeholder="Association, SASU, GIE, SARL..." /></label><label>Numéro d'enregistrement / RCCM<input id="org-profile-registration" maxlength="120" placeholder="Récépissé / RCCM" /></label>
+   <label>Pays<input id="org-profile-country" value="" /></label><label>Ville / commune<input id="org-profile-city" maxlength="120" placeholder="Ville ou commune" /></label>
    <label>E-mail professionnel<input id="org-profile-email" type="email" placeholder="contact@organisation.sn" /></label><label>Téléphone<input id="org-profile-phone" placeholder="+221 ..." /></label>
-   <label>Site web<input id="org-profile-website" placeholder="https://" /></label><label>Adresse<input placeholder="Adresse du siège" disabled /></label>
-  </div><p class="subtle">Les champs modifiables sont enregistrés dans votre espace Supabase, sous réserve des permissions de votre compte.</p></div>
+   <label>Site web<input id="org-profile-website" placeholder="https://" /></label><label>Adresse du siège<input id="org-profile-address" maxlength="300" placeholder="Adresse du siège" /></label><label>NINEA / Identifiant fiscal<input id="org-profile-tax-number" maxlength="120" placeholder="NINEA ou identifiant fiscal" /></label>
+  </div><p class="subtle">Les informations administratives et juridiques sont enregistrées dans Supabase. Modification réservée aux administrateurs.</p></div>
   <div class="panel"><h3>Identité visuelle</h3><div style="display:flex;align-items:center;gap:14px;margin-bottom:14px"><img id="org-logo-preview" alt="Logo de l'organisation" style="display:none;width:76px;height:76px;object-fit:contain;border:1px solid var(--line);border-radius:12px;padding:5px"><label class="btn secondary" for="org-logo-file">＋ Ajouter le logo de l'organisation</label><input id="org-logo-file" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" style="display:none"><span class="subtle" id="org-logo-status">PNG, JPG, WEBP ou SVG</span></div><div class="form-grid"><label>Couleur principale<input id="org-primary-color" type="color" value="#053E2B"></label><label>Couleur secondaire<input id="org-secondary-color" type="color" value="#44B331"></label><label>Devise<select id="org-currency"><option value="XOF">Franc CFA (XOF)</option><option value="EUR">Euro (EUR)</option><option value="USD">Dollar US (USD)</option><option value="GBP">Livre sterling (GBP)</option></select></label><label>Langue par défaut<select id="org-default-language"><option value="Français">Français</option><option value="English">English</option></select></label></div><button class="btn secondary" id="preview-identity-button" type="button">Prévisualiser</button><p class="subtle" id="identity-save-status">Les préférences seront enregistrées avec la fiche de l'organisation.</p></div>
  </div>
  <div class="panel"><div class="panel-head"><div><h3>Branches, antennes et établissements</h3><div class="subtle">Gestion des implantations de votre organisation.</div></div><button class="btn" id="add-branch-button" type="button">+ Ajouter une antenne</button></div><div id="branches-status" class="subtle" style="margin:10px 0">Chargement des antennes…</div><div style="overflow-x:auto"><table class="table"><thead><tr><th>Nom</th><th>Zone</th><th>Responsable</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="branches-table-body"><tr><td colspan="5">Chargement…</td></tr></tbody></table></div></div>
@@ -727,6 +727,12 @@ let currentOrganizationData = null;
 function populateOrganizationProfile(org) {
   const fields = {
     'org-profile-name': org.name || '',
+    'org-profile-acronym': org.acronym || '',
+    'org-profile-legal-form': org.legal_form || '',
+    'org-profile-registration': org.registration_number || '',
+    'org-profile-tax-number': org.tax_number || '',
+    'org-profile-city': org.city || '',
+    'org-profile-address': org.address || '',
     'org-profile-country': org.country || '',
     'org-profile-email': org.email || '',
     'org-profile-phone': org.phone || '',
@@ -773,6 +779,12 @@ document.getElementById('save-organization-button')?.addEventListener('click', a
     }
     const payload = {
       name,
+      acronym: document.getElementById('org-profile-acronym')?.value.trim() || null,
+      legal_form: document.getElementById('org-profile-legal-form')?.value.trim() || null,
+      registration_number: document.getElementById('org-profile-registration')?.value.trim() || null,
+      tax_number: document.getElementById('org-profile-tax-number')?.value.trim() || null,
+      city: document.getElementById('org-profile-city')?.value.trim() || null,
+      address: document.getElementById('org-profile-address')?.value.trim() || null,
       country: document.getElementById('org-profile-country').value.trim(),
       email: document.getElementById('org-profile-email').value.trim() || null,
       phone: document.getElementById('org-profile-phone').value.trim() || null,
@@ -786,7 +798,7 @@ document.getElementById('save-organization-button')?.addEventListener('click', a
     const { error: saveUpdateError } = await supabaseClient.from('Organisations').update(payload).eq('id', currentOrganizationId);
     if (saveUpdateError) throw saveUpdateError;
     const { data, error: readError } = await supabaseClient.from('Organisations')
-      .select('id, name, country, organization_type, email, phone, website, logo_url, primary_color, secondary_color, currency, default_language')
+      .select('id, name, acronym, legal_form, registration_number, tax_number, city, address, country, organization_type, email, phone, website, logo_url, primary_color, secondary_color, currency, default_language')
       .eq('id', currentOrganizationId).maybeSingle();
     if (readError) throw readError;
     if (!data) throw new Error('La mise à jour a été envoyée, mais la fiche est introuvable à la relecture. Vérifiez la politique SELECT RLS.');
@@ -856,7 +868,7 @@ async function loadUserWorkspace(user, preferredOrganizationId = null) {
 
   const { data: organization, error: organizationError } = await supabaseClient
     .from('Organisations')
-    .select('id, name, country, organization_type, email, phone, website, logo_url, primary_color, secondary_color, currency, default_language')
+    .select('id, name, acronym, legal_form, registration_number, tax_number, city, address, country, organization_type, email, phone, website, logo_url, primary_color, secondary_color, currency, default_language')
     .eq('id', membership['organization-id'])
     .maybeSingle();
 
@@ -1825,24 +1837,48 @@ window.sendAssistantPrompt=function(){return false;};
 
  async function getRemoteReport(){
   const id=currentOrganizationId;
+  const admin=roleAdmin();
+  const projectFields=admin
+   ? 'id,name,status,progress_percentage,estimated_budget,actual_budget,start_date,end_date,created_at'
+   : 'id,name,status,progress_percentage,start_date,end_date,created_at';
   const specs=[
-   ['members','id,full_name,email,status,created_at'],['projects','id,name,status,progress_percentage,estimated_budget,actual_budget,start_date,end_date'],
-   ['project_activities','id,name,status,progress_percentage,start_date,end_date'],['finance_incomes','id,description,amount,income_date,status'],
-   ['finance_expenses','id,description,amount,expense_date,status'],['finance_transfers','id,description,amount,transfer_date,status'],
-   ['organization_branches','id,name,zone,status'],['organization_units','id,name,unit_type,status']
+   ['members','id,full_name,email,status,created_at'],['projects',projectFields],
+   ['project_activities','id,project_id,name,status,progress_percentage,start_date,end_date,created_at'],
+   ['organization_branches','id,name,zone,status,created_at'],['organization_units','id,name,unit_type,status,created_at']
   ];
-  const results=await Promise.all(specs.map(async([table,fields])=>{const r=await supabaseClient.from(table).select(fields).eq('organization_id',id).order('created_at',{ascending:false}).limit(1000);if(r.error)throw new Error(table+': '+r.error.message);return [table,r.data||[]];}));
+  if(admin){
+   specs.push(['finance_accounts','id,account_name,currency']);
+   specs.push(['finance_incomes','id,account_id,description,amount,income_date,status,created_at']);
+   specs.push(['finance_expenses','id,account_id,description,amount,expense_date,status,created_at']);
+   specs.push(['finance_transfers','id,description,amount,transfer_date,status,created_at']);
+  }
+  const results=await Promise.all(specs.map(async([table,fields])=>{
+   const r=await supabaseClient.from(table).select(fields).eq('organization_id',id).order('created_at',{ascending:false}).limit(1000);
+   if(r.error)throw new Error(table+': '+r.error.message);
+   return [table,r.data||[]];
+  }));
   const data=Object.fromEntries(results);
-  const sum=key=>(data[key]||[]).filter(x=>!['canceled','cancelled','rejected'].includes(String(x.status||'').toLowerCase())).reduce((n,x)=>n+Number(x.amount||0),0);
   const org=currentOrganizationData||{};
-  return {generated_at:new Date().toISOString(),source:'Supabase — données distantes réelles',organization:{id,name:org.name||'',country:org.country||'',currency:org.currency||'XOF'},summary:{members:data.members.length,projects:data.projects.length,activities:data.project_activities.length,incomes:sum('finance_incomes'),expenses:sum('finance_expenses'),transfers:sum('finance_transfers'),balance:sum('finance_incomes')-sum('finance_expenses'),branches:data.organization_branches.length,units:data.organization_units.length},data};
+  const accountCurrencies=new Map((data.finance_accounts||[]).map(a=>[a.id,a.currency||org.currency||'XOF']));
+  const grouped=key=>{const map={};for(const row of (data[key]||[])){if(!['recorded','approved','paid','completed',''].includes(String(row.status||'').toLowerCase()))continue;const c=accountCurrencies.get(row.account_id)||org.currency||'XOF';map[c]=(map[c]||0)+Number(row.amount||0);}return map;};
+  const formatMap=map=>Object.keys(map).length?Object.entries(map).map(([c,v])=>fmt(v)+' '+c).join(' · '):'0 '+(org.currency||'XOF');
+  const incomeMap=admin?grouped('finance_incomes'):null,expenseMap=admin?grouped('finance_expenses'):null;
+  const balanceMap={};if(admin){for(const c of new Set([...Object.keys(incomeMap),...Object.keys(expenseMap)])){balanceMap[c]=(incomeMap[c]||0)-(expenseMap[c]||0);}}
+  return {
+   generated_at:new Date().toISOString(),source:'Supabase — données distantes réelles',
+   organization:{id,name:org.name||'',country:org.country||'',currency:org.currency||'XOF'},
+   summary:{members:data.members.length,projects:data.projects.length,activities:data.project_activities.length,
+    incomes:admin?formatMap(incomeMap):null,expenses:admin?formatMap(expenseMap):null,
+    transfers:admin?(data.finance_transfers||[]).length:null,balance:admin?formatMap(balanceMap):null,
+    branches:data.organization_branches.length,units:data.organization_units.length},data
+  };
  }
  function csv(rows){const quote=v=>'"'+String(v??'').replace(/"/g,'""')+'"';return '\ufeff'+rows.map(r=>r.map(quote).join(';')).join('\r\n');}
- function reportHtml(d){const s=d.summary;return `<div id="ramasys-print-report"><h1>Rapport de synthèse — RAMASYS One</h1><p><b>Organisation :</b> ${esc(d.organization.name)}<br><b>Pays :</b> ${esc(d.organization.country)}<br><b>Source :</b> ${esc(d.source)}<br><b>Édité le :</b> ${esc(when(d.generated_at))}</p><h2>Indicateurs</h2><table style="width:100%;border-collapse:collapse">${Object.entries({Membres:s.members,Projets:s.projects,Activités:s.activities,Antennes:s.branches,Unités:s.units,Recettes:s.incomes+' '+d.organization.currency,Dépenses:s.expenses+' '+d.organization.currency,Solde:s.balance+' '+d.organization.currency}).map(([k,v])=>`<tr><td style="border-bottom:1px solid #ddd;padding:7px">${esc(k)}</td><td style="border-bottom:1px solid #ddd;padding:7px;text-align:right"><b>${esc(v)}</b></td></tr>`).join('')}</table><h2>Projets</h2><table style="width:100%;border-collapse:collapse"><tr><th>Projet</th><th>Statut</th><th>Progression</th></tr>${d.data.projects.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.status)}</td><td>${esc(x.progress_percentage??0)} %</td></tr>`).join('')||'<tr><td colspan="3">Aucun projet enregistré</td></tr>'}</table><p style="margin-top:24px;font-size:11px;color:#555">Rapport généré à partir des données réellement accessibles dans Supabase. Les résultats dépendent des droits RLS et des données renseignées.</p></div>`;}
+ function reportHtml(d){const s=d.summary;return `<div id="ramasys-print-report"><h1>Rapport de synthèse — RAMASYS One</h1><p><b>Organisation :</b> ${esc(d.organization.name)}<br><b>Pays :</b> ${esc(d.organization.country)}<br><b>Source :</b> ${esc(d.source)}<br><b>Édité le :</b> ${esc(when(d.generated_at))}</p><h2>Indicateurs</h2><table style="width:100%;border-collapse:collapse">${Object.entries({Membres:s.members,Projets:s.projects,Activités:s.activities,Antennes:s.branches,Unités:s.units,Recettes:s.incomes===null?'Réservé':s.incomes,Dépenses:s.expenses===null?'Réservé':s.expenses,Solde:s.balance===null?'Réservé':s.balance}).map(([k,v])=>`<tr><td style="border-bottom:1px solid #ddd;padding:7px">${esc(k)}</td><td style="border-bottom:1px solid #ddd;padding:7px;text-align:right"><b>${esc(v)}</b></td></tr>`).join('')}</table><h2>Projets</h2><table style="width:100%;border-collapse:collapse"><tr><th>Projet</th><th>Statut</th><th>Progression</th></tr>${d.data.projects.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.status)}</td><td>${esc(x.progress_percentage??0)} %</td></tr>`).join('')||'<tr><td colspan="3">Aucun projet enregistré</td></tr>'}</table><p style="margin-top:24px;font-size:11px;color:#555">Rapport généré à partir des données réellement accessibles dans Supabase. Les résultats dépendent des droits RLS et des données renseignées.</p></div>`;}
  async function renderReports(){
   const page=$('reports');if(!page||!remoteReady())return;
   page.innerHTML=`<div class="panel"><div class="panel-head"><div><h3>Rapports & exports — données Supabase</h3><p class="module-intro">Rapport actualisé à partir des enregistrements distants de votre organisation.</p></div><span class="pill" id="ra-report-source">Chargement…</span></div><div id="ra-report-status" class="subtle">Lecture des données distantes…</div><div id="ra-report-stats" class="ra-report-grid"></div><div class="ra-toolbar no-print"><button class="btn" id="ra-report-csv">Exporter le résumé CSV</button><button class="btn secondary" id="ra-report-json">Exporter les données JSON</button><button class="btn secondary" id="ra-report-print">Imprimer / PDF</button><button class="btn secondary" id="ra-report-refresh">Actualiser</button></div><div id="ra-report-preview"></div></div>`;
-  const refresh=async()=>{status($('ra-report-status'),'Synchronisation du rapport…');try{const d=await getRemoteReport();reportCache=d;$('ra-report-source').textContent='Source distante · Supabase';const stats=[['Membres',d.summary.members],['Projets',d.summary.projects],['Activités',d.summary.activities],['Antennes',d.summary.branches],['Unités',d.summary.units],['Recettes',fmt(d.summary.incomes)+' '+d.organization.currency],['Dépenses',fmt(d.summary.expenses)+' '+d.organization.currency],['Solde',fmt(d.summary.balance)+' '+d.organization.currency]];$('ra-report-stats').innerHTML=stats.map(([l,v])=>`<div class="ra-stat"><span>${esc(l)}</span><b>${esc(v)}</b></div>`).join('');$('ra-report-preview').innerHTML=`<h3>Projets suivis</h3>${d.data.projects.map(p=>`<article class="ra-message"><b>${esc(p.name)}</b><p>${esc(p.status||'Statut non renseigné')} · ${esc(p.progress_percentage??0)} %</p></article>`).join('')||'<p class="empty">Aucun projet enregistré dans Supabase.</p>'}<p class="ra-muted-note">Généré le ${esc(when(d.generated_at))}. Les exports contiennent les données visibles selon vos permissions.</p>`;status($('ra-report-status'),'Données distantes chargées avec succès.');}catch(e){status($('ra-report-status'),'Rapport indisponible : '+e.message,true);}};
+  const refresh=async()=>{status($('ra-report-status'),'Synchronisation du rapport…');try{const d=await getRemoteReport();reportCache=d;$('ra-report-source').textContent='Source distante · Supabase';const stats=[['Membres',d.summary.members],['Projets',d.summary.projects],['Activités',d.summary.activities],['Antennes',d.summary.branches],['Unités',d.summary.units],['Recettes',d.summary.incomes===null?'Réservé':d.summary.incomes],['Dépenses',d.summary.expenses===null?'Réservé':d.summary.expenses],['Solde',d.summary.balance===null?'Réservé':d.summary.balance]];$('ra-report-stats').innerHTML=stats.map(([l,v])=>`<div class="ra-stat"><span>${esc(l)}</span><b>${esc(v)}</b></div>`).join('');$('ra-report-preview').innerHTML=`<h3>Projets suivis</h3>${d.data.projects.map(p=>`<article class="ra-message"><b>${esc(p.name)}</b><p>${esc(p.status||'Statut non renseigné')} · ${esc(p.progress_percentage??0)} %</p></article>`).join('')||'<p class="empty">Aucun projet enregistré dans Supabase.</p>'}<p class="ra-muted-note">Généré le ${esc(when(d.generated_at))}. Les exports contiennent les données visibles selon vos permissions.</p>`;status($('ra-report-status'),'Données distantes chargées avec succès.');}catch(e){status($('ra-report-status'),'Rapport indisponible : '+e.message,true);}};
   $('ra-report-csv').onclick=()=>{if(!reportCache)return;const s=reportCache.summary;download('ramasys-rapport-'+dateTag()+'.csv',csv([['Indicateur','Valeur'],['Organisation',reportCache.organization.name],['Membres',s.members],['Projets',s.projects],['Activités',s.activities],['Recettes',s.incomes],['Dépenses',s.expenses],['Solde',s.balance],['Devise',reportCache.organization.currency]]),'text/csv;charset=utf-8');};
   $('ra-report-json').onclick=()=>{if(reportCache)download('ramasys-export-supabase-'+dateTag()+'.json',JSON.stringify(reportCache,null,2),'application/json');};
   $('ra-report-print').onclick=()=>{if(!reportCache)return;const old=$('ra-report-print-area');if(old)old.remove();const box=document.createElement('div');box.id='ra-report-print-area';box.innerHTML=reportHtml(reportCache);document.body.appendChild(box);window.print();box.remove();};
@@ -2336,6 +2372,303 @@ document.getElementById('platform-admin-refresh')?.addEventListener('click',()=>
   const active=document.querySelector('[data-platform-section].active')?.dataset.platformSection||'overview';
   loadPlatformAdminSection(active);
 });
+</script>
+
+
+<script>
+/* RAMASYS One v3.0 — projets, activités, finances, documents et tableau de bord réellement distants */
+(function(){
+ 'use strict';
+ const $=id=>document.getElementById(id);
+ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const client=()=>{try{return typeof supabaseClient!=='undefined'?supabaseClient:null;}catch(_){return null;}};
+ const org=()=>window.currentOrganizationId||null;
+ const role=()=>window.currentOrganizationRole||null;
+ const admin=()=>role()==='admin';
+ const canManage=()=>['admin','manager'].includes(role());
+ const ready=()=>!!(client()&&org()&&!window.RAMASYS_LOCAL_MODE);
+ const currency=()=>window.currentOrganizationData?.currency||'XOF';
+ const fmt=n=>new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0}).format(Number(n)||0);
+ const date=v=>v?new Date(v+'T00:00:00').toLocaleDateString('fr-FR'):'—';
+ const stamp=v=>v?new Date(v).toLocaleString('fr-FR'):'—';
+ const msg=(id,text,bad=false)=>{const el=$(id);if(el){el.textContent=text;el.style.color=bad?'#b42318':'#28734a';}};
+ const today=()=>new Date().toISOString().slice(0,10);
+ const user=async()=>{const r=await client().auth.getUser();if(r.error)throw r.error;return r.data.user;};
+ const commonStyles=`
+  .ra-v3-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin:14px 0}
+  .ra-v3-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+  .ra-v3-form label{display:grid;gap:5px;font-size:13px;font-weight:650;color:#274536}
+  .ra-v3-form input,.ra-v3-form select,.ra-v3-form textarea{width:100%;padding:10px 11px;border:1px solid #d6e2d9;border-radius:9px;font:inherit;background:#fff;color:#20372a}
+  .ra-v3-form textarea{min-height:76px;resize:vertical}
+  .ra-v3-wide{grid-column:1/-1}
+  .ra-v3-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}
+  .ra-v3-record{border:1px solid #e2eae4;border-radius:12px;padding:13px 15px;margin:9px 0;background:#fff}
+  .ra-v3-record-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+  .ra-v3-muted{color:#6b7b70;font-size:12px}
+  .ra-v3-progress{height:7px;background:#e8eee9;border-radius:20px;overflow:hidden;margin-top:8px}
+  .ra-v3-progress span{display:block;height:100%;background:linear-gradient(90deg,#087a43,#48b52d)}
+  .ra-v3-table{width:100%;border-collapse:collapse;min-width:680px}
+  .ra-v3-table th,.ra-v3-table td{padding:10px;border-bottom:1px solid #e7eee9;text-align:left;vertical-align:top;font-size:13px}
+  .ra-v3-table th{color:#567062;background:#f6faf6}
+  .ra-v3-scroll{overflow-x:auto}
+  .ra-v3-hidden{display:none!important}
+  @media(max-width:620px){.ra-v3-form{grid-template-columns:1fr}.ra-v3-grid{grid-template-columns:1fr 1fr}}
+ `;
+ if(!document.getElementById('ramasys-v3-style')){const st=document.createElement('style');st.id='ramasys-v3-style';st.textContent=commonStyles;document.head.appendChild(st);}
+
+ // --------------------------- DASHBOARD ---------------------------
+ let dashboardBusy=false;
+ async function renderDashboard(){
+  if(!ready()||dashboardBusy)return;dashboardBusy=true;
+  try{
+   const id=org();
+   const jobs=[
+    client().from('members').select('id',{count:'exact',head:true}).eq('organization_id',id).eq('status','active'),
+    client().from('projects').select('id,name,status,progress_percentage,created_at').eq('organization_id',id).order('created_at',{ascending:false}).limit(6),
+    client().from('project_activities').select('id,project_id,name,status,progress_percentage,created_at').eq('organization_id',id).order('created_at',{ascending:false}).limit(6)
+   ];
+   if(admin()){
+    jobs.push(client().from('finance_accounts').select('id,currency').eq('organization_id',id));
+    jobs.push(client().from('finance_incomes').select('account_id,amount,status').eq('organization_id',id));
+    jobs.push(client().from('finance_expenses').select('account_id,amount,status').eq('organization_id',id));
+   }
+   const results=await Promise.all(jobs);
+   for(const r of results){if(r.error)throw r.error;}
+   const members=results[0].count||0,projects=results[1].data||[],activities=results[2].data||[];
+   if($('member-count'))$('member-count').textContent=String(members);
+   if($('overview-active-projects'))$('overview-active-projects').textContent=String(projects.filter(x=>x.status==='active').length);
+   if($('overview-completed-activities'))$('overview-completed-activities').textContent=String(activities.filter(x=>x.status==='completed').length);
+   if(admin()){
+    const accountCurrency=new Map((results[3].data||[]).map(a=>[a.id,a.currency||currency()]));
+    const sumByCurrency=arr=>{const totals={};for(const x of arr.filter(x=>['recorded','approved','paid','completed'].includes(String(x.status||'').toLowerCase()))){const cur=accountCurrency.get(x.account_id)||currency();totals[cur]=(totals[cur]||0)+Number(x.amount||0);}return Object.entries(totals).map(([cur,n])=>fmt(n)+' '+cur).join(' · ')||'0 '+currency();};
+    const income=sumByCurrency(results[4].data||[]);
+    if($('overview-mobilized-budget'))$('overview-mobilized-budget').textContent=income;
+    const note=$('overview-mobilized-budget')?.parentElement?.querySelector('.metric-note');if(note)note.textContent='Recettes enregistrées et validées';
+   }else if($('overview-mobilized-budget')){$('overview-mobilized-budget').textContent='Réservé';}
+   if($('dashboard-projects'))$('dashboard-projects').innerHTML=projects.length?projects.map(p=>`<div class="activity"><i class="dot"></i><div><b>${esc(p.name)}</b><small>${esc(p.status)} · ${Math.round(Number(p.progress_percentage)||0)} %</small></div></div>`).join(''):'Aucun projet enregistré dans Supabase.';
+   if($('dashboard-activity'))$('dashboard-activity').innerHTML=activities.length?activities.map(a=>`<div class="activity"><i class="dot"></i><div><b>${esc(a.name)}</b><small>${esc(a.status)} · ${stamp(a.created_at)}</small></div></div>`).join(''):'Aucune activité enregistrée dans Supabase.';
+  }catch(e){console.error('RAMASYS dashboard',e);const h=$('dashboard');if(h&&!h.querySelector('#ra-v3-dashboard-error')){const el=document.createElement('p');el.id='ra-v3-dashboard-error';el.className='subtle';el.style.color='#b42318';el.textContent='Actualisation du tableau de bord impossible : '+e.message;h.prepend(el);}}
+  finally{dashboardBusy=false;}
+ }
+
+ // --------------------------- PROJECTS & ACTIVITIES ---------------------------
+ let projectRows=[],activityRows=[];
+ const projectStatus={draft:'Brouillon',planned:'Planifié',active:'En cours',on_hold:'En pause',completed:'Terminé',cancelled:'Annulé'};
+ const activityStatus={planned:'Planifiée',in_progress:'En cours',completed:'Terminée',on_hold:'En pause',cancelled:'Annulée'};
+ const priorityLabel={low:'Basse',medium:'Normale',high:'Haute',critical:'Critique'};
+ function projectFormHtml(p={}){
+  return `<div class="panel" id="ra-v3-project-editor"><div class="panel-head"><div><h3>${p.id?'Modifier le projet':'Créer un projet'}</h3><p class="module-intro">Les données sont enregistrées dans Supabase et liées à cette organisation.</p></div></div>
+   <form id="ra-v3-project-form" class="ra-v3-form" data-id="${esc(p.id||'')}">
+    <label>Nom du projet<input name="name" required maxlength="180" value="${esc(p.name||'')}"></label>
+    <label>Code / référence<input name="project_code" maxlength="60" value="${esc(p.project_code||'')}"></label>
+    <label>Type de projet<input name="project_type" value="${esc(p.project_type||'')}"></label>
+    <label>Domaine / secteur<input name="thematic_area" value="${esc(p.thematic_area||'')}"></label>
+    <label>Date de début<input name="start_date" type="date" value="${esc(p.start_date||'')}"></label>
+    <label>Date de fin<input name="end_date" type="date" value="${esc(p.end_date||'')}"></label>
+    <label>Statut<select name="status">${Object.entries(projectStatus).map(([v,l])=>`<option value="${v}" ${p.status===v?'selected':''}>${l}</option>`).join('')}</select></label>
+    <label>Priorité<select name="priority">${Object.entries(priorityLabel).map(([v,l])=>`<option value="${v}" ${(p.priority||'medium')===v?'selected':''}>${l}</option>`).join('')}</select></label>
+    ${admin()?`<label>Budget prévisionnel (${esc(currency())})<input name="estimated_budget" type="number" min="0" step="1" value="${esc(p.estimated_budget??'')}"></label><label>Budget réalisé (${esc(currency())})<input name="actual_budget" type="number" min="0" step="1" value="${esc(p.actual_budget??0)}"></label>`:''}
+    <label>Lieu<input name="location" value="${esc(p.location||'')}"></label>
+    <label>Bénéficiaires prévus<input name="target_beneficiaries" type="number" min="0" step="1" value="${esc(p.target_beneficiaries??'')}"></label>
+    <label>Progression (%)<input name="progress_percentage" type="number" min="0" max="100" step="1" value="${esc(p.progress_percentage??0)}"></label>
+    <label class="ra-v3-wide">Résumé<textarea name="summary">${esc(p.summary||'')}</textarea></label>
+    <label class="ra-v3-wide">Description détaillée<textarea name="description">${esc(p.description||'')}</textarea></label>
+    <label class="ra-v3-wide">Objectifs<textarea name="objectives">${esc(p.objectives||'')}</textarea></label>
+    <label class="ra-v3-wide">Résultats attendus<textarea name="expected_results">${esc(p.expected_results||'')}</textarea></label>
+    <div class="ra-v3-wide ra-v3-toolbar"><button class="btn" type="submit">${p.id?'Enregistrer les modifications':'Enregistrer le projet'}</button><button class="btn secondary" type="button" id="ra-v3-project-cancel">Annuler</button></div>
+   </form><div id="ra-v3-project-message" class="subtle" role="status"></div></div>`;
+ }
+ function activityFormHtml(a={},projects=[]) {
+  return `<div class="panel" id="ra-v3-activity-editor"><div class="panel-head"><div><h3>${a.id?'Modifier l’activité':'Ajouter une activité'}</h3><p class="module-intro">Chaque activité est rattachée à un projet existant.</p></div></div>
+   <form id="ra-v3-activity-form" class="ra-v3-form" data-id="${esc(a.id||'')}">
+    <label>Projet associé<select name="project_id" required><option value="">Choisir un projet</option>${projects.filter(p=>p.status!=='cancelled').map(p=>`<option value="${esc(p.id)}" ${a.project_id===p.id?'selected':''}>${esc(p.name)}</option>`).join('')}</select></label>
+    <label>Intitulé<input name="name" required maxlength="180" value="${esc(a.name||'')}"></label>
+    <label>Type d’activité<input name="activity_type" value="${esc(a.activity_type||'')}"></label>
+    <label>Responsable<input name="responsible_name" value="${esc(a.responsible_name||'')}"></label>
+    <label>Date de début<input name="start_date" type="date" value="${esc(a.start_date||'')}"></label>
+    <label>Date de fin / échéance<input name="end_date" type="date" value="${esc(a.end_date||'')}"></label>
+    <label>Statut<select name="status">${Object.entries(activityStatus).map(([v,l])=>`<option value="${v}" ${(a.status||'planned')===v?'selected':''}>${l}</option>`).join('')}</select></label>
+    <label>Priorité<select name="priority">${Object.entries(priorityLabel).map(([v,l])=>`<option value="${v}" ${(a.priority||'medium')===v?'selected':''}>${l}</option>`).join('')}</select></label>
+    <label>Progression (%)<input name="progress_percentage" type="number" min="0" max="100" step="1" value="${esc(a.progress_percentage??0)}"></label>
+    <label class="ra-v3-wide">Description<textarea name="description">${esc(a.description||'')}</textarea></label>
+    <label class="ra-v3-wide">Résultat attendu<textarea name="expected_output">${esc(a.expected_output||'')}</textarea></label>
+    <label class="ra-v3-wide">Résultat obtenu<textarea name="actual_output">${esc(a.actual_output||'')}</textarea></label>
+    <label class="ra-v3-wide">Notes<textarea name="notes">${esc(a.notes||'')}</textarea></label>
+    <div class="ra-v3-wide ra-v3-toolbar"><button class="btn" type="submit">${a.id?'Enregistrer les modifications':'Enregistrer l’activité'}</button><button class="btn secondary" type="button" id="ra-v3-activity-cancel">Annuler</button></div>
+   </form><div id="ra-v3-activity-message" class="subtle" role="status"></div></div>`;
+ }
+ async function loadProjectData(){
+  const id=org();
+  const projectFields=admin()?'*':'id,organization_id,project_code,name,summary,description,project_type,thematic_area,start_date,end_date,status,priority,location,target_beneficiaries,objectives,expected_results,progress_percentage,created_at,updated_at';
+  const [p,a]=await Promise.all([
+   client().from('projects').select(projectFields).eq('organization_id',id).order('created_at',{ascending:false}).limit(500),
+   client().from('project_activities').select('id,project_id,organization_id,name,description,activity_type,responsible_name,start_date,end_date,status,priority,progress_percentage,expected_output,actual_output,sort_order,notes,created_by,created_at,updated_at,completed_at').eq('organization_id',id).order('created_at',{ascending:false}).limit(1000)
+  ]);
+  if(p.error)throw new Error('Projets : '+p.error.message);if(a.error)throw new Error('Activités : '+a.error.message);
+  projectRows=p.data||[];activityRows=a.data||[];
+ }
+ async function renderProjects(){
+  const page=$('projects');if(!page||!ready())return;
+  page.innerHTML=`<div class="panel"><div class="panel-head"><div><h3>Projets & activités</h3><p class="module-intro">Planification, suivi des résultats, responsables, délais et progression. Les données sont synchronisées avec Supabase.</p></div><span class="pill">Données partagées</span></div>
+   <div class="ra-v3-grid"><div class="card"><div class="metric-label">Projets</div><div class="metric" id="ra-v3-project-count">—</div></div><div class="card"><div class="metric-label">Projets en cours</div><div class="metric" id="ra-v3-project-active">—</div></div><div class="card"><div class="metric-label">Activités</div><div class="metric" id="ra-v3-activity-count">—</div></div><div class="card"><div class="metric-label">Activités terminées</div><div class="metric" id="ra-v3-activity-complete">—</div></div></div>
+   <div id="ra-v3-project-message" class="subtle" role="status">Chargement depuis Supabase…</div>
+   <div class="ra-v3-toolbar">${canManage()?'<button class="btn" id="ra-v3-new-project" type="button">＋ Nouveau projet</button><button class="btn secondary" id="ra-v3-new-activity" type="button">＋ Nouvelle activité</button>':''}<button class="btn secondary" id="ra-v3-project-refresh" type="button">Actualiser</button></div>
+   <div id="ra-v3-project-editor-host"></div><div id="ra-v3-activity-editor-host"></div></div>
+   <div class="panel"><h3>Registre des projets</h3><div id="ra-v3-project-list"><p class="empty">Chargement…</p></div></div>
+   <div class="panel"><h3>Activités et exécution</h3><div id="ra-v3-activity-list"><p class="empty">Chargement…</p></div></div>`;
+  const refresh=async()=>{
+   msg('ra-v3-project-message','Lecture des projets et activités dans Supabase…');
+   try{
+    await loadProjectData();
+    $('ra-v3-project-count').textContent=projectRows.length;
+    $('ra-v3-project-active').textContent=projectRows.filter(p=>p.status==='active').length;
+    $('ra-v3-activity-count').textContent=activityRows.length;
+    $('ra-v3-activity-complete').textContent=activityRows.filter(a=>a.status==='completed').length;
+    $('ra-v3-project-list').innerHTML=projectRows.length?projectRows.map(p=>`<article class="ra-v3-record"><div class="ra-v3-record-head"><div><b>${esc(p.name)}</b><div class="ra-v3-muted">${esc(p.project_code||'Sans code')} · ${esc(projectStatus[p.status]||p.status)} · ${esc(priorityLabel[p.priority]||p.priority)}</div></div><div class="ra-v3-toolbar">${canManage()?`<button type="button" class="btn secondary" data-edit-project="${esc(p.id)}">Modifier</button>${p.status!=='cancelled'?`<button type="button" class="btn secondary" data-cancel-project="${esc(p.id)}">Annuler le projet</button>`:''}`:''}</div></div><p>${esc(p.summary||p.description||'Aucun résumé renseigné')}</p><div class="ra-v3-progress"><span style="width:${Math.max(0,Math.min(100,Number(p.progress_percentage)||0))}%"></span></div><small class="ra-v3-muted">Progression : ${Math.round(Number(p.progress_percentage)||0)} % · ${date(p.start_date)} — ${date(p.end_date)}${admin()?` · Budget prévisionnel : ${fmt(p.estimated_budget||0)} ${esc(currency())} · Réalisé : ${fmt(p.actual_budget||0)} ${esc(currency())}`:''}</small></article>`).join(''):'<p class="empty">Aucun projet enregistré. Créez le premier projet pour démarrer.</p>';
+    $('ra-v3-activity-list').innerHTML=activityRows.length?activityRows.map(a=>{const p=projectRows.find(x=>x.id===a.project_id);return `<article class="ra-v3-record"><div class="ra-v3-record-head"><div><b>${esc(a.name)}</b><div class="ra-v3-muted">Projet : ${esc(p?.name||'Projet non disponible')} · ${esc(activityStatus[a.status]||a.status)} · ${esc(priorityLabel[a.priority]||a.priority)}</div></div><div class="ra-v3-toolbar">${canManage()?`<button class="btn secondary" type="button" data-edit-activity="${esc(a.id)}">Modifier</button>${a.status!=='completed'&&a.status!=='cancelled'?`<button class="btn secondary" type="button" data-complete-activity="${esc(a.id)}">Terminer</button>`:''}`:''}</div></div><p>${esc(a.description||'')}</p><small class="ra-v3-muted">Responsable : ${esc(a.responsible_name||'Non désigné')} · ${date(a.start_date)} — ${date(a.end_date)} · ${Math.round(Number(a.progress_percentage)||0)} %</small></article>`;}).join(''):'<p class="empty">Aucune activité enregistrée.</p>';
+    msg('ra-v3-project-message','Données chargées depuis Supabase.');
+   }catch(e){msg('ra-v3-project-message','Erreur de chargement : '+e.message,true);}
+  };
+  if(canManage()){
+   $('ra-v3-new-project').onclick=()=>{ $('ra-v3-activity-editor-host').innerHTML='';$('ra-v3-project-editor-host').innerHTML=projectFormHtml();bindProjectForm(refresh); };
+   $('ra-v3-new-activity').onclick=()=>{ $('ra-v3-project-editor-host').innerHTML='';$('ra-v3-activity-editor-host').innerHTML=activityFormHtml({},projectRows);bindActivityForm(refresh); };
+  }
+  $('ra-v3-project-refresh').onclick=refresh;
+  $('ra-v3-project-list').addEventListener('click',async e=>{
+   const edit=e.target.closest('[data-edit-project]'),cancel=e.target.closest('[data-cancel-project]');
+   if(edit){const p=projectRows.find(x=>x.id===edit.dataset.editProject);$('ra-v3-activity-editor-host').innerHTML='';$('ra-v3-project-editor-host').innerHTML=projectFormHtml(p);bindProjectForm(refresh);}
+   if(cancel){if(!confirm('Marquer ce projet comme annulé ? Les données ne seront pas supprimées.'))return;const r=await client().from('projects').update({status:'cancelled',updated_at:new Date().toISOString()}).eq('id',cancel.dataset.cancelProject).eq('organization_id',org());if(r.error)msg('ra-v3-project-message',r.error.message,true);else refresh();}
+  });
+  $('ra-v3-activity-list').addEventListener('click',async e=>{
+   const edit=e.target.closest('[data-edit-activity]'),complete=e.target.closest('[data-complete-activity]');
+   if(edit){const a=activityRows.find(x=>x.id===edit.dataset.editActivity);$('ra-v3-project-editor-host').innerHTML='';$('ra-v3-activity-editor-host').innerHTML=activityFormHtml(a,projectRows);bindActivityForm(refresh);}
+   if(complete){const r=await client().from('project_activities').update({status:'completed',progress_percentage:100,completed_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',complete.dataset.completeActivity).eq('organization_id',org());if(r.error)msg('ra-v3-project-message',r.error.message,true);else refresh();}
+  });
+  await refresh();
+ }
+ function bindProjectForm(refresh){
+  $('ra-v3-project-cancel').onclick=()=>{$('ra-v3-project-editor-host').innerHTML='';};
+  $('ra-v3-project-form').onsubmit=async e=>{
+   e.preventDefault();const f=new FormData(e.currentTarget),id=e.currentTarget.dataset.id||null,btn=e.currentTarget.querySelector('button[type=submit]');btn.disabled=true;msg('ra-v3-project-message','Enregistrement du projet…');
+   try{
+    const payload={organization_id:org(),name:String(f.get('name')||'').trim(),project_code:String(f.get('project_code')||'').trim()||null,project_type:String(f.get('project_type')||'').trim()||null,thematic_area:String(f.get('thematic_area')||'').trim()||null,start_date:f.get('start_date')||null,end_date:f.get('end_date')||null,status:f.get('status'),priority:f.get('priority'),location:String(f.get('location')||'').trim()||null,target_beneficiaries:f.get('target_beneficiaries')===''?null:Number(f.get('target_beneficiaries')),progress_percentage:Number(f.get('progress_percentage')||0),summary:String(f.get('summary')||'').trim()||null,description:String(f.get('description')||'').trim()||null,objectives:String(f.get('objectives')||'').trim()||null,expected_results:String(f.get('expected_results')||'').trim()||null,updated_at:new Date().toISOString()};
+    if(admin()){payload.estimated_budget=f.get('estimated_budget')===''?null:Number(f.get('estimated_budget'));payload.actual_budget=Number(f.get('actual_budget')||0);payload.budget_currency=currency();}
+    if(!id)payload.created_by=(await user()).id;
+    const r=id?await client().from('projects').update(payload).eq('id',id).eq('organization_id',org()):await client().from('projects').insert(payload);
+    if(r.error)throw r.error;$('ra-v3-project-editor-host').innerHTML='';await refresh();
+   }catch(err){msg('ra-v3-project-message','Enregistrement impossible : '+err.message,true);}finally{btn.disabled=false;}
+  };
+ }
+ function bindActivityForm(refresh){
+  $('ra-v3-activity-cancel').onclick=()=>{$('ra-v3-activity-editor-host').innerHTML='';};
+  $('ra-v3-activity-form').onsubmit=async e=>{
+   e.preventDefault();const f=new FormData(e.currentTarget),id=e.currentTarget.dataset.id||null,btn=e.currentTarget.querySelector('button[type=submit]');btn.disabled=true;msg('ra-v3-project-message','Enregistrement de l’activité…');
+   try{
+    const status=f.get('status');const payload={project_id:f.get('project_id'),organization_id:org(),name:String(f.get('name')||'').trim(),description:String(f.get('description')||'').trim()||null,activity_type:String(f.get('activity_type')||'').trim()||null,responsible_name:String(f.get('responsible_name')||'').trim()||null,start_date:f.get('start_date')||null,end_date:f.get('end_date')||null,status,priority:f.get('priority'),progress_percentage:Number(f.get('progress_percentage')||0),expected_output:String(f.get('expected_output')||'').trim()||null,actual_output:String(f.get('actual_output')||'').trim()||null,notes:String(f.get('notes')||'').trim()||null,updated_at:new Date().toISOString(),completed_at:status==='completed'?new Date().toISOString():null};
+    if(!id){payload.created_by=(await user()).id;payload.sort_order=activityRows.length+1;}
+    const r=id?await client().from('project_activities').update(payload).eq('id',id).eq('organization_id',org()):await client().from('project_activities').insert(payload);
+    if(r.error)throw r.error;$('ra-v3-activity-editor-host').innerHTML='';await refresh();
+   }catch(err){msg('ra-v3-project-message','Enregistrement impossible : '+err.message,true);}finally{btn.disabled=false;}
+  };
+ }
+
+ // Capture les anciens gestionnaires locaux avant qu'ils ne s'exécutent.
+ const projectPage=$('projects');
+ projectPage?.addEventListener('click',e=>{
+  const p=e.target.closest('#btn-new-project'),a=e.target.closest('#btn-new-activity');if(!p&&!a)return;
+  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+  if(!canManage()){msg('ra-v3-project-message','Droit insuffisant : seuls les administrateurs et gestionnaires peuvent modifier les projets.',true);return;}
+  if(p){$('ra-v3-activity-editor-host').innerHTML='';$('ra-v3-project-editor-host').innerHTML=projectFormHtml();bindProjectForm(renderProjects);}
+  if(a){$('ra-v3-project-editor-host').innerHTML='';$('ra-v3-activity-editor-host').innerHTML=activityFormHtml({},projectRows);bindActivityForm(renderProjects);}
+ },true);
+
+ // --------------------------- FINANCE ---------------------------
+ let financeAccounts=[],financeIncome=[],financeExpenses=[],financeTransfers=[];
+ async function renderFinance(){
+  const page=$('finance');if(!page||!ready())return;
+  if(!admin()){
+   page.innerHTML=`<div class="panel"><h3>Finances</h3><p class="subtle">La consultation des comptes, recettes, dépenses et transferts est réservée aux administrateurs de cette organisation, conformément aux règles de sécurité Supabase.</p></div>`;return;
+  }
+  page.innerHTML=`<div class="panel"><div class="panel-head"><div><h3>Gestion financière</h3><p class="module-intro">Comptes, recettes, dépenses, transferts et rapprochement. Toutes les opérations sont enregistrées dans Supabase.</p></div><span class="pill">Accès administrateur</span></div>
+   <div class="ra-v3-grid"><div class="card"><div class="metric-label">Recettes enregistrées / validées</div><div class="metric" id="ra-v3-fin-income">—</div></div><div class="card"><div class="metric-label">Dépenses enregistrées / validées</div><div class="metric" id="ra-v3-fin-expense">—</div></div><div class="card"><div class="metric-label">Solde indicatif</div><div class="metric" id="ra-v3-fin-balance">—</div></div><div class="card"><div class="metric-label">Comptes actifs</div><div class="metric" id="ra-v3-fin-accounts">—</div></div></div>
+   <div id="ra-v3-fin-message" class="subtle" role="status">Chargement des données financières…</div>
+   <div class="panel"><h3>Comptes et caisses</h3><form id="ra-v3-account-form" class="ra-v3-form"><label>Nom du compte<input name="account_name" maxlength="120" required placeholder="Caisse principale, compte bancaire…"></label><label>Type<select name="account_type"><option value="cash">Caisse / espèces</option><option value="bank">Compte bancaire</option><option value="mobile_money">Mobile money</option><option value="other">Autre</option></select></label><label>Banque / opérateur<input name="institution_name"></label><label>Référence (facultatif)<input name="account_reference"></label><label>Devise<select name="currency"><option value="${esc(currency())}">${esc(currency())}</option><option value="XOF">XOF</option><option value="EUR">EUR</option><option value="USD">USD</option></select></label><label>Solde d’ouverture<input name="opening_balance" type="number" min="0" step="1" value="0"></label><label>Date d’ouverture<input name="opening_date" type="date" value="${today()}"></label><label class="ra-v3-wide">Notes<textarea name="notes"></textarea></label><div class="ra-v3-wide"><button class="btn" type="submit">Créer le compte</button></div></form><div id="ra-v3-account-list"></div></div>
+   <div class="panel"><h3>Enregistrer une recette ou une dépense</h3><form id="ra-v3-transaction-form" class="ra-v3-form"><label>Nature<select name="kind"><option value="income">Recette</option><option value="expense">Dépense</option></select></label><label>Compte / caisse<select name="account_id" id="ra-v3-transaction-account" required></select></label><label>Catégorie<input name="category" required placeholder="Cotisation, vente, loyer, transport…"></label><label>Montant (devise du compte)<input name="amount" type="number" min="1" step="1" required></label><label>Date<input name="entry_date" type="date" value="${today()}" required></label><label>Mode de paiement<input name="payment_method" placeholder="Espèces, virement, Wave…"></label><label>Source / fournisseur<input name="counterparty" placeholder="Client, bailleur ou fournisseur"></label><label>Référence transaction<input name="payment_reference"></label><label class="ra-v3-wide">Libellé / description<input name="description" maxlength="240" required></label><label class="ra-v3-wide">Notes<textarea name="notes"></textarea></label><div class="ra-v3-wide"><button class="btn" type="submit">Enregistrer l’opération</button></div></form><div id="ra-v3-transaction-message" class="subtle" role="status"></div></div>
+   <div class="panel"><h3>Transfert entre comptes</h3><form id="ra-v3-transfer-form" class="ra-v3-form"><label>Compte source<select name="source_account_id" id="ra-v3-transfer-source" required></select></label><label>Compte destinataire<select name="destination_account_id" id="ra-v3-transfer-dest" required></select></label><label>Montant (devise des comptes)<input name="amount" type="number" min="1" step="1" required></label><label>Date<input name="transfer_date" type="date" value="${today()}" required></label><label class="ra-v3-wide">Motif<input name="description" required></label><label>Référence<input name="reference"></label><div class="ra-v3-wide"><button class="btn secondary" type="submit">Enregistrer le transfert</button></div></form><div id="ra-v3-transfer-message" class="subtle" role="status"></div></div>
+   <div class="panel"><div class="panel-head"><h3>Journal des opérations</h3><button class="btn secondary" id="ra-v3-fin-refresh" type="button">Actualiser</button></div><div class="ra-v3-scroll"><table class="ra-v3-table"><thead><tr><th>Date</th><th>Type</th><th>Libellé</th><th>Compte</th><th>Montant</th><th>Statut</th><th>Validation</th></tr></thead><tbody id="ra-v3-fin-ledger"></tbody></table></div></div></div>`;
+  const load=async()=>{
+   msg('ra-v3-fin-message','Lecture des comptes et opérations…');
+   try{
+    const id=org();
+    const [a,i,x,t]=await Promise.all([
+     client().from('finance_accounts').select('*').eq('organization_id',id).order('created_at',{ascending:false}),
+     client().from('finance_incomes').select('*').eq('organization_id',id).order('income_date',{ascending:false}).limit(1000),
+     client().from('finance_expenses').select('*').eq('organization_id',id).order('expense_date',{ascending:false}).limit(1000),
+     client().from('finance_transfers').select('*').eq('organization_id',id).order('transfer_date',{ascending:false}).limit(1000)
+    ]);
+    for(const r of [a,i,x,t])if(r.error)throw r.error;
+    financeAccounts=a.data||[];financeIncome=i.data||[];financeExpenses=x.data||[];financeTransfers=t.data||[];
+    const accountCurrency=new Map(financeAccounts.map(a=>[a.id,a.currency||currency()]));
+    const sumByCurrency=arr=>{const totals={};for(const r of arr.filter(r=>['recorded','approved'].includes(r.status))){const cur=accountCurrency.get(r.account_id)||currency();totals[cur]=(totals[cur]||0)+Number(r.amount||0);}return totals;};
+    const incomeMap=sumByCurrency(financeIncome),expenseMap=sumByCurrency(financeExpenses);
+    const formatTotals=map=>Object.keys(map).length?Object.entries(map).map(([cur,n])=>fmt(n)+' '+cur).join('<br>'):'0 '+currency();
+    const balanceMap={};for(const cur of new Set([...Object.keys(incomeMap),...Object.keys(expenseMap)]))balanceMap[cur]=(incomeMap[cur]||0)-(expenseMap[cur]||0);
+    $('ra-v3-fin-income').innerHTML=formatTotals(incomeMap);$('ra-v3-fin-expense').innerHTML=formatTotals(expenseMap);$('ra-v3-fin-balance').innerHTML=formatTotals(balanceMap);$('ra-v3-fin-accounts').textContent=financeAccounts.filter(x=>x.status==='active').length;
+    const opts=financeAccounts.filter(x=>x.status==='active').map(x=>`<option value="${esc(x.id)}">${esc(x.account_name)} (${esc(x.account_type)} · ${esc(x.currency)})</option>`).join('')||'<option value="">Créez d’abord un compte</option>';
+    ['ra-v3-transaction-account','ra-v3-transfer-source','ra-v3-transfer-dest'].forEach(id=>{if($(id))$(id).innerHTML=opts;});
+    $('ra-v3-account-list').innerHTML=financeAccounts.length?financeAccounts.map(x=>`<div class="ra-v3-record"><b>${esc(x.account_name)}</b><div class="ra-v3-muted">${esc(x.account_type)} · ${esc(x.institution_name||'Institution non précisée')} · ${esc(x.currency)} · ${esc(x.status)}</div><small>Solde d’ouverture : ${fmt(x.opening_balance)} ${esc(x.currency)}</small></div>`).join(''):'<p class="empty">Aucun compte financier. Créez une caisse ou un compte bancaire avant de saisir une opération.</p>';
+    const accountName=id=>financeAccounts.find(x=>x.id===id)?.account_name||'Compte indisponible';
+    const ledger=[
+     ...financeIncome.map(x=>({date:x.income_date,type:'Recette',label:x.description,account:x.account_id,amount:Number(x.amount),status:x.status,table:'income',id:x.id})),
+     ...financeExpenses.map(x=>({date:x.expense_date,type:'Dépense',label:x.description,account:x.account_id,amount:Number(x.amount),status:x.status,table:'expense',id:x.id})),
+     ...financeTransfers.map(x=>({date:x.transfer_date,type:'Transfert',label:x.description||'Transfert entre comptes',account:accountName(x.source_account_id)+' → '+accountName(x.destination_account_id),amount:Number(x.amount),status:x.status,table:'transfer',id:x.id}))
+    ].sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+    $('ra-v3-fin-ledger').innerHTML=ledger.length?ledger.map(x=>`<tr><td>${date(x.date)}</td><td>${esc(x.type)}</td><td>${esc(x.label||'—')}</td><td>${esc(x.table==='transfer'?x.account:accountName(x.account))}</td><td>${fmt(x.amount)} ${esc(x.table==='transfer'?(financeAccounts.find(a=>a.id===financeTransfers.find(t=>t.id===x.id)?.source_account_id)?.currency||currency()):(financeAccounts.find(a=>a.id===x.account)?.currency||currency()))}</td><td>${esc(x.status)}</td><td>${x.status==='pending_approval'&&x.table!=='transfer'?`<button class="btn secondary" type="button" data-fin-approve="${esc(x.id)}" data-fin-kind="${x.table}">Valider</button> <button class="btn secondary" type="button" data-fin-reject="${esc(x.id)}" data-fin-kind="${x.table}">Rejeter</button>`:'—'}</td></tr>`).join(''):'<tr><td colspan="7">Aucune opération financière enregistrée.</td></tr>';
+    msg('ra-v3-fin-message','Comptes et écritures synchronisés avec Supabase.');
+   }catch(e){msg('ra-v3-fin-message','Lecture financière impossible : '+e.message,true);}
+  };
+  $('ra-v3-account-form').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.currentTarget),btn=e.currentTarget.querySelector('button[type=submit]');btn.disabled=true;try{const u=await user();const r=await client().from('finance_accounts').insert({organization_id:org(),account_name:String(f.get('account_name')).trim(),account_type:f.get('account_type'),institution_name:String(f.get('institution_name')||'').trim()||null,account_reference:String(f.get('account_reference')||'').trim()||null,currency:f.get('currency'),opening_balance:Number(f.get('opening_balance')||0),opening_date:f.get('opening_date')||today(),notes:String(f.get('notes')||'').trim()||null,created_by:u.id});if(r.error)throw r.error;e.currentTarget.reset();msg('ra-v3-fin-message','Compte créé.');await load();}catch(err){msg('ra-v3-fin-message','Création du compte impossible : '+err.message,true);}finally{btn.disabled=false;}};
+  $('ra-v3-transaction-form').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.currentTarget),btn=e.currentTarget.querySelector('button[type=submit]');btn.disabled=true;try{const u=await user();const kind=f.get('kind'),amount=Number(f.get('amount'));if(!(amount>0))throw new Error('Le montant doit être supérieur à zéro.');if(!financeAccounts.some(a=>a.id===f.get('account_id')&&a.status==='active'))throw new Error('Sélectionnez un compte actif.');let result;if(kind==='income'){result=await client().from('finance_incomes').insert({organization_id:org(),account_id:f.get('account_id'),income_category:String(f.get('category')).trim(),description:String(f.get('description')).trim(),amount,income_date:f.get('entry_date'),source_name:String(f.get('counterparty')||'').trim()||null,payment_method:String(f.get('payment_method')||'').trim()||null,payment_reference:String(f.get('payment_reference')||'').trim()||null,status:'recorded',received_by:u.id,notes:String(f.get('notes')||'').trim()||null});}else{result=await client().from('finance_expenses').insert({organization_id:org(),account_id:f.get('account_id'),expense_category:String(f.get('category')).trim(),description:String(f.get('description')).trim(),amount,expense_date:f.get('entry_date'),supplier_name:String(f.get('counterparty')||'').trim()||null,payment_method:String(f.get('payment_method')||'').trim()||null,payment_reference:String(f.get('payment_reference')||'').trim()||null,status:'recorded',recorded_by:u.id,notes:String(f.get('notes')||'').trim()||null});}if(result.error)throw result.error;e.currentTarget.reset();msg('ra-v3-transaction-message','Opération enregistrée dans Supabase.');await load();}catch(err){msg('ra-v3-transaction-message','Enregistrement impossible : '+err.message,true);}finally{btn.disabled=false;}};
+  $('ra-v3-transfer-form').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.currentTarget),btn=e.currentTarget.querySelector('button[type=submit]');btn.disabled=true;try{const u=await user();if(f.get('source_account_id')===f.get('destination_account_id'))throw new Error('Les deux comptes doivent être différents.');const source=financeAccounts.find(a=>a.id===f.get('source_account_id')),destination=financeAccounts.find(a=>a.id===f.get('destination_account_id'));if(!source||!destination||source.currency!==destination.currency)throw new Error('Les deux comptes doivent utiliser la même devise pour ce transfert.');const r=await client().from('finance_transfers').insert({organization_id:org(),source_account_id:f.get('source_account_id'),destination_account_id:f.get('destination_account_id'),amount:Number(f.get('amount')),transfer_date:f.get('transfer_date'),description:String(f.get('description')).trim(),reference:String(f.get('reference')||'').trim()||null,status:'recorded',recorded_by:u.id});if(r.error)throw r.error;e.currentTarget.reset();msg('ra-v3-transfer-message','Transfert enregistré.');await load();}catch(err){msg('ra-v3-transfer-message','Transfert impossible : '+err.message,true);}finally{btn.disabled=false;}};
+  $('ra-v3-fin-refresh').onclick=load;
+  $('ra-v3-fin-ledger').addEventListener('click',async e=>{const b=e.target.closest('[data-fin-approve],[data-fin-reject]');if(!b)return;const approve=b.hasAttribute('data-fin-approve'),id=approve?b.dataset.finApprove:b.dataset.finReject,kind=b.dataset.finKind,table=kind==='income'?'finance_incomes':'finance_expenses';try{const u=await user();const r=await client().from(table).update({status:approve?'approved':'rejected',approved_by:u.id,approved_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',id).eq('organization_id',org());if(r.error)throw r.error;await load();}catch(err){msg('ra-v3-fin-message','Validation impossible : '+err.message,true);}});
+  await load();
+ }
+
+ // --------------------------- DOCUMENTS / SUPABASE STORAGE ---------------------------
+ function formatSize(bytes){const n=Number(bytes)||0;return n<1024?`${n} o`:n<1048576?`${(n/1024).toFixed(1)} Ko`:`${(n/1048576).toFixed(2)} Mo`;}
+ async function renderDocuments(){
+  const page=$('documents');if(!page||!ready())return;
+  page.innerHTML=`<div class="panel"><div class="panel-head"><div><h3>Documents de l’organisation</h3><p class="module-intro">Fichiers stockés dans Supabase Storage, dans un espace privé séparé pour chaque organisation. Taille maximale : 20 Mo par fichier.</p></div><span class="pill">Stockage Supabase</span></div>
+   <div class="ra-v3-toolbar">${admin()?'<label class="btn" for="ra-v3-document-file">＋ Ajouter un document</label><input id="ra-v3-document-file" type="file" class="ra-v3-hidden">':''}<button class="btn secondary" type="button" id="ra-v3-document-refresh">Actualiser</button></div>
+   <div id="ra-v3-document-message" class="subtle" role="status">Chargement des documents…</div><div id="ra-v3-document-list"></div></div>`;
+  const list=async()=>{msg('ra-v3-document-message','Lecture du stockage privé…');try{const r=await client().storage.from('organization-documents').list(org(),{limit:100,offset:0,sortBy:{column:'created_at',order:'desc'}});if(r.error)throw r.error;const files=(r.data||[]).filter(x=>x.name&&x.id);$('ra-v3-document-list').innerHTML=files.length?files.map(x=>{const path=org()+'/'+x.name;return `<article class="ra-v3-record"><div class="ra-v3-record-head"><div><b>${esc(x.name)}</b><div class="ra-v3-muted">${formatSize(x.metadata?.size)} · ${esc(x.metadata?.mimetype||'Type non précisé')} · ${stamp(x.created_at||x.updated_at)}</div></div><div class="ra-v3-toolbar"><button class="btn secondary" type="button" data-doc-download="${esc(x.name)}">Télécharger</button>${admin()?`<button class="btn secondary" type="button" data-doc-delete="${esc(x.name)}">Supprimer</button>`:''}</div></div></article>`;}).join(''):'<p class="empty">Aucun document enregistré dans le stockage de cette organisation.</p>';msg('ra-v3-document-message',files.length+' document(s) retrouvé(s) dans Supabase Storage.');}catch(e){msg('ra-v3-document-message','Lecture impossible : '+e.message,true);}};
+  if(admin())$('ra-v3-document-file').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;const btn=$('ra-v3-document-file');if(file.size>20*1024*1024){msg('ra-v3-document-message','Fichier trop volumineux : maximum 20 Mo.',true);btn.value='';return;}const clean=file.name.normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'_').replace(/^_+|_+$/g,'').slice(-120)||'document';const path=org()+'/'+Date.now()+'_'+clean;msg('ra-v3-document-message','Envoi du fichier vers Supabase Storage…');try{const r=await client().storage.from('organization-documents').upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type||'application/octet-stream'});if(r.error)throw r.error;msg('ra-v3-document-message','Document envoyé et enregistré.');await list();}catch(err){msg('ra-v3-document-message','Téléversement impossible : '+err.message,true);}finally{btn.value='';}};
+  $('ra-v3-document-list').addEventListener('click',async e=>{const dl=e.target.closest('[data-doc-download]'),del=e.target.closest('[data-doc-delete]');if(dl){try{const r=await client().storage.from('organization-documents').createSignedUrl(org()+'/'+dl.dataset.docDownload,120);if(r.error)throw r.error;window.open(r.data.signedUrl,'_blank','noopener');}catch(err){msg('ra-v3-document-message','Téléchargement impossible : '+err.message,true);}}if(del){if(!admin()||!confirm('Supprimer définitivement ce document ?'))return;try{const r=await client().storage.from('organization-documents').remove([org()+'/'+del.dataset.docDelete]);if(r.error)throw r.error;await list();}catch(err){msg('ra-v3-document-message','Suppression impossible : '+err.message,true);}}});
+  $('ra-v3-document-refresh').onclick=list;await list();
+ }
+ // The inline legacy input calls this global function; replace its localStorage implementation.
+ window.handleDocumentSelection=async function(event){
+  const file=event?.target?.files?.[0];if(!file)return;
+  if(!ready()){msg('document-message','Connectez-vous à un espace pour déposer un document.',true);event.target.value='';return;}
+  if(!admin()){msg('document-message','Seuls les administrateurs peuvent ajouter des documents.',true);event.target.value='';return;}
+  if(file.size>20*1024*1024){msg('document-message','Fichier trop volumineux : maximum 20 Mo.',true);event.target.value='';return;}
+  const clean=file.name.normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'_').replace(/^_+|_+$/g,'').slice(-120)||'document';
+  const path=org()+'/'+Date.now()+'_'+clean;msg('document-message','Envoi vers Supabase Storage…');
+  try{const r=await client().storage.from('organization-documents').upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type||'application/octet-stream'});if(r.error)throw r.error;msg('document-message','Document envoyé dans Supabase Storage.');await renderDocuments();}catch(e){msg('document-message','Envoi impossible : '+e.message,true);}finally{event.target.value='';}
+ };
+
+ // --------------------------- NAVIGATION / REALTIME ---------------------------
+ let currentInitOrg=null,coreChannel=null;
+ async function renderPage(page){if(!ready())return;try{if(page==='dashboard')await renderDashboard();if(page==='projects')await renderProjects();if(page==='finance')await renderFinance();if(page==='documents')await renderDocuments();}catch(e){console.error('RAMASYS v3 render',page,e);}}
+ function setupRealtime(){if(!ready())return;if(coreChannel)client().removeChannel(coreChannel);coreChannel=client().channel('ramasys-core-v3-'+org());['members','projects','project_activities','finance_accounts','finance_incomes','finance_expenses','finance_transfers'].forEach(table=>coreChannel.on('postgres_changes',{event:'*',schema:'public',table,filter:'organization_id=eq.'+org()},()=>{renderDashboard();const page=document.querySelector('.page.active')?.id;if(['projects','finance','dashboard','reports'].includes(page))renderPage(page);if(page==='reports')window.RAMASYS_REMOTE?.refresh?.();}));coreChannel.subscribe();}
+ async function start(){if(!ready())return;if(currentInitOrg===org())return;currentInitOrg=org();await Promise.allSettled([renderDashboard(),renderPage(document.querySelector('.page.active')?.id)]);setupRealtime();}
+ let attempts=0;const waitForWorkspace=()=>{if(ready()){start();return;}if(++attempts<90)setTimeout(waitForWorkspace,500);};
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',waitForWorkspace);else waitForWorkspace();
+ document.querySelectorAll('.nav button[data-page]').forEach(b=>b.addEventListener('click',()=>setTimeout(()=>renderPage(b.dataset.page),400)));
+ if(client())client().auth.onAuthStateChange((event)=>{if(event==='SIGNED_OUT'){currentInitOrg=null;if(coreChannel)client().removeChannel(coreChannel);}else if(['SIGNED_IN','TOKEN_REFRESHED','USER_UPDATED'].includes(event)){currentInitOrg=null;setTimeout(waitForWorkspace,700);}});
+ window.RAMASYS_V30={version:'3.0',refresh:renderPage,dashboard:renderDashboard};
+})();
 </script>
 
 </body>
