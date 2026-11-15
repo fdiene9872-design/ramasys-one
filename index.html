@@ -155,6 +155,16 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
 @media(max-width:620px){.brand-logo img{max-width:155px;max-height:68px;object-fit:contain}}
 </style>
 
+
+<style id="ramasys-category-workspaces-style">
+.ramasys-workspace-identity{border-left:4px solid var(--primary,#0b5b3b)}.ramasys-workspace-tag{padding:6px 11px;border-radius:99px;background:#eaf3ed;color:#23583d;font-size:11px;font-weight:700}.ramasys-workspace-widgets{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.ramasys-workspace-widgets span{padding:7px 10px;border:1px solid #dce7df;border-radius:9px;background:#fbfdfb;font-size:12px;color:#355c45}.ramasys-role-management{margin-top:18px;padding-top:18px;border-top:1px solid #e6ece8}.ramasys-custom-role{margin-top:18px;padding:16px;border:1px solid #e1e9e3;border-radius:12px;background:#fbfdfb}.ramasys-role-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.ramasys-role-form-grid label{display:grid;gap:6px;font-size:12px;font-weight:600}.ramasys-role-form-grid input{padding:10px;border:1px solid #d9e2dc;border-radius:8px}.ramasys-permission-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:9px;margin:12px 0 16px}.ramasys-permission-grid label{display:flex;gap:8px;align-items:center;font-size:12px}.ramasys-permission-grid input,.ramasys-module-toggle{accent-color:#16804a}.ramasys-role-select{min-width:170px;padding:8px;border:1px solid #d9e2dc;border-radius:8px}.ramasys-module-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:12px;margin-top:15px}.ramasys-module-card{border:1px solid #e1e9e3;border-radius:12px;padding:14px;background:#fff;display:flex;flex-direction:column;gap:8px}.ramasys-module-card h4{margin:0;font-size:14px}.ramasys-module-card p{margin:0;font-size:12px;line-height:1.5;color:#68776e}.ramasys-module-meta{display:flex;gap:6px;flex-wrap:wrap;font-size:11px}.ramasys-module-pill{border-radius:99px;padding:4px 8px;background:#edf4ef;color:#285b40}.ramasys-module-pill.locked{background:#fff3df;color:#8a5a13}.ramasys-module-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto}
+</style>
+
+
+<style id="ramasys-business-style">
+.ramasys-business-toolbar{display:flex;align-items:end;gap:14px;flex-wrap:wrap;margin:14px 0}.ramasys-business-toolbar label{display:grid;gap:6px;min-width:240px;font-size:12px;font-weight:600}.ramasys-business-toolbar select{padding:10px;border:1px solid #d9e2dc;border-radius:8px;background:white}.ramasys-business-layout{display:grid;grid-template-columns:minmax(260px,0.8fr) minmax(350px,1.2fr);gap:14px}.ramasys-business-layout>.panel{min-width:0}.ramasys-business-layout h4{margin-top:0}.ramasys-business-layout input,.ramasys-business-layout select,.ramasys-business-layout textarea{width:100%;padding:10px;border:1px solid #d9e2dc;border-radius:8px;font:inherit}.ramasys-business-layout label{display:grid;gap:5px;font-size:12px;font-weight:600}.ramasys-business-layout textarea{min-height:80px}@media(max-width:800px){.ramasys-business-layout{grid-template-columns:1fr}}
+</style>
+
 </head>
 <body>
 
@@ -221,6 +231,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
       <option value="Association/ONG">Association / ONG</option>
       <option value="Entreprise/PME">Entreprise / PME</option>
       <option value="Collectif communautaire">Collectif communautaire</option>
+      <option value="Institution/Structure publique">Institution / Structure publique</option>
     </select>
 
     <label for="org-country">Pays</label>
@@ -263,6 +274,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
     <button data-page="operations"><span>▧</span>RH & opérations</button>
     <button data-page="intelligence"><span>✧</span>Intelligence & assistance</button>
     <button data-page="security"><span>♜</span>Utilisateurs, sécurité & abonnements</button>
+  <button data-page="business"><span>▧</span>Activités métier</button>
   </nav>
   <div class="side-bottom">RAMASYS One<br>Version locale v1.6</div>
 </aside>
@@ -271,6 +283,13 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
 
 <section class="page active" id="dashboard">
   <div class="welcome"><div><h2>Bienvenue dans RAMASYS One</h2><p>Pilotez votre organisation depuis un espace unique.</p></div><div class="date"><strong>Tableau de bord</strong><br><span>Vos données réelles apparaîtront ici.</span></div></div>
+
+  <div class="panel ramasys-workspace-identity" id="ramasys-workspace-identity">
+   <div class="panel-head"><div><h3 id="ramasys-workspace-title">Votre espace de travail</h3><p class="subtle" id="ramasys-workspace-description">Chargement du profil de votre organisation…</p></div><span class="ramasys-workspace-tag" id="ramasys-workspace-type">RAMASYS One</span></div>
+   <div id="ramasys-workspace-widgets" class="ramasys-workspace-widgets"></div>
+   <div id="ramasys-workspace-welcome" class="subtle"></div>
+  </div>
+
   <div class="cards">
     <div class="card">
   <div class="metric-label">Membres & bénévoles</div>
@@ -481,7 +500,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
   </div>
 </section>
 <section class="page" id="reports"><div class="panel"><h3>Rapports & indicateurs</h3><p class="module-intro">Visualisez les résultats et préparez vos comptes rendus.</p><div class="empty">Les rapports d’activités, tableaux de bord d’impact et exports seront construits à partir des données saisies.</div></div></section>
-<section class="page" id="settings"><div class="panel"><h3>Paramètres de l’organisation</h3><p class="module-intro">Configurez l’identité et les préférences de votre espace.</p><p>Les paramètres de votre organisation seront affichés ici après leur enregistrement.</p><div class="empty">Les paramètres de sécurité, les rôles et les abonnements seront ajoutés dans les prochaines étapes.</div></div></section>
+<section class="page" id="settings"><div class="panel"><h3>Paramètres de l’organisation</h3><p class="module-intro">Configurez l’identité et les préférences de votre espace.</p><p>Les paramètres de votre organisation seront affichés ici après leur enregistrement.</p><div class="empty">Les paramètres de sécurité, les rôles et les abonnements seront ajoutés dans les prochaines étapes.</div></div>
+ <div class="panel" id="ramasys-module-catalog-panel"><div class="panel-head"><div><h3>Catalogue des modules</h3><p class="module-intro">Les outils disponibles sont adaptés au type de votre organisation et à votre formule.</p></div><button class="btn secondary" id="ramasys-refresh-modules" type="button">Actualiser</button></div><div id="ramasys-module-catalog-status" class="subtle" role="status">Chargement…</div><div id="ramasys-module-catalog-list" class="ramasys-module-grid"></div></div>
+</section>
 
 <section class="page" id="organization">
  <div class="panel"><div class="panel-head"><div><h3>Organisation & administration</h3><div class="subtle">Identité, structure, espaces et configuration de votre organisation.</div></div><button class="btn" id="save-organization-button">Enregistrer les modifications</button></div>
@@ -550,12 +571,39 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
 <section class="page" id="security">
  <div class="panel"><div class="panel-head"><div><h3>Utilisateurs, sécurité & abonnements</h3><div class="subtle">Contrôlez les accès, protégez les données et gérez les formules.</div></div><button class="btn" onclick="openLocalRecordForm('Invitation d’un utilisateur')">+ Préparer une fiche utilisateur locale</button></div>
  <div class="cards"><div class="card"><div class="metric-label">Comptes utilisateurs</div><div class="metric" id="security-user-count">0</div></div><div class="card"><div class="metric-label">Brouillons locaux</div><div class="metric" id="security-invitation-count">0</div></div><div class="card"><div class="metric-label">Authentification renforcée</div><div class="metric">Non configurée</div></div><div class="card"><div class="metric-label">Formule</div><div class="metric" style="font-size:20px">Non définie</div></div></div>
- <div class="content-grid"><div class="panel"><h3>Utilisateurs et permissions</h3><table class="table"><thead><tr><th>Utilisateur</th><th>Rôle</th><th>Accès</th><th>Statut</th></tr></thead><tbody id="security-users-table"><tr><td colspan="4">Aucun compte utilisateur configuré en mode local.</td></tr></tbody></table><button class="btn secondary" onclick="return false" disabled title="Les permissions multi-utilisateurs nécessitent le serveur">Gestion des rôles non activée</button></div>
+ <div class="content-grid"><div class="panel"><h3>Utilisateurs et permissions</h3><table class="table"><thead><tr><th>Utilisateur</th><th>Rôle</th><th>Accès</th><th>Statut</th></tr></thead><tbody id="security-users-table"><tr><td colspan="4">Aucun compte utilisateur configuré en mode local.</td></tr></tbody></table>
+<div id="ramasys-role-management" class="ramasys-role-management">
+ <div class="panel-head"><div><h3>Rôles et habilitations détaillés</h3><p class="subtle">Attribuez les rôles prédéfinis ou créez des profils d’accès propres à votre organisation.</p></div><button class="btn secondary" type="button" id="ramasys-reload-team">Actualiser</button></div>
+ <div id="ramasys-team-status" class="subtle" role="status">Chargement des rôles et utilisateurs…</div>
+ <div style="overflow-x:auto"><table class="table"><thead><tr><th>Utilisateur</th><th>Rôle actuel</th><th>Nouvelle attribution</th><th>Statut</th></tr></thead><tbody id="ramasys-team-table"><tr><td colspan="4">Chargement…</td></tr></tbody></table></div>
+ <div class="ramasys-custom-role"><h4>Créer un rôle personnalisé</h4>
+  <div class="ramasys-role-form-grid"><label>Nom du rôle<input id="ramasys-new-role-name" maxlength="80" placeholder="Ex. Responsable communication"></label><label>Description<input id="ramasys-new-role-description" maxlength="180" placeholder="Responsabilités principales"></label></div>
+  <p class="subtle">Autorisations :</p><div class="ramasys-permission-grid">
+   <label><input type="checkbox" value="dashboard.read" checked> Tableau de bord</label>
+   <label><input type="checkbox" value="projects.read"> Consulter les projets</label><label><input type="checkbox" value="projects.manage"> Gérer les projets</label>
+   <label><input type="checkbox" value="finance.read"> Consulter les finances</label><label><input type="checkbox" value="finance.create"> Saisir les opérations financières</label><label><input type="checkbox" value="finance.update"> Modifier les opérations financières</label><label><input type="checkbox" value="finance.manage"> Administrer les finances</label>
+   <label><input type="checkbox" value="people.read"> Consulter les équipes</label><label><input type="checkbox" value="people.manage"> Gérer les équipes</label><label><input type="checkbox" value="hr.read"> Consulter les RH</label><label><input type="checkbox" value="hr.manage"> Gérer les RH</label>
+   <label><input type="checkbox" value="documents.read"> Consulter les documents</label><label><input type="checkbox" value="reports.read"> Consulter les rapports</label><label><input type="checkbox" value="partners.manage"> Gérer les partenaires</label><label><input type="checkbox" value="impact.manage"> Gérer le suivi d’impact</label><label><input type="checkbox" value="communication.read"> Consulter la communication</label><label><input type="checkbox" value="organization.read"> Consulter l’organisation</label><label><input type="checkbox" value="crm.read"> Consulter les clients</label><label><input type="checkbox" value="crm.create"> Créer des fiches clients</label><label><input type="checkbox" value="crm.manage"> Gérer le portefeuille clients</label><label><input type="checkbox" value="inventory.read"> Consulter les stocks</label><label><input type="checkbox" value="inventory.create"> Enregistrer les articles</label><label><input type="checkbox" value="inventory.manage"> Gérer les stocks et fournisseurs</label><label><input type="checkbox" value="community.read"> Consulter les groupes communautaires</label><label><input type="checkbox" value="community.create"> Créer des initiatives</label><label><input type="checkbox" value="community.manage"> Gérer les groupes et actions</label><label><input type="checkbox" value="beneficiaries.read"> Consulter les bénéficiaires</label><label><input type="checkbox" value="beneficiaries.create"> Enregistrer des bénéficiaires</label><label><input type="checkbox" value="beneficiaries.manage"> Gérer le registre bénéficiaires</label><label><input type="checkbox" value="public_services.read"> Consulter les demandes des usagers</label><label><input type="checkbox" value="public_services.create"> Enregistrer les demandes</label><label><input type="checkbox" value="public_services.manage"> Gérer les services aux usagers</label><label><input type="checkbox" value="procurement.read"> Consulter les marchés publics</label><label><input type="checkbox" value="procurement.create"> Enregistrer les marchés</label><label><input type="checkbox" value="procurement.manage"> Gérer les marchés publics</label>
+  </div><button class="btn" type="button" id="ramasys-create-role">Créer ce rôle</button><p id="ramasys-role-create-status" class="subtle" role="status"></p>
+ </div>
+</div>
+</div>
  <div class="panel"><h3>Protection et traçabilité</h3><div class="activity"><i class="dot"></i><div><b>Authentification multifacteur</b><small>Paramètre à configurer</small></div></div><div class="activity"><i class="dot"></i><div><b>Sessions et appareils</b><small>Gestion des connexions</small></div></div><div class="activity"><i class="dot"></i><div><b>Journal d'audit</b><small>Actions et validations</small></div></div><div class="activity"><i class="dot"></i><div><b>Sauvegardes</b><small>État et restauration</small></div></div></div></div>
  <div class="panel"><h3>Abonnement et facturation</h3><div class="form-grid"><label>Formule<select disabled><option value="">Sélectionner une formule</option><option>Free</option><option>Starter</option><option>Pro</option><option>Business</option><option>Enterprise</option></select></label><label>Cycle<select disabled><option>Mensuel</option><option>Annuel</option></select></label><label>Mode de paiement<select disabled><option>Wave</option><option>Orange Money</option><option>Virement bancaire</option><option>Carte bancaire</option><option>Validation manuelle</option></select></label><label>Prochaine échéance<input type="date" disabled></label></div><button class="btn secondary" onclick="return false" disabled title="La facturation n’est pas activée dans cette version">Facturation non activée</button><p class="subtle">Aucune formule ni aucun paiement n’est enregistré ou prélevé en mode local.</p></div>
  </div>
 </section>
 
+
+<section class="page" id="business">
+ <div class="panel">
+  <div class="panel-head"><div><h3 id="ramasys-business-title">Activités métier</h3><p class="module-intro" id="ramasys-business-description">Outils opérationnels propres à votre catégorie d’organisation.</p></div><button class="btn secondary" type="button" id="ramasys-business-refresh">Actualiser</button></div>
+  <div class="ramasys-business-toolbar"><label>Registre métier<select id="ramasys-business-kind"></select></label><span class="subtle" id="ramasys-business-status" role="status">Chargement…</span></div>
+  <div class="ramasys-business-layout">
+   <div class="panel"><h4 id="ramasys-business-form-title">Nouvel enregistrement</h4><form id="ramasys-business-form"><div id="ramasys-business-fields" class="ramasys-role-form-grid"></div><button class="btn" type="submit" id="ramasys-business-save">Enregistrer</button></form></div>
+   <div class="panel"><h4>Enregistrements récents</h4><div style="overflow-x:auto"><table class="table"><thead id="ramasys-business-head"></thead><tbody id="ramasys-business-rows"><tr><td>Chargement…</td></tr></tbody></table></div></div>
+  </div>
+ </div>
+</section>
 <footer>
   Bienvenue sur RAMASYS One — Votre espace de travail est connecté et prêt à être utilisé. Certaines fonctionnalités complémentaires seront disponibles après configuration de leurs services associés.
 </footer>
@@ -1203,6 +1251,7 @@ async function handleSupabaseSession(session) {
     }
     if (adminPanel) adminPanel.style.display = 'none';
     await loadUserWorkspace(user);
+    window.dispatchEvent(new Event("ramasys:workspace-ready"));
   } catch (error) {
     console.error('Chargement de l’espace RAMASYS impossible:', error);
     if (adminPanel) adminPanel.style.display = 'none';
@@ -1290,6 +1339,10 @@ message.textContent = 'Votre espace a été créé dans Supabase.';
   } catch(error){message.textContent='Création impossible : '+(error.message||error);}
   finally{button.disabled=false;button.textContent='Créer mon espace';}
 });
+
+window.RAMASYS_CONTEXT = function(){
+ return {organizationId:currentOrganizationId,organizationRole:currentOrganizationRole,organization:currentOrganizationData,userId:ramasysWorkspaceUserId||null,client:supabaseClient};
+};
 </script>
 <!-- FENÊTRE FICHE INDIVIDUELLE -->
 <div id="member-profile-modal" style="
@@ -2667,6 +2720,177 @@ document.getElementById('platform-admin-refresh')?.addEventListener('click',()=>
  document.querySelectorAll('.nav button[data-page]').forEach(b=>b.addEventListener('click',()=>setTimeout(()=>renderPage(b.dataset.page),400)));
  if(client())client().auth.onAuthStateChange((event)=>{if(event==='SIGNED_OUT'){currentInitOrg=null;if(coreChannel)client().removeChannel(coreChannel);}else if(['SIGNED_IN','TOKEN_REFRESHED','USER_UPDATED'].includes(event)){currentInitOrg=null;setTimeout(waitForWorkspace,700);}});
  window.RAMASYS_V30={version:'3.0',refresh:renderPage,dashboard:renderDashboard};
+})();
+</script>
+
+
+<script id="ramasys-category-workspaces-runtime">
+(function(){
+ 'use strict';
+ const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const pageModules={people:'members',projects:'projects',finance:'finance',documents:'documents',reports:'reports',partners:'partners',impact:'impact',communication:'communication',operations:'operations',intelligence:'intelligence',security:'security'};
+ const widgetLabels={members:'Membres et adhérents',projects:'Projets et programmes',funding:'Financements et subventions',impact:'Suivi-évaluation et impact',partners:'Partenaires et bailleurs',volunteers:'Bénévoles et volontaires',governance:'Gouvernance associative',sales:'Ventes et clientèle',customers:'Gestion de la clientèle',inventory:'Stocks et approvisionnement',procurement:'Achats et approvisionnement',production:'Production et services',cashflow:'Trésorerie',hr:'Ressources humaines',contracts:'Contrats',community:'Vie communautaire',groups:'Groupes locaux',events:'Événements',local_initiatives:'Initiatives locales',participation:'Participation citoyenne',departments:'Directions et services',public_programs:'Programmes publics',citizen_services:'Services aux usagers',public_procurement:'Marchés publics',budget_execution:'Exécution budgétaire',records:'Archives administratives',public_reporting:'Reporting institutionnel'};
+ let profile=null, modules=[], moduleRows=[], roles=[], team=[], subscriptionActive=false, lastOrg=null;
+ const ctx=()=>window.RAMASYS_CONTEXT?.(), ready=()=>!!(ctx()?.client&&ctx()?.organizationId&&ctx()?.organization), admin=()=>ctx()?.organizationRole==='admin';
+ const msg=(id,t,bad=false)=>{const e=$(id);if(e){e.textContent=t;e.style.color=bad?'#b42318':'';}};
+ async function loadWorkspace(){
+  if(!ready())return;const c=ctx();if(lastOrg===c.organizationId)return;
+  try{
+   const [p,m,s]=await Promise.all([c.client.from('platform_workspace_profiles').select('*').eq('organization_type',c.organization.organization_type).maybeSingle(),c.client.from('organization_modules').select('module_code,is_enabled').eq('organization_id',c.organizationId),c.client.from('organization_subscriptions').select('status').eq('organization_id',c.organizationId).in('status',['active','trialing']).limit(1)]);
+   if(p.error)throw p.error;if(m.error)throw m.error;profile=p.data;moduleRows=m.data||[];subscriptionActive=!s.error&&(s.data||[]).length>0;if(!profile)throw new Error('Profil de travail absent.');
+   $('ramasys-workspace-title').textContent=profile.display_name;$('ramasys-workspace-description').textContent=profile.description;$('ramasys-workspace-type').textContent=c.organization.organization_type;
+   $('ramasys-workspace-widgets').innerHTML=(profile.dashboard_widgets||[]).map(w=>'<span>'+esc(widgetLabels[w]||w)+'</span>').join('');
+   $('ramasys-workspace-welcome').textContent='Les outils, les indicateurs et les circuits de validation sont adaptés à cette catégorie de structure. Les données restent isolées dans votre organisation.';
+   applyNavigation();await loadModules();lastOrg=c.organizationId;
+  }catch(e){msg('ramasys-module-catalog-status','Chargement impossible : '+e.message,true);console.error(e);}
+ }
+ function applyNavigation(){
+  const nav=new Map((profile?.navigation||[]).map(x=>[x.page,x.label]));
+  document.querySelectorAll('.nav button[data-page]').forEach(btn=>{
+   const p=btn.dataset.page, module=pageModules[p], enabled=!module||moduleRows.some(x=>x.module_code===module&&x.is_enabled), allowed=['dashboard','settings'].includes(p)||nav.has(p);
+   btn.hidden=!(allowed&&enabled);
+   if(nav.has(p)){const icon=btn.querySelector('span')?.outerHTML||'';btn.innerHTML=icon+esc(nav.get(p));}
+  });
+  const active=document.querySelector('.page.active'),activeBtn=active&&document.querySelector('.nav button[data-page="'+active.id+'"]');
+  if(activeBtn?.hidden)document.querySelector('.nav button[data-page="dashboard"]')?.click();
+ }
+ async function loadModules(){
+  const c=ctx();msg('ramasys-module-catalog-status','Chargement des modules…');
+  const {data,error}=await c.client.from('platform_module_catalog').select('code,label,description,category,default_for_types,requires_subscription,sort_order').eq('is_active',true).contains('eligible_organization_types',[c.organization.organization_type]).order('sort_order');
+  if(error)throw error;modules=data||[];renderModules();
+ }
+ function renderModules(){
+  const host=$('ramasys-module-catalog-list');if(!host)return;const c=ctx();
+  host.innerHTML=modules.map(m=>{const row=moduleRows.find(x=>x.module_code===m.code),on=!!row?.is_enabled,included=(m.default_for_types||[]).includes(c.organization.organization_type),locked=m.requires_subscription&&!included&&!subscriptionActive;
+   return '<article class="ramasys-module-card"><div class="ramasys-module-meta"><span class="ramasys-module-pill">'+esc(m.category)+'</span>'+(locked?'<span class="ramasys-module-pill locked">Abonnement requis</span>':'')+'</div><h4>'+esc(m.label)+'</h4><p>'+esc(m.description)+'</p><div class="ramasys-module-actions"><span class="subtle">'+(included?'Inclus par défaut':m.requires_subscription?'Option avec abonnement':'Option complémentaire')+'</span><label><input class="ramasys-module-toggle" type="checkbox" data-module="'+esc(m.code)+'" '+(on?'checked':'')+((!admin()||locked)?'disabled':'')+'></label></div></article>';
+  }).join('')||'<p>Aucun module disponible pour cette catégorie.</p>';
+  host.querySelectorAll('[data-module]').forEach(el=>el.addEventListener('change',()=>toggleModule(el.dataset.module,el.checked,el)));
+  msg('ramasys-module-catalog-status',admin()?'Vous pouvez gérer les modules de votre organisation.':'Consultation uniquement : seul un administrateur peut modifier les modules.');
+ }
+ async function toggleModule(code,on,input){
+  const c=ctx(),m=modules.find(x=>x.code===code),included=(m?.default_for_types||[]).includes(c.organization.organization_type);
+  if(on&&m?.requires_subscription&&!included&&!subscriptionActive){input.checked=false;msg('ramasys-module-catalog-status','Un abonnement actif est requis pour ce module.',true);return;}
+  input.disabled=true;const {error}=await c.client.from('organization_modules').upsert({organization_id:c.organizationId,module_code:code,is_enabled:on,activation_source:included?'default':'organization',activated_at:on?new Date().toISOString():null,updated_by:c.userId,updated_at:new Date().toISOString()},{onConflict:'organization_id,module_code'});
+  if(error){input.checked=!on;msg('ramasys-module-catalog-status','Erreur : '+error.message,true);}else{const row=moduleRows.find(x=>x.module_code===code);if(row)row.is_enabled=on;else moduleRows.push({module_code:code,is_enabled:on});msg('ramasys-module-catalog-status','Module '+(on?'activé':'désactivé')+'.');applyNavigation();}
+  input.disabled=false;
+ }
+ async function loadTeam(){
+  if(!ready())return;const c=ctx();msg('ramasys-team-status','Chargement de l’équipe…');
+  const [r,t]=await Promise.all([c.client.from('organization_roles').select('id,role_code,role_name,description,permissions,is_system').eq('organization_id',c.organizationId).eq('is_active',true).order('is_system',{ascending:false}).order('role_name'),c.client.from('organization_members').select('"user-id",role,role_id,status').eq('"organization-id"',c.organizationId).order('"created-at"')]);
+  if(r.error)throw r.error;if(t.error)throw t.error;roles=r.data||[];team=t.data||[];renderTeam();msg('ramasys-team-status',admin()?'Vous pouvez attribuer des rôles aux autres utilisateurs et créer des rôles personnalisés.':'Consultation de l’équipe. Modifications réservées à l’administrateur.');
+ }
+ function renderTeam(){
+  const host=$('ramasys-team-table');if(!host)return;const c=ctx();
+  host.innerHTML=team.map(m=>{const role=roles.find(r=>r.id===m.role_id)||roles.find(r=>r.role_code===m.role),self=m['user-id']===c.userId;
+   const opts=roles.map(r=>'<option value="'+esc(r.id)+'" '+(role?.id===r.id?'selected':'')+'>'+esc(r.role_name)+'</option>').join('');
+   return '<tr><td>Utilisateur<div class="subtle">'+esc(String(m['user-id']).slice(0,8))+'…'+(self?' · Votre compte':'')+'</div></td><td>'+esc(role?.role_name||m.role)+'</td><td><select class="ramasys-role-select" data-user="'+esc(m['user-id'])+'" '+((!admin()||self)?'disabled':'')+'>'+opts+'</select> <button class="btn secondary" data-save-role="'+esc(m['user-id'])+'" '+((!admin()||self)?'disabled':'')+'>Enregistrer</button></td><td>'+esc(m.status)+'</td></tr>';
+  }).join('')||'<tr><td colspan="4">Aucun utilisateur supplémentaire dans cet espace.</td></tr>';
+  host.querySelectorAll('[data-save-role]').forEach(b=>b.addEventListener('click',()=>saveRole(b.dataset.saveRole,b)));
+ }
+ async function saveRole(userId,btn){
+  const c=ctx(),select=document.querySelector('select[data-user="'+CSS.escape(userId)+'"]'),r=roles.find(x=>x.id===select?.value);if(!r)return;
+  btn.disabled=true;const legacy=r.role_code==='admin'?'admin':(['director','project_manager'].includes(r.role_code)?'manager':'member');
+  const {error}=await c.client.from('organization_members').update({role_id:r.id,role:legacy}).eq('"organization-id"',c.organizationId).eq('"user-id"',userId);
+  if(error)msg('ramasys-team-status','Attribution impossible : '+error.message,true);else{const m=team.find(x=>x['user-id']===userId);m.role_id=r.id;m.role=legacy;msg('ramasys-team-status','Rôle attribué : '+r.role_name+'.');renderTeam();}
+  btn.disabled=false;
+ }
+ async function createRole(){
+  const c=ctx(),name=$('ramasys-new-role-name').value.trim(),description=$('ramasys-new-role-description').value.trim();if(!name){msg('ramasys-role-create-status','Indiquez un nom de rôle.',true);return;}
+  const code='custom_'+name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'').slice(0,40)+'_'+Date.now().toString().slice(-5),permissions={};
+  document.querySelectorAll('.ramasys-permission-grid input:checked').forEach(x=>permissions[x.value]=true);
+  const btn=$('ramasys-create-role');btn.disabled=true;const {error}=await c.client.from('organization_roles').insert({organization_id:c.organizationId,role_code:code,role_name:name,description,permissions,is_system:false,is_active:true});
+  if(error)msg('ramasys-role-create-status','Création impossible : '+error.message,true);else{$('ramasys-new-role-name').value='';$('ramasys-new-role-description').value='';msg('ramasys-role-create-status','Rôle personnalisé créé.');await loadTeam();}
+  btn.disabled=false;
+ }
+ function init(){
+  $('ramasys-refresh-modules')?.addEventListener('click',()=>{lastOrg=null;loadWorkspace();});
+  $('ramasys-reload-team')?.addEventListener('click',()=>loadTeam().catch(e=>msg('ramasys-team-status',e.message,true)));
+  $('ramasys-create-role')?.addEventListener('click',()=>createRole().catch(e=>msg('ramasys-role-create-status',e.message,true)));
+  document.querySelector('.nav')?.addEventListener('click',e=>{const b=e.target.closest('button[data-page]');if(!b)return;if(b.dataset.page==='security')loadTeam().catch(x=>msg('ramasys-team-status',x.message,true));if(b.dataset.page==='settings')loadModules().catch(x=>msg('ramasys-module-catalog-status',x.message,true));});
+  window.addEventListener('ramasys:workspace-ready',()=>{lastOrg=null;loadWorkspace();loadTeam().catch(console.warn);});
+  if(ready()){loadWorkspace();loadTeam().catch(console.warn);}
+  window.addEventListener('load',()=>{if(ready()){loadWorkspace();loadTeam().catch(console.warn);}});
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+ window.RAMASYS_CategoryWorkspaces={refresh:()=>{lastOrg=null;loadWorkspace();loadTeam();}};
+})();
+</script>
+
+
+<script id="ramasys-business-runtime">
+(function(){
+ 'use strict';
+ const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ let config=[],current=null,listenersBound=false;
+ const configs={
+  'Association/ONG':[
+   {table:'organization_beneficiaries',label:'Bénéficiaires',title:'Registre des bénéficiaires',fields:[['full_name','Nom complet','text',true],['beneficiary_type','Catégorie / programme','text',false],['locality','Localité','text',false],['phone','Téléphone','tel',false]],columns:[['full_name','Nom'],['beneficiary_type','Catégorie'],['locality','Localité'],['status','Statut']],permission:'beneficiaries'},
+   {table:'organization_community_actions',label:'Actions de terrain',title:'Actions et interventions',fields:[['title','Intitulé de l’action','text',true],['locality','Localité','text',false],['action_date','Date','date',false],['participants_count','Participants','number',false],['description','Description','textarea',false]],columns:[['title','Action'],['locality','Localité'],['action_date','Date'],['participants_count','Participants']],permission:'community'}
+  ],
+  'Entreprise/PME':[
+   {table:'organization_customers',label:'Clients',title:'Portefeuille clients',fields:[['name','Nom du client','text',true],['contact_name','Personne à contacter','text',false],['email','E-mail','email',false],['phone','Téléphone','tel',false],['customer_type','Type de client','text',false]],columns:[['name','Client'],['contact_name','Contact'],['phone','Téléphone'],['status','Statut']],permission:'crm'},
+   {table:'organization_inventory_items',label:'Stocks',title:'Articles et stocks',fields:[['name','Désignation','text',true],['sku','Référence / SKU','text',false],['category','Catégorie','text',false],['quantity','Quantité disponible','number',false],['minimum_quantity','Seuil minimum','number',false],['unit','Unité','text',false],['location','Emplacement','text',false]],columns:[['name','Article'],['sku','Référence'],['quantity','Stock'],['minimum_quantity','Seuil'],['location','Emplacement']],permission:'inventory'},
+   {table:'organization_suppliers',label:'Fournisseurs',title:'Répertoire fournisseurs',fields:[['name','Nom du fournisseur','text',true],['contact_name','Contact','text',false],['email','E-mail','email',false],['phone','Téléphone','tel',false],['category','Catégorie','text',false]],columns:[['name','Fournisseur'],['contact_name','Contact'],['phone','Téléphone'],['status','Statut']],permission:'inventory'}
+  ],
+  'Collectif communautaire':[
+   {table:'organization_community_groups',label:'Groupes locaux',title:'Groupes et cellules communautaires',fields:[['name','Nom du groupe','text',true],['locality','Village / quartier','text',false],['coordinator_name','Responsable','text',false],['member_count','Nombre de membres','number',false],['group_type','Type de groupe','text',false]],columns:[['name','Groupe'],['locality','Localité'],['coordinator_name','Responsable'],['member_count','Membres']],permission:'community'},
+   {table:'organization_community_actions',label:'Initiatives et actions',title:'Initiatives communautaires',fields:[['title','Nom de l’initiative','text',true],['locality','Localité','text',false],['action_date','Date','date',false],['participants_count','Participants','number',false],['description','Description','textarea',false]],columns:[['title','Initiative'],['locality','Localité'],['action_date','Date'],['participants_count','Participants']],permission:'community'}
+  ],
+  'Institution/Structure publique':[
+   {table:'organization_public_requests',label:'Demandes des usagers',title:'Registre des demandes des usagers',fields:[['requester_name','Nom de l’usager','text',true],['requester_contact','Contact','text',false],['service_name','Service concerné','text',true],['subject','Objet de la demande','text',true],['due_date','Échéance','date',false],['details','Détails','textarea',false]],columns:[['requester_name','Usager'],['service_name','Service'],['subject','Objet'],['status','Statut'],['due_date','Échéance']],permission:'public_services'},
+   {table:'organization_procurements',label:'Marchés et achats publics',title:'Suivi des marchés et achats',fields:[['title','Intitulé du marché','text',true],['reference','Référence','text',false],['supplier_name','Fournisseur','text',false],['estimated_amount','Montant estimé (FCFA)','number',false],['closing_date','Date limite','date',false],['procurement_type','Type de procédure','text',false]],columns:[['title','Marché'],['reference','Référence'],['supplier_name','Fournisseur'],['estimated_amount','Montant'],['status','Statut']],permission:'procurement'}
+  ]
+ };
+ function ctx(){return window.RAMASYS_CONTEXT?.();}
+ function say(t,bad=false){const e=$('ramasys-business-status');if(e){e.textContent=t;e.style.color=bad?'#b42318':'';}}
+ function init(){
+  const c=ctx();if(!c?.organization||!c?.client)return;
+  config=configs[c.organization.organization_type]||[];
+  $('ramasys-business-title').textContent=({
+   'Association/ONG':'Bénéficiaires & interventions terrain',
+   'Entreprise/PME':'Gestion commerciale & stocks',
+   'Collectif communautaire':'Groupes & initiatives locales',
+   'Institution/Structure publique':'Services aux usagers & marchés publics'
+  })[c.organization.organization_type]||'Activités métier';
+  $('ramasys-business-description').textContent='Registres opérationnels adaptés à votre organisation. Les données sont enregistrées dans votre espace privé.';
+  $('ramasys-business-kind').innerHTML=config.map((x,i)=>'<option value="'+i+'">'+esc(x.label)+'</option>').join('');
+  if(!listenersBound){
+   $('ramasys-business-kind').onchange=()=>{current=config[Number($('ramasys-business-kind').value)];renderForm();loadRows();};
+   $('ramasys-business-form').onsubmit=save;
+   $('ramasys-business-refresh').onclick=loadRows;
+   document.querySelector('.nav')?.addEventListener('click',e=>{if(e.target.closest('[data-page="business"]')){if(!current)init();else loadRows();}});
+   listenersBound=true;
+  }
+  if(config.length){current=config[0];renderForm();loadRows();}
+ }
+ function renderForm(){
+  $('ramasys-business-form-title').textContent=current.title;
+  $('ramasys-business-fields').innerHTML=current.fields.map(f=>{
+   const [name,label,type,required]=f;
+   if(type==='textarea')return '<label>'+esc(label)+'<textarea name="'+name+'"></textarea></label>';
+   return '<label>'+esc(label)+(required?' *':'')+'<input name="'+name+'" type="'+type+'" '+(required?'required':'')+(type==='number'?' min="0" step="any"':'')+'></label>';
+  }).join('');
+ }
+ async function loadRows(){
+  const c=ctx();if(!current||!c)return;say('Chargement des enregistrements…');
+  const {data,error}=await c.client.from(current.table).select('*').eq('organization_id',c.organizationId).order('created_at',{ascending:false}).limit(100);
+  if(error){say('Lecture impossible : '+error.message,true);return;}
+  $('ramasys-business-head').innerHTML='<tr>'+current.columns.map(x=>'<th>'+esc(x[1])+'</th>').join('')+'</tr>';
+  $('ramasys-business-rows').innerHTML=(data||[]).map(row=>'<tr>'+current.columns.map(x=>'<td>'+esc(row[x[0]])+'</td>').join('')+'</tr>').join('')||'<tr><td colspan="'+current.columns.length+'">Aucun enregistrement pour le moment.</td></tr>';
+  say((data||[]).length+' enregistrement(s) affiché(s).');
+ }
+ async function save(e){
+  e.preventDefault();const c=ctx(),form=e.currentTarget,fd=new FormData(form),payload={organization_id:c.organizationId,created_by:c.userId,updated_at:new Date().toISOString()};
+  current.fields.forEach(([name,label,type])=>{const v=String(fd.get(name)||'').trim();if(v!=='')payload[name]=type==='number'?Number(v):v;});
+  const btn=$('ramasys-business-save');btn.disabled=true;
+  const {error}=await c.client.from(current.table).insert(payload);
+  if(error)say('Enregistrement refusé : '+error.message,true);
+  else{form.reset();say('Enregistrement ajouté avec succès.');await loadRows();}
+  btn.disabled=false;
+ }
+ document.addEventListener('DOMContentLoaded',init,{once:true});
+ window.addEventListener('ramasys:workspace-ready',init);
+ if(ctx()?.organization)init();
 })();
 </script>
 
