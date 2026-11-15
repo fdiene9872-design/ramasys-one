@@ -635,7 +635,7 @@ const SUPABASE_URL = 'https://ephuckzavbssojhptoou.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_kygTNScWMCiAlJAG0Y0qfg_IBez4iLj';
 const supabaseClient = window.supabase?.createClient
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+      auth: { persistSession: false, autoRefreshToken: true, detectSessionInUrl: true }
     })
   : null;
 if (!supabaseClient) {
@@ -1263,16 +1263,17 @@ async function handleSupabaseSession(session) {
 }
 
 if (supabaseClient) {
+  // Toujours demander un choix explicite : aucune session n'est restaurée au prochain chargement.
   showAuth();
   supabaseClient.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_OUT') { setTimeout(() => handleSupabaseSession(null), 0); return; }
-    if (['INITIAL_SESSION','SIGNED_IN','TOKEN_REFRESHED','USER_UPDATED'].includes(event)) {
+    if (event === 'SIGNED_OUT') {
+      setTimeout(() => handleSupabaseSession(null), 0);
+      return;
+    }
+    // Le tableau de bord ne se charge qu'après une action de connexion explicite.
+    if (event === 'SIGNED_IN') {
       setTimeout(() => handleSupabaseSession(session), 0);
     }
-  });
-  supabaseClient.auth.getSession().then(({data,error}) => {
-    if (error) { showMessage('Vérification de session impossible : ' + error.message, true); return; }
-    handleSupabaseSession(data.session);
   });
 } else {
   showAuth();
