@@ -3157,25 +3157,6 @@ window.RAMASYS_CONTEXT=function(){return{organizationId:currentOrganizationId,or
 })();
 </script>
 
-<script id="ramasys-initial-screen-reset">
-(function () {
-  const auth = document.getElementById('auth-screen');
-  const setup = document.getElementById('organization-setup-screen');
-  const app = document.querySelector('.app');
-  const admin = document.getElementById('platform-admin-panel');
-  const login = document.getElementById('login-form');
-  const signup = document.getElementById('signup-form');
-  const typeStep = document.getElementById('signup-type-step');
-  const credentialsStep = document.getElementById('signup-credentials-step');
-  if (auth) auth.classList.add('active');
-  if (setup) setup.classList.remove('active');
-  if (app) app.style.display = 'none';
-  if (admin) admin.style.display = 'none';
-  if (login) login.style.display = 'block';
-  if (signup) signup.style.display = 'none';
-  if (typeStep) typeStep.style.display = 'block';
-  if (credentialsStep) credentialsStep.style.display = 'none';
-})();
-</script>
+<!-- Le formulaire initial est déjà défini dans le HTML. On évite un reset tardif qui pourrait masquer l'espace après la restauration de session Supabase. -->
 </body>
 </html>
