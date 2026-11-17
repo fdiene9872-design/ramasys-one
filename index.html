@@ -3168,26 +3168,66 @@ window.RAMASYS_CONTEXT=function(){return{organizationId:currentOrganizationId,or
  };
  function ctx(){return window.RAMASYS_CONTEXT?.();}
  function say(t,bad=false){const e=$('ramasys-business-status');if(e){e.textContent=t;e.style.color=bad?'#b42318':'';}}
- function init(){
-  const c=ctx();if(!c?.organization||!c?.client)return;
+
+function init(){
+  const c=ctx();
+  if(!c?.organization||!c?.client)return;
+
   config=configs[c.organization.organization_type]||[];
-  $('ramasys-business-title').textContent=({
-   'Association/ONG':'Bénéficiaires & interventions terrain',
-   'Entreprise/PME':'Gestion commerciale & stocks',
-   'Collectif communautaire':'Groupes & initiatives locales',
-   'Institution/Structure publique':'Services aux usagers & marchés publics'
-  })[c.organization.organization_type]||'Activités métier';
-  $('ramasys-business-description').textContent='Registres opérationnels adaptés à votre organisation. Les données sont enregistrées dans votre espace privé.';
-  $('ramasys-business-kind').innerHTML=config.map((x,i)=>'<option value="'+i+'">'+esc(x.label)+'</option>').join('');
-  if(!listenersBound){
-   $('ramasys-business-kind').onchange=()=>{current=config[Number($('ramasys-business-kind').value)];renderForm();loadRows();};
-   $('ramasys-business-form').onsubmit=save;
-   $('ramasys-business-refresh').onclick=loadRows;
-   document.querySelector('.nav')?.addEventListener('click',e=>{if(e.target.closest('[data-page="business"]')){if(!current)init();else loadRows();}});
-   listenersBound=true;
+
+  const businessTitle=$('ramasys-business-title');
+  const businessDescription=$('ramasys-business-description');
+  const businessKind=$('ramasys-business-kind');
+  const businessForm=$('ramasys-business-form');
+  const businessRefresh=$('ramasys-business-refresh');
+
+  if(businessTitle){
+    businessTitle.textContent=({
+      'Association/ONG':'Bénéficiaires & interventions terrain',
+      'Entreprise/PME':'Gestion commerciale & stocks',
+      'Collectif communautaire':'Groupes & initiatives locales',
+      'Institution/Structure publique':'Services aux usagers & marchés publics'
+    })[c.organization.organization_type]||'Activités métier';
   }
-  if(config.length){current=config[0];renderForm();loadRows();}
- }
+
+  if(businessDescription){
+    businessDescription.textContent='Registres opérationnels adaptés à votre organisation. Les données sont enregistrées dans votre espace privé.';
+  }
+
+  if(businessKind){
+    businessKind.innerHTML=config.map((x,i)=>'<option value="'+i+'">'+esc(x.label)+'</option>').join('');
+  }
+
+  if(!listenersBound){
+    if(businessKind){
+      businessKind.onchange=()=>{
+        current=config[Number(businessKind.value)];
+        if(current){
+          renderForm();
+          loadRows();
+        }
+      };
+    }
+
+    if(businessForm)businessForm.onsubmit=save;
+    if(businessRefresh)businessRefresh.onclick=loadRows;
+
+    document.querySelector('.nav')?.addEventListener('click',e=>{
+      if(e.target.closest('[data-page="business"]')){
+        if(!current)init();
+        else loadRows();
+      }
+    });
+
+    listenersBound=true;
+  }
+
+  if(config.length){
+    current=config[0];
+    renderForm();
+    loadRows();
+  }
+}
  function renderForm(){
   $('ramasys-business-form-title').textContent=current.title;
   $('ramasys-business-fields').innerHTML=current.fields.map(f=>{
