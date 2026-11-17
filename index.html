@@ -217,7 +217,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
         <button type="button" class="auth-switch" id="signup-change-type" style="border:0;background:none;padding:0;margin:0 0 16px;">← Modifier la catégorie</button>
         <label for="signup-plan">Choisissez votre formule RAMASYS *</label>
         <select id="signup-plan" required style="width:100%;padding:13px;border:1px solid #dce5df;border-radius:8px;margin-bottom:12px;">
-          <option value="free">FREE — 0 FCFA, à vie (2 utilisateurs, 2 projets, 500 Mo)</option>
+          <option value="free">FREE — Gratuit, sans limite de durée (0 FCFA · 2 utilisateurs, 2 projets, 500 Mo)</option>
           <option value="starter">STARTER — 10 000 FCFA/mois ou 100 000 FCFA/an</option>
           <option value="pro">PRO — 25 000 FCFA/mois ou 250 000 FCFA/an</option>
           <option value="business">BUSINESS — 50 000 FCFA/mois ou 500 000 FCFA/an</option>
@@ -227,7 +227,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
         <select id="signup-interval" style="width:100%;padding:13px;border:1px solid #dce5df;border-radius:8px;margin-bottom:12px;">
           <option value="month">Mensuelle</option><option value="year">Annuelle — 2 mois offerts</option>
         </select>
-        <p class="auth-description" id="signup-plan-note">Les formules payantes incluent 30 jours d’essai PRO. FREE reste gratuit à vie.</p>
+        <p class="auth-description" id="signup-plan-note">Les formules payantes incluent 30 jours d’essai PRO. La formule FREE est accessible gratuitement, sans limite de durée.</p>
         <label for="signup-email">Adresse e-mail</label>
         <input type="email" id="signup-email" placeholder="nom@organisation.sn">
         <label for="signup-password">Mot de passe</label>
@@ -811,7 +811,6 @@ const signupTypeSelect = document.getElementById('signup-org-type');
 const signupTypeStep = document.getElementById('signup-type-step');
 const signupCredentialsStep = document.getElementById('signup-credentials-step');
 try {
-  // Ne jamais reprendre une ancienne catégorie depuis le navigateur.
   // Chaque nouvelle inscription commence sans catégorie présélectionnée.
   localStorage.removeItem('ramasys_pending_organization_type');
   const pendingPlan = localStorage.getItem('ramasys_pending_plan_code');
@@ -1028,7 +1027,6 @@ async function loadUserWorkspace(user, preferredOrganizationId = null) {
   if (!membership) {
     showOrganizationSetup();
     const signupMetadata=user?.user_metadata||{};
-    // L'utilisateur confirme lui-même la catégorie lors de la création de son espace.
     const typeField=document.getElementById('org-type');
     if(typeField)typeField.value='';
     try{localStorage.removeItem('ramasys_pending_organization_type');if(signupMetadata.selected_plan_code)localStorage.setItem('ramasys_pending_plan_code',signupMetadata.selected_plan_code);if(signupMetadata.billing_interval)localStorage.setItem('ramasys_pending_billing_interval',signupMetadata.billing_interval);}catch(_){}
@@ -2228,7 +2226,7 @@ window.sendAssistantPrompt=function(){return false;};
    const {data,error}=await client().functions.invoke('platform-billing',{body:{action:'my_subscription',organization_id:org()}});
    if(error)throw error;if(data?.error)throw new Error(data.error);
    const sub=data.subscription;
-   if(!sub){status.innerHTML='<p>Aucun abonnement n’est encore associé à cet espace. Choisissez votre formule pour l’activer.</p><div class="ra-form-grid"><label>Formule<select id="ramasys-start-plan"><option value="free">FREE — gratuit à vie</option><option value="starter">STARTER — 10 000 FCFA/mois · 100 000 FCFA/an</option><option value="pro">PRO — 25 000 FCFA/mois · 250 000 FCFA/an</option><option value="business">BUSINESS — 50 000 FCFA/mois · 500 000 FCFA/an</option><option value="enterprise">ENTERPRISE — à partir de 100 000 FCFA/mois</option></select></label><label>Périodicité<select id="ramasys-start-interval"><option value="month">Mensuelle</option><option value="year">Annuelle — 2 mois offerts</option></select></label></div><button class="btn" id="ramasys-start-subscription" type="button">Activer cette formule</button>';const start=$('ramasys-start-subscription');start.onclick=async()=>{start.disabled=true;try{const plan=$('ramasys-start-plan').value,interval=plan==='enterprise'?'month':$('ramasys-start-interval').value;const {data:r,error:e}=await client().functions.invoke('platform-billing',{body:{action:'create_subscription',organization_id:org(),plan_code:plan,billing_interval:interval}});if(e)throw e;if(r?.error)throw new Error(r.error);await renderBilling();}catch(e){status.innerHTML='<p style="color:#b42318">'+esc(e.message)+'</p><button class="btn" id="ramasys-start-retry" type="button">Réessayer</button>';const retry=$('ramasys-start-retry');if(retry)retry.onclick=()=>renderBilling();}};return;}
+   if(!sub){status.innerHTML='<p>Aucun abonnement n’est encore associé à cet espace. Choisissez votre formule pour l’activer.</p><div class="ra-form-grid"><label>Formule<select id="ramasys-start-plan"><option value="free">FREE — Gratuit, sans limite de durée</option><option value="starter">STARTER — 10 000 FCFA/mois · 100 000 FCFA/an</option><option value="pro">PRO — 25 000 FCFA/mois · 250 000 FCFA/an</option><option value="business">BUSINESS — 50 000 FCFA/mois · 500 000 FCFA/an</option><option value="enterprise">ENTERPRISE — à partir de 100 000 FCFA/mois</option></select></label><label>Périodicité<select id="ramasys-start-interval"><option value="month">Mensuelle</option><option value="year">Annuelle — 2 mois offerts</option></select></label></div><button class="btn" id="ramasys-start-subscription" type="button">Activer cette formule</button>';const start=$('ramasys-start-subscription');start.onclick=async()=>{start.disabled=true;try{const plan=$('ramasys-start-plan').value,interval=plan==='enterprise'?'month':$('ramasys-start-interval').value;const {data:r,error:e}=await client().functions.invoke('platform-billing',{body:{action:'create_subscription',organization_id:org(),plan_code:plan,billing_interval:interval}});if(e)throw e;if(r?.error)throw new Error(r.error);await renderBilling();}catch(e){status.innerHTML='<p style="color:#b42318">'+esc(e.message)+'</p><button class="btn" id="ramasys-start-retry" type="button">Réessayer</button>';const retry=$('ramasys-start-retry');if(retry)retry.onclick=()=>renderBilling();}};return;}
    const labels={free:'FREE',starter:'STARTER',pro:'PRO',business:'BUSINESS',enterprise:'ENTERPRISE'};
    const states={active:'Actif',trialing:'Essai gratuit en cours',payment_required:'Paiement requis — accès suspendu',past_due:'Paiement en retard',cancelled:'Résilié',expired:'Expiré'};
    const fmt=n=>Number(n||0).toLocaleString('fr-FR')+' FCFA';
@@ -3168,13 +3166,12 @@ window.RAMASYS_CONTEXT=function(){return{organizationId:currentOrganizationId,or
  };
  function ctx(){return window.RAMASYS_CONTEXT?.();}
  function say(t,bad=false){const e=$('ramasys-business-status');if(e){e.textContent=t;e.style.color=bad?'#b42318':'';}}
-
-function init(){
-  const c=ctx();
-  if(!c?.organization||!c?.client)return;
-
+ function init(){
+  const c=ctx();if(!c?.organization||!c?.client)return;
   config=configs[c.organization.organization_type]||[];
 
+  // Certains éléments de présentation ne sont pas présents dans toutes les versions du portail.
+  // Leur absence ne doit jamais interrompre le chargement de l'espace de travail.
   const businessTitle=$('ramasys-business-title');
   const businessDescription=$('ramasys-business-description');
   const businessKind=$('ramasys-business-kind');
@@ -3182,55 +3179,42 @@ function init(){
   const businessRefresh=$('ramasys-business-refresh');
 
   if(businessTitle){
-    businessTitle.textContent=({
-      'Association/ONG':'Bénéficiaires & interventions terrain',
-      'Entreprise/PME':'Gestion commerciale & stocks',
-      'Collectif communautaire':'Groupes & initiatives locales',
-      'Institution/Structure publique':'Services aux usagers & marchés publics'
-    })[c.organization.organization_type]||'Activités métier';
+   businessTitle.textContent=({
+    'Association/ONG':'Bénéficiaires & interventions terrain',
+    'Entreprise/PME':'Gestion commerciale & stocks',
+    'Collectif communautaire':'Groupes & initiatives locales',
+    'Institution/Structure publique':'Services aux usagers & marchés publics'
+   })[c.organization.organization_type]||'Activités métier';
   }
-
   if(businessDescription){
-    businessDescription.textContent='Registres opérationnels adaptés à votre organisation. Les données sont enregistrées dans votre espace privé.';
+   businessDescription.textContent='Registres opérationnels adaptés à votre organisation. Les données sont enregistrées dans votre espace privé.';
   }
-
   if(businessKind){
-    businessKind.innerHTML=config.map((x,i)=>'<option value="'+i+'">'+esc(x.label)+'</option>').join('');
+   businessKind.innerHTML=config.map((x,i)=>'<option value="'+i+'">'+esc(x.label)+'</option>').join('');
   }
-
   if(!listenersBound){
-    if(businessKind){
-      businessKind.onchange=()=>{
-        current=config[Number(businessKind.value)];
-        if(current){
-          renderForm();
-          loadRows();
-        }
-      };
-    }
-
-    if(businessForm)businessForm.onsubmit=save;
-    if(businessRefresh)businessRefresh.onclick=loadRows;
-
-    document.querySelector('.nav')?.addEventListener('click',e=>{
-      if(e.target.closest('[data-page="business"]')){
-        if(!current)init();
-        else loadRows();
-      }
-    });
-
-    listenersBound=true;
+   if(businessKind){
+    businessKind.onchange=()=>{
+     current=config[Number(businessKind.value)];
+     if(current){renderForm();loadRows();}
+    };
+   }
+   if(businessForm)businessForm.onsubmit=save;
+   if(businessRefresh)businessRefresh.onclick=loadRows;
+   document.querySelector('.nav')?.addEventListener('click',e=>{
+    if(e.target.closest('[data-page="business"]')){if(!current)init();else loadRows();}
+   });
+   listenersBound=true;
   }
-
-  if(config.length){
-    current=config[0];
-    renderForm();
-    loadRows();
-  }
-}
+  if(config.length){current=config[0];renderForm();loadRows();}
+ }
  function renderForm(){
-  $('ramasys-business-form-title').textContent=current.title;
-  $('ramasys-business-fields').innerHTML=current.fields.map(f=>{
+  if(!current)return;
+  const formTitle=$('ramasys-business-form-title');
+  const fieldsHost=$('ramasys-business-fields');
+  if(formTitle)formTitle.textContent=current.title;
+  if(!fieldsHost)return;
+  fieldsHost.innerHTML=current.fields.map(f=>{
    const [name,label,type,required]=f;
    if(type==='textarea')return '<label>'+esc(label)+'<textarea name="'+name+'"></textarea></label>';
    return '<label>'+esc(label)+(required?' *':'')+'<input name="'+name+'" type="'+type+'" '+(required?'required':'')+(type==='number'?' min="0" step="any"':'')+'></label>';
@@ -3240,18 +3224,19 @@ function init(){
   const c=ctx();if(!current||!c)return;say('Chargement des enregistrements…');
   const {data,error}=await c.client.from(current.table).select('*').eq('organization_id',c.organizationId).order('created_at',{ascending:false}).limit(100);
   if(error){say('Lecture impossible : '+error.message,true);return;}
-  $('ramasys-business-head').innerHTML='<tr>'+current.columns.map(x=>'<th>'+esc(x[1])+'</th>').join('')+'</tr>';
-  $('ramasys-business-rows').innerHTML=(data||[]).map(row=>'<tr>'+current.columns.map(x=>'<td>'+esc(row[x[0]])+'</td>').join('')+'</tr>').join('')||'<tr><td colspan="'+current.columns.length+'">Aucun enregistrement pour le moment.</td></tr>';
+  const head=$('ramasys-business-head'),rows=$('ramasys-business-rows');
+  if(head)head.innerHTML='<tr>'+current.columns.map(x=>'<th>'+esc(x[1])+'</th>').join('')+'</tr>';
+  if(rows)rows.innerHTML=(data||[]).map(row=>'<tr>'+current.columns.map(x=>'<td>'+esc(row[x[0]])+'</td>').join('')+'</tr>').join('')||'<tr><td colspan="'+current.columns.length+'">Aucun enregistrement pour le moment.</td></tr>';
   say((data||[]).length+' enregistrement(s) affiché(s).');
  }
  async function save(e){
   e.preventDefault();const c=ctx(),form=e.currentTarget,fd=new FormData(form),payload={organization_id:c.organizationId,created_by:c.userId,updated_at:new Date().toISOString()};
   current.fields.forEach(([name,label,type])=>{const v=String(fd.get(name)||'').trim();if(v!=='')payload[name]=type==='number'?Number(v):v;});
-  const btn=$('ramasys-business-save');btn.disabled=true;
+  const btn=$('ramasys-business-save');if(btn)btn.disabled=true;
   const {error}=await c.client.from(current.table).insert(payload);
   if(error)say('Enregistrement refusé : '+error.message,true);
   else{form.reset();say('Enregistrement ajouté avec succès.');await loadRows();}
-  btn.disabled=false;
+  if(btn)btn.disabled=false;
  }
  document.addEventListener('DOMContentLoaded',init,{once:true});
  window.addEventListener('ramasys:workspace-ready',init);
