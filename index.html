@@ -3169,41 +3169,24 @@ window.RAMASYS_CONTEXT=function(){return{organizationId:currentOrganizationId,or
  function init(){
   const c=ctx();if(!c?.organization||!c?.client)return;
   config=configs[c.organization.organization_type]||[];
-
-  // Certains éléments de présentation ne sont pas présents dans toutes les versions du portail.
-  // Leur absence ne doit jamais interrompre le chargement de l'espace de travail.
-  const businessTitle=$('ramasys-business-title');
-  const businessDescription=$('ramasys-business-description');
-  const businessKind=$('ramasys-business-kind');
-  const businessForm=$('ramasys-business-form');
-  const businessRefresh=$('ramasys-business-refresh');
-
-  if(businessTitle){
-   businessTitle.textContent=({
-    'Association/ONG':'Bénéficiaires & interventions terrain',
-    'Entreprise/PME':'Gestion commerciale & stocks',
-    'Collectif communautaire':'Groupes & initiatives locales',
-    'Institution/Structure publique':'Services aux usagers & marchés publics'
-   })[c.organization.organization_type]||'Activités métier';
-  }
-  if(businessDescription){
-   businessDescription.textContent='Registres opérationnels adaptés à votre organisation. Les données sont enregistrées dans votre espace privé.';
-  }
-  if(businessKind){
-   businessKind.innerHTML=config.map((x,i)=>'<option value="'+i+'">'+esc(x.label)+'</option>').join('');
-  }
+  const title=$('ramasys-business-title');
+  const description=$('ramasys-business-description');
+  const kind=$('ramasys-business-kind');
+  const form=$('ramasys-business-form');
+  const refresh=$('ramasys-business-refresh');
+  if(title)title.textContent=({
+   'Association/ONG':'Bénéficiaires & interventions terrain',
+   'Entreprise/PME':'Gestion commerciale & stocks',
+   'Collectif communautaire':'Groupes & initiatives locales',
+   'Institution/Structure publique':'Services aux usagers & marchés publics'
+  })[c.organization.organization_type]||'Activités métier';
+  if(description)description.textContent='Registres opérationnels adaptés à votre organisation. Les données sont enregistrées dans votre espace privé.';
+  if(kind)kind.innerHTML=config.map((x,i)=>'<option value="'+i+'">'+esc(x.label)+'</option>').join('');
   if(!listenersBound){
-   if(businessKind){
-    businessKind.onchange=()=>{
-     current=config[Number(businessKind.value)];
-     if(current){renderForm();loadRows();}
-    };
-   }
-   if(businessForm)businessForm.onsubmit=save;
-   if(businessRefresh)businessRefresh.onclick=loadRows;
-   document.querySelector('.nav')?.addEventListener('click',e=>{
-    if(e.target.closest('[data-page="business"]')){if(!current)init();else loadRows();}
-   });
+   if(kind)kind.onchange=()=>{current=config[Number(kind.value)];if(current){renderForm();loadRows();}};
+   if(form)form.onsubmit=save;
+   if(refresh)refresh.onclick=loadRows;
+   document.querySelector('.nav')?.addEventListener('click',e=>{if(e.target.closest('[data-page="business"]')){if(!current)init();else loadRows();}});
    listenersBound=true;
   }
   if(config.length){current=config[0];renderForm();loadRows();}
@@ -3211,10 +3194,10 @@ window.RAMASYS_CONTEXT=function(){return{organizationId:currentOrganizationId,or
  function renderForm(){
   if(!current)return;
   const formTitle=$('ramasys-business-form-title');
-  const fieldsHost=$('ramasys-business-fields');
+  const fields=$('ramasys-business-fields');
   if(formTitle)formTitle.textContent=current.title;
-  if(!fieldsHost)return;
-  fieldsHost.innerHTML=current.fields.map(f=>{
+  if(!fields)return;
+  fields.innerHTML=current.fields.map(f=>{
    const [name,label,type,required]=f;
    if(type==='textarea')return '<label>'+esc(label)+'<textarea name="'+name+'"></textarea></label>';
    return '<label>'+esc(label)+(required?' *':'')+'<input name="'+name+'" type="'+type+'" '+(required?'required':'')+(type==='number'?' min="0" step="any"':'')+'></label>';
