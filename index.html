@@ -272,6 +272,15 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
     <label for="org-phone">Téléphone</label>
     <input type="tel" id="org-phone" placeholder="+221 ...">
 
+    <div class="org-signup-logo" style="margin:16px 0;padding:14px;border:1px solid #dce5df;border-radius:10px;background:#fbfdfb;">
+      <label for="signup-org-logo" style="display:block;font-weight:600;margin-bottom:8px;">Logo de votre structure (facultatif)</label>
+      <input type="file" id="signup-org-logo" accept="image/png,image/jpeg,image/webp" style="width:100%;">
+      <div style="display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap;">
+        <img id="signup-org-logo-preview" alt="Aperçu du logo" style="display:none;width:64px;height:64px;object-fit:contain;border:1px solid #dce5df;border-radius:8px;padding:4px;background:white;">
+        <span id="signup-org-logo-status" class="auth-description">PNG, JPG ou WEBP — 3 Mo maximum. Le logo sera enregistré avec votre espace.</span>
+      </div>
+    </div>
+
     <button class="auth-button" id="create-organization-button">
       Créer mon espace
     </button>
@@ -539,7 +548,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
    <label>E-mail professionnel<input id="org-profile-email" type="email" placeholder="contact@organisation.sn" /></label><label>Téléphone<input id="org-profile-phone" placeholder="+221 ..." /></label>
    <label>Site web<input id="org-profile-website" placeholder="https://" /></label><label>Adresse du siège<input id="org-profile-address" maxlength="300" placeholder="Adresse du siège" /></label><label>NINEA / Identifiant fiscal<input id="org-profile-tax-number" maxlength="120" placeholder="NINEA ou identifiant fiscal" /></label>
   </div><p class="subtle">Les informations administratives et juridiques sont enregistrées dans Supabase. Modification réservée aux administrateurs.</p></div>
-  <div class="panel"><h3>Identité visuelle</h3><div style="display:flex;align-items:center;gap:14px;margin-bottom:14px"><img id="org-logo-preview" alt="Logo de l'organisation" style="display:none;width:76px;height:76px;object-fit:contain;border:1px solid var(--line);border-radius:12px;padding:5px"><label class="btn secondary" for="org-logo-file">＋ Ajouter le logo de l'organisation</label><input id="org-logo-file" type="file" accept="image/png,image/jpeg,image/webp" style="display:none"><span class="subtle" id="org-logo-status">PNG, JPG ou WEBP</span></div><div class="form-grid"><label>Couleur principale<input id="org-primary-color" type="color" value="#053E2B"></label><label>Couleur secondaire<input id="org-secondary-color" type="color" value="#44B331"></label><label>Devise<select id="org-currency"><option value="XOF">Franc CFA (XOF)</option><option value="EUR">Euro (EUR)</option><option value="USD">Dollar US (USD)</option><option value="GBP">Livre sterling (GBP)</option></select></label><label>Langue par défaut<select id="org-default-language"><option value="Français">Français</option><option value="English">English</option></select></label></div><button class="btn secondary" id="preview-identity-button" type="button">Prévisualiser</button><p class="subtle" id="identity-save-status">Les préférences seront enregistrées avec la fiche de l'organisation.</p></div>
+  <div class="panel"><h3>Identité visuelle</h3><div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px"><img id="org-logo-preview" alt="Logo de l'organisation" style="display:none;width:76px;height:76px;object-fit:contain;border:1px solid var(--line);border-radius:12px;padding:5px"><label class="btn secondary" for="org-logo-file">Modifier le logo</label><input id="org-logo-file" type="file" accept="image/png,image/jpeg,image/webp" style="display:none"><span class="subtle" id="org-logo-status">Remplacez ici le logo déjà enregistré.</span></div><div class="form-grid"><label>Couleur principale<input id="org-primary-color" type="color" value="#053E2B"></label><label>Couleur secondaire<input id="org-secondary-color" type="color" value="#44B331"></label><label>Devise<select id="org-currency"><option value="XOF">Franc CFA (XOF)</option><option value="EUR">Euro (EUR)</option><option value="USD">Dollar US (USD)</option><option value="GBP">Livre sterling (GBP)</option></select></label><label>Langue par défaut<select id="org-default-language"><option value="Français">Français</option><option value="English">English</option></select></label></div><button class="btn secondary" id="preview-identity-button" type="button">Prévisualiser</button><p class="subtle" id="identity-save-status">Les préférences seront enregistrées avec la fiche de l'organisation.</p></div>
  </div>
  <div class="panel"><div class="panel-head"><div><h3>Branches, antennes et établissements</h3><div class="subtle">Gestion des implantations de votre organisation.</div></div><button class="btn" id="add-branch-button" type="button">+ Ajouter une antenne</button></div><div id="branches-status" class="subtle" style="margin:10px 0">Chargement des antennes…</div><div style="overflow-x:auto"><table class="table"><thead><tr><th>Nom</th><th>Zone</th><th>Responsable</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="branches-table-body"><tr><td colspan="5">Chargement…</td></tr></tbody></table></div></div>
  <div class="panel"><div class="panel-head"><div><h3>Organigramme dynamique</h3><div class="subtle">Construisez la structure hiérarchique réelle de votre organisation.</div></div><button class="btn" id="add-org-unit-button" type="button">+ Ajouter un service</button></div><div id="org-units-status" class="subtle" style="margin:10px 0">Chargement de l’organigramme…</div><div id="org-chart-live" class="org-chart"><div class="subtle">Connectez-vous pour afficher votre organigramme.</div></div></div>
@@ -1414,6 +1423,28 @@ if (supabaseClient) {
   showMessage('Connexion Supabase indisponible : la bibliothèque JavaScript n’a pas été chargée.', true);
 }
 
+document.getElementById('signup-org-logo')?.addEventListener('change', async (event) => {
+  const file = event.target.files?.[0];
+  const preview = document.getElementById('signup-org-logo-preview');
+  const status = document.getElementById('signup-org-logo-status');
+  if (!file) { preview.style.display = 'none'; status.textContent = 'PNG, JPG ou WEBP — 3 Mo maximum.'; return; }
+  try {
+    await RAMASYS_SECURITY.validateLogoFile(file);
+    if (preview.dataset.objectUrl) URL.revokeObjectURL(preview.dataset.objectUrl);
+    const objectUrl = URL.createObjectURL(file);
+    preview.dataset.objectUrl = objectUrl;
+    preview.src = objectUrl;
+    preview.style.display = 'block';
+    status.textContent = file.name;
+    status.style.color = '';
+  } catch (error) {
+    event.target.value = '';
+    preview.style.display = 'none';
+    status.textContent = error.message;
+    status.style.color = '#b42318';
+  }
+});
+
 document.getElementById('create-organization-button').addEventListener('click', async () => {
   const name=document.getElementById('org-name').value.trim();
   const type=document.getElementById('org-type').value;
@@ -1466,17 +1497,39 @@ if (!data) {
     );
 }
 
-// 3. Activer la formule choisie à l'inscription (métadonnées Auth conservées après confirmation e-mail).
+// 3. Enregistrer le logo choisi pendant le parcours de création de l'espace.
+const signupLogoFile = document.getElementById('signup-org-logo')?.files?.[0];
+let signupLogoWarning = '';
+if (signupLogoFile) {
+  try {
+    const validatedLogo = await RAMASYS_SECURITY.validateLogoFile(signupLogoFile);
+    const logoPath = `${data}/logo.${validatedLogo.ext}`;
+    const { error: logoUploadError } = await supabaseClient.storage
+      .from('organization-logos')
+      .upload(logoPath, signupLogoFile, { upsert: true, contentType: validatedLogo.mime });
+    if (logoUploadError) throw logoUploadError;
+    const { data: logoPublicData } = supabaseClient.storage.from('organization-logos').getPublicUrl(logoPath);
+    const logoPublicUrl = logoPublicData.publicUrl + (logoPublicData.publicUrl.includes('?') ? '&' : '?') + 'v=' + Date.now();
+    const { error: logoSaveError } = await supabaseClient.from('Organisations')
+      .update({ logo_url: logoPublicUrl }).eq('id', data);
+    if (logoSaveError) throw logoSaveError;
+  } catch (logoError) {
+    console.error('Enregistrement du logo à la création :', logoError);
+    signupLogoWarning = ' Le logo n’a pas pu être enregistré : ' + (logoError.message || logoError) + '. Vous pourrez réessayer dans Identité visuelle.';
+  }
+}
+
+// 4. Activer la formule choisie à l'inscription (métadonnées Auth conservées après confirmation e-mail).
 const signupMeta=userData.user.user_metadata||{};
 const selectedPlan=String(signupMeta.selected_plan_code||localStorage.getItem('ramasys_pending_plan_code')||'free').toLowerCase();
 const billingInterval=String(signupMeta.billing_interval||localStorage.getItem('ramasys_pending_billing_interval')||'month');
 const {data:billingResult,error:billingError}=await supabaseClient.functions.invoke('platform-billing',{body:{action:'create_subscription',organization_id:data,plan_code:selectedPlan,billing_interval:billingInterval}});
 if(billingError||billingResult?.error){
   console.error('Activation abonnement:',billingError||billingResult?.error);
-  message.textContent='Espace créé. Attention : la formule n’a pas pu être activée automatiquement ('+(billingResult?.error||billingError?.message||'erreur')+'). Contactez le support avant de continuer.';
+  message.textContent='Espace créé. Attention : la formule n’a pas pu être activée automatiquement ('+(billingResult?.error||billingError?.message||'erreur')+'). Contactez le support avant de continuer.'+signupLogoWarning;
 } else {
   try{localStorage.removeItem('ramasys_pending_plan_code');localStorage.removeItem('ramasys_pending_billing_interval');localStorage.removeItem('ramasys_pending_organization_type');}catch(_){}
-  message.textContent=billingResult.message||'Votre espace et votre abonnement sont activés.';
+  message.textContent=(billingResult.message||'Votre espace et votre abonnement sont activés.')+signupLogoWarning;
 }
 ramasysWorkspaceUserId = null;
 await loadUserWorkspace(userData.user, data);
@@ -3029,7 +3082,7 @@ document.getElementById('platform-admin-refresh')?.addEventListener('click',()=>
     window.RAMASYS_ACTIVE_PORTAL={type,code:PORTALS[type].code,displayName:profile.display_name||PORTALS[type].title};
   };
   const style=document.createElement('style');
-  style.textContent='.ramasys-portal-banner{margin:0 0 18px;padding:18px 20px;border:1px solid #dce8e1;border-left:4px solid #0b6846;border-radius:12px;background:linear-gradient(110deg,#f3f8f5,#fff);color:#173b2c}.ramasys-portal-kicker{font-weight:800;font-size:14px;letter-spacing:.04em}.ramasys-portal-banner p{margin:7px 0 0;color:#53665c;line-height:1.55;font-size:13px}#business .cards,#portal-business-shortcuts{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}body[data-ramasys-portal="ong_association"] .ramasys-portal-banner{border-left-color:#176b4a}body[data-ramasys-portal="pme_entreprise"] .ramasys-portal-banner{border-left-color:#2463a6}body[data-ramasys-portal="institution_publique"] .ramasys-portal-banner{border-left-color:#7652a5}body[data-ramasys-portal="collectif_communautaire"] .ramasys-portal-banner{border-left-color:#b07824}';
+  style.textContent='.ramasys-portal-banner{display:block;box-sizing:border-box;width:100%;max-width:100%;min-width:0;overflow-wrap:anywhere;word-break:normal;margin:0 0 18px;padding:18px 20px;border:1px solid #dce8e1;border-left:4px solid #0b6846;border-radius:12px;background:linear-gradient(110deg,#f3f8f5,#fff);color:#173b2c}.ramasys-portal-kicker{display:block;max-width:100%;font-weight:800;font-size:14px;line-height:1.45;letter-spacing:.04em;overflow-wrap:anywhere}.ramasys-portal-banner p{display:block;max-width:100%;margin:7px 0 0;color:#53665c;line-height:1.6;font-size:13px;white-space:normal;overflow-wrap:anywhere}.panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}.panel-head>div{flex:1 1 260px;min-width:0}.panel-head h3,.panel-head .module-intro{white-space:normal;overflow-wrap:anywhere;line-height:1.45}.panel-head .pill{flex:0 1 auto;max-width:100%;white-space:normal}#business .cards,#portal-business-shortcuts{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}body[data-ramasys-portal="ong_association"] .ramasys-portal-banner{border-left-color:#176b4a}body[data-ramasys-portal="pme_entreprise"] .ramasys-portal-banner{border-left-color:#2463a6}body[data-ramasys-portal="institution_publique"] .ramasys-portal-banner{border-left-color:#7652a5}body[data-ramasys-portal="collectif_communautaire"] .ramasys-portal-banner{border-left-color:#b07824}';
   document.head.appendChild(style);
 })();
 </script>
@@ -3169,24 +3222,41 @@ window.RAMASYS_CONTEXT=function(){return{organizationId:currentOrganizationId,or
  function init(){
   const c=ctx();if(!c?.organization||!c?.client)return;
   config=configs[c.organization.organization_type]||[];
-  const title=$('ramasys-business-title');
-  const description=$('ramasys-business-description');
-  const kind=$('ramasys-business-kind');
-  const form=$('ramasys-business-form');
-  const refresh=$('ramasys-business-refresh');
-  if(title)title.textContent=({
-   'Association/ONG':'Bénéficiaires & interventions terrain',
-   'Entreprise/PME':'Gestion commerciale & stocks',
-   'Collectif communautaire':'Groupes & initiatives locales',
-   'Institution/Structure publique':'Services aux usagers & marchés publics'
-  })[c.organization.organization_type]||'Activités métier';
-  if(description)description.textContent='Registres opérationnels adaptés à votre organisation. Les données sont enregistrées dans votre espace privé.';
-  if(kind)kind.innerHTML=config.map((x,i)=>'<option value="'+i+'">'+esc(x.label)+'</option>').join('');
+
+  // Certains éléments de présentation ne sont pas présents dans toutes les versions du portail.
+  // Leur absence ne doit jamais interrompre le chargement de l'espace de travail.
+  const businessTitle=$('ramasys-business-title');
+  const businessDescription=$('ramasys-business-description');
+  const businessKind=$('ramasys-business-kind');
+  const businessForm=$('ramasys-business-form');
+  const businessRefresh=$('ramasys-business-refresh');
+
+  if(businessTitle){
+   businessTitle.textContent=({
+    'Association/ONG':'Bénéficiaires & interventions terrain',
+    'Entreprise/PME':'Gestion commerciale & stocks',
+    'Collectif communautaire':'Groupes & initiatives locales',
+    'Institution/Structure publique':'Services aux usagers & marchés publics'
+   })[c.organization.organization_type]||'Activités métier';
+  }
+  if(businessDescription){
+   businessDescription.textContent='Registres opérationnels adaptés à votre organisation. Les données sont enregistrées dans votre espace privé.';
+  }
+  if(businessKind){
+   businessKind.innerHTML=config.map((x,i)=>'<option value="'+i+'">'+esc(x.label)+'</option>').join('');
+  }
   if(!listenersBound){
-   if(kind)kind.onchange=()=>{current=config[Number(kind.value)];if(current){renderForm();loadRows();}};
-   if(form)form.onsubmit=save;
-   if(refresh)refresh.onclick=loadRows;
-   document.querySelector('.nav')?.addEventListener('click',e=>{if(e.target.closest('[data-page="business"]')){if(!current)init();else loadRows();}});
+   if(businessKind){
+    businessKind.onchange=()=>{
+     current=config[Number(businessKind.value)];
+     if(current){renderForm();loadRows();}
+    };
+   }
+   if(businessForm)businessForm.onsubmit=save;
+   if(businessRefresh)businessRefresh.onclick=loadRows;
+   document.querySelector('.nav')?.addEventListener('click',e=>{
+    if(e.target.closest('[data-page="business"]')){if(!current)init();else loadRows();}
+   });
    listenersBound=true;
   }
   if(config.length){current=config[0];renderForm();loadRows();}
@@ -3194,10 +3264,10 @@ window.RAMASYS_CONTEXT=function(){return{organizationId:currentOrganizationId,or
  function renderForm(){
   if(!current)return;
   const formTitle=$('ramasys-business-form-title');
-  const fields=$('ramasys-business-fields');
+  const fieldsHost=$('ramasys-business-fields');
   if(formTitle)formTitle.textContent=current.title;
-  if(!fields)return;
-  fields.innerHTML=current.fields.map(f=>{
+  if(!fieldsHost)return;
+  fieldsHost.innerHTML=current.fields.map(f=>{
    const [name,label,type,required]=f;
    if(type==='textarea')return '<label>'+esc(label)+'<textarea name="'+name+'"></textarea></label>';
    return '<label>'+esc(label)+(required?' *':'')+'<input name="'+name+'" type="'+type+'" '+(required?'required':'')+(type==='number'?' min="0" step="any"':'')+'></label>';
