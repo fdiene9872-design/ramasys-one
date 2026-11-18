@@ -231,7 +231,7 @@ main{background:linear-gradient(135deg,#f7faf6 0%,#f1f7f1 100%)}
         <button type="button" class="auth-switch" id="signup-change-type" style="border:0;background:none;padding:0;margin:0 0 16px;">← Modifier la catégorie</button>
         <label for="signup-plan">Choisissez votre formule RAMASYS *</label>
         <select id="signup-plan" required style="width:100%;padding:13px;border:1px solid #dce5df;border-radius:8px;margin-bottom:12px;">
-          <option value="free">FREE — Gratuit, sans limite de durée (0 FCFA · 2 utilisateurs, 2 projets, 500 Mo)</option>
+          <option value="free">FREE — 1 mois d’essai gratuit (0 FCFA · 2 utilisateurs, 2 projets, 500 Mo)</option>
           <option value="starter">STARTER — 10 000 FCFA/mois ou 100 000 FCFA/an</option>
           <option value="pro">PRO — 25 000 FCFA/mois ou 250 000 FCFA/an</option>
           <option value="business">BUSINESS — 50 000 FCFA/mois ou 500 000 FCFA/an</option>
@@ -241,7 +241,7 @@ main{background:linear-gradient(135deg,#f7faf6 0%,#f1f7f1 100%)}
         <select id="signup-interval" style="width:100%;padding:13px;border:1px solid #dce5df;border-radius:8px;margin-bottom:12px;">
           <option value="month">Mensuelle</option><option value="year">Annuelle — 2 mois offerts</option>
         </select>
-        <p class="auth-description" id="signup-plan-note">Les formules payantes incluent 30 jours d’essai PRO. La formule FREE est accessible gratuitement, sans limite de durée.</p>
+        <p class="auth-description" id="signup-plan-note">La formule FREE comprend un mois d’essai gratuit. Les autres formules nécessitent un paiement Bictorys avant l’accès à la plateforme.</p>
         <label for="signup-email">Adresse e-mail</label>
         <input type="email" id="signup-email" placeholder="nom@organisation.sn">
         <label for="signup-password">Mot de passe</label>
@@ -548,7 +548,15 @@ main{background:linear-gradient(135deg,#f7faf6 0%,#f1f7f1 100%)}
   </div>
 </section>
 <section class="page" id="reports"><div class="panel"><h3>Rapports & indicateurs</h3><p class="module-intro">Visualisez les résultats et préparez vos comptes rendus.</p><div class="empty">Les rapports d’activités, tableaux de bord d’impact et exports seront construits à partir des données saisies.</div></div></section>
-<section class="page" id="settings"><div class="panel"><h3>Paramètres de l’organisation</h3><p class="module-intro">Configurez l’identité et les préférences de votre espace.</p><p>Les paramètres de votre organisation seront affichés ici après leur enregistrement.</p><div class="empty">Les paramètres de sécurité et les rôles sont gérés par les administrateurs. Retrouvez votre formule et vos paiements RAMASYS dans le module Sécurité → Mon abonnement.</div></div><div class="panel" id="ramasys-module-catalog-panel"><div class="panel-head"><div><h3>Catalogue des modules</h3><p class="module-intro">Les outils disponibles sont adaptés au type de votre organisation et à votre formule.</p></div><button class="btn secondary" id="ramasys-refresh-modules" type="button">Actualiser</button></div><div id="ramasys-module-catalog-status" class="subtle" role="status">Chargement…</div><div id="ramasys-module-catalog-list" class="ramasys-module-grid"></div></div></section>
+<section class="page" id="settings">
+ <div class="panel"><div class="panel-head"><div><h3>Paramètres de votre espace</h3><p class="module-intro">Gérez votre compte, les informations de votre organisation et votre abonnement RAMASYS One.</p></div><span class="pill">Supabase sécurisé</span></div>
+  <div class="ra-settings-grid">
+   <div class="ra-settings-card"><h4>Compte de connexion</h4><p class="module-intro">Modifiez l’adresse utilisée pour vous connecter ou votre mot de passe.</p><form id="ra-account-email-form"><label>Nouvelle adresse e-mail<input type="email" id="ra-account-email" autocomplete="email" required placeholder="vous@organisation.sn"></label><button class="btn" type="submit">Mettre à jour l’e-mail</button><p class="subtle" id="ra-account-email-status" role="status">Une confirmation sera envoyée par e-mail avant l’application du changement.</p></form><hr><form id="ra-account-password-form"><label>Nouveau mot de passe<input type="password" id="ra-account-password" minlength="8" autocomplete="new-password" required placeholder="8 caractères minimum"></label><label>Confirmer le mot de passe<input type="password" id="ra-account-password-confirm" minlength="8" autocomplete="new-password" required placeholder="Répéter le mot de passe"></label><button class="btn" type="submit">Modifier le mot de passe</button><p class="subtle" id="ra-account-password-status" role="status"></p></form></div>
+   <div class="ra-settings-card"><h4>Organisation et identité visuelle</h4><p class="module-intro">Le nom, les coordonnées, le logo et les couleurs de votre structure sont gérés dans sa fiche d’identité.</p><button class="btn secondary" type="button" id="ra-open-organization-settings">Modifier les informations et le logo</button><p class="subtle">Modification réservée à l’administrateur de l’organisation. Le logo existant est conservé tant que vous ne le remplacez pas.</p><hr><h4>Utilisateurs et permissions</h4><p class="module-intro">Gérez les membres, les rôles et les autorisations de votre espace.</p><button class="btn secondary" type="button" id="ra-open-security-settings">Ouvrir la gestion des utilisateurs</button></div>
+  </div>
+ </div>
+ <div class="panel" id="ramasys-settings-billing"><div class="panel-head"><div><h3>Mes abonnements RAMASYS</h3><p class="module-intro">Consultez votre formule, payez ou renouvelez votre abonnement via Bictorys.</p></div><span class="pill">XOF</span></div><div id="ramasys-subscription-status">Chargement de votre abonnement…</div><div id="ramasys-subscription-action" style="margin-top:16px"></div></div>
+ <div class="panel" id="ramasys-module-catalog-panel"><div class="panel-head"><div><h3>Catalogue des modules</h3><p class="module-intro">Les outils disponibles sont adaptés au type de votre organisation et à votre formule.</p></div><button class="btn secondary" id="ramasys-refresh-modules" type="button">Actualiser</button></div><div id="ramasys-module-catalog-status" class="subtle" role="status">Chargement…</div><div id="ramasys-module-catalog-list" class="ramasys-module-grid"></div></div></section>
 
 <section class="page" id="organization">
  <div class="panel"><div class="panel-head"><div><h3>Organisation & administration</h3><div class="subtle">Identité, structure, espaces et configuration de votre organisation.</div></div><button class="btn" id="save-organization-button">Enregistrer les modifications</button></div>
@@ -664,6 +672,7 @@ main{background:linear-gradient(135deg,#f7faf6 0%,#f1f7f1 100%)}
   const titles={dashboard:'Vue d’ensemble',people:'Membres & équipes',projects:'Projets & activités',finance:'Finances',documents:'Documents',reports:'Rapports & indicateurs',settings:'Paramètres',organization:'Organisation & administration',partners:'Partenaires & relations',impact:'Suivi & impact',communication:'Communication & réunions',operations:'RH & opérations',intelligence:'Intelligence & assistance',security:'Utilisateurs, sécurité & abonnements'};
   document.querySelectorAll('.nav button[data-page]').forEach(btn=>btn.addEventListener('click',()=>{
     const target=btn.dataset.page;
+    if(window.RAMASYS_SUBSCRIPTION_ACCESS_BLOCKED && !['settings','security'].includes(target)) return;
     if(!document.getElementById(target)) return;
     document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b===btn));
     document.querySelectorAll('.page').forEach(page=>page.classList.toggle('active',page.id===target));
@@ -813,8 +822,8 @@ function enterLocalMode(){
   document.querySelectorAll('.user-name').forEach(el=>el.innerHTML='<strong>Mode local</strong><br><span class="subtle">Administrateur local</span>');
   showApp();if(window.RAMASYS_applyPortalProfile)window.RAMASYS_applyPortalProfile(currentOrganizationData);if(typeof loadMembers==='function')loadMembers();if(typeof window.RAMASYS_refreshFinance==='function')window.RAMASYS_refreshFinance();
 }
-document.getElementById('local-mode-button')?.addEventListener('click',enterLocalMode);
-window.RAMASYS_enterLocalMode=enterLocalMode;
+document.getElementById('local-mode-button')?.remove();
+window.RAMASYS_enterLocalMode=undefined;
 
 function showOrganizationSetup() {
   authScreen.classList.remove('active');
@@ -1039,7 +1048,7 @@ function renderPartnerPortalScreen(data,user){
   let host=document.getElementById('ramasys-partner-portal-screen');
   if(!host){host=document.createElement('section');host.id='ramasys-partner-portal-screen';host.style.cssText='position:fixed;inset:0;z-index:1000000;overflow:auto;background:#f4f7f5;padding:24px;font-family:inherit;color:#17352a';document.body.appendChild(host);}
   const orgs=data.organizations||[];
-  host.innerHTML=`<div style="max-width:1100px;margin:0 auto"><header style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;background:#fff;border:1px solid #dce7df;border-radius:16px;padding:20px;margin-bottom:18px"><div><div style="font-size:12px;font-weight:700;letter-spacing:.12em;color:#28734a">RAMASYS ONE · ESPACE EXTERNE</div><h1 style="margin:6px 0">Portail partenaire</h1><p style="margin:0;color:#60736a">Connecté en tant que ${safe(user?.email||'partenaire')}</p></div><button id="ramasys-partner-signout" class="btn secondary" type="button">Se déconnecter</button></header>${orgs.map((o,i)=>`<section style="background:#fff;border:1px solid #dce7df;border-radius:16px;padding:20px;margin-bottom:18px"><h2 style="margin:0 0 4px">${safe(o.organization?.name||'Organisation')}</h2><p style="color:#60736a;margin:0 0 16px">Partenaire : ${safe(o.partner?.name||'—')} · Accès : consultation</p><h3>Projets partagés</h3>${(o.projects||[]).length?(o.projects||[]).map(pr=>`<article style="padding:12px;border:1px solid #e5ece7;border-radius:10px;margin:8px 0"><b>${safe(pr.project_code?pr.project_code+' · ':'')}${safe(pr.name)}</b><p style="margin:5px 0;color:#60736a">${safe(pr.summary||'') } · ${safe(pr.status||'')}</p><div style="height:6px;background:#edf2ee;border-radius:8px;overflow:hidden"><div style="width:${Math.max(0,Math.min(100,Number(pr.progress_percentage)||0))}%;height:6px;background:#27804b"></div></div></article>`).join(''):'<p>Aucun projet attribué pour le moment.</p>'}<h3 style="margin-top:22px">Documents partagés</h3>${(o.documents||[]).length?(o.documents||[]).map(doc=>`<div style="display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px 0;border-top:1px solid #edf1ee"><div><b>${safe(doc.document_name)}</b><div style="font-size:12px;color:#60736a">${safe(doc.document_type||'Document')} · ${safe(new Date(doc.uploaded_at).toLocaleDateString('fr-FR'))}</div></div><button class="btn secondary" type="button" data-partner-document="${safe(doc.id)}">Ouvrir</button></div>`).join(''):'<p class="subtle">Aucun document n’a encore été partagé sur les projets attribués.</p>'}</section>`).join('')||'<section style="background:#fff;padding:24px;border-radius:16px">Aucun accès partenaire actif. Contactez l’organisation qui vous a invité.</section>'}<p style="text-align:center;color:#718078;font-size:12px">Vos accès sont limités aux projets et documents explicitement partagés avec votre compte.</p></div>`;
+  host.innerHTML=`<div style="max-width:1100px;margin:0 auto"><header style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;background:#fff;border:1px solid #dce7df;border-radius:16px;padding:20px;margin-bottom:18px"><div><div style="font-size:12px;font-weight:700;letter-spacing:.12em;color:#28734a">RAMASYS ONE · ESPACE EXTERNE</div><h1 style="margin:6px 0">Portail partenaire</h1><p style="margin:0;color:#60736a">Connecté en tant que ${safe(user?.email||'partenaire')}</p></div><button id="ramasys-partner-signout" class="btn secondary" type="button">Se déconnecter</button></header>${orgs.map((o,i)=>`<section style="background:#fff;border:1px solid #dce7df;border-radius:16px;padding:20px;margin-bottom:18px"><h2 style="margin:0 0 4px">${safe(o.organization?.name||'Organisation')}</h2><p style="color:#60736a;margin:0 0 16px">Partenaire : ${safe(o.partner?.name||'—')} · Accès : consultation</p>${o.access_suspended?'<div style="background:#fff7ed;border-left:4px solid #e58a12;border-radius:8px;padding:12px;color:#824400;margin:12px 0">Accès temporairement suspendu : l’organisation doit régulariser son abonnement RAMASYS. Les projets et documents restent conservés.</div>':''}<h3>Projets partagés</h3>${(o.projects||[]).length?(o.projects||[]).map(pr=>`<article style="padding:12px;border:1px solid #e5ece7;border-radius:10px;margin:8px 0"><b>${safe(pr.project_code?pr.project_code+' · ':'')}${safe(pr.name)}</b><p style="margin:5px 0;color:#60736a">${safe(pr.summary||'') } · ${safe(pr.status||'')}</p><div style="height:6px;background:#edf2ee;border-radius:8px;overflow:hidden"><div style="width:${Math.max(0,Math.min(100,Number(pr.progress_percentage)||0))}%;height:6px;background:#27804b"></div></div></article>`).join(''):'<p>Aucun projet attribué pour le moment.</p>'}<h3 style="margin-top:22px">Documents partagés</h3>${(o.documents||[]).length?(o.documents||[]).map(doc=>`<div style="display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px 0;border-top:1px solid #edf1ee"><div><b>${safe(doc.document_name)}</b><div style="font-size:12px;color:#60736a">${safe(doc.document_type||'Document')} · ${safe(new Date(doc.uploaded_at).toLocaleDateString('fr-FR'))}</div></div><button class="btn secondary" type="button" data-partner-document="${safe(doc.id)}">Ouvrir</button></div>`).join(''):'<p class="subtle">Aucun document n’a encore été partagé sur les projets attribués.</p>'}</section>`).join('')||'<section style="background:#fff;padding:24px;border-radius:16px">Aucun accès partenaire actif. Contactez l’organisation qui vous a invité.</section>'}<p style="text-align:center;color:#718078;font-size:12px">Vos accès sont limités aux projets et documents explicitement partagés avec votre compte.</p></div>`;
   host.querySelector('#ramasys-partner-signout')?.addEventListener('click',()=>{host.remove();supabaseClient.auth.signOut();});
   host.querySelectorAll('[data-partner-document]').forEach(btn=>btn.addEventListener('click',async()=>{btn.disabled=true;btn.textContent='Ouverture…';try{const {data:r,error}=await supabaseClient.functions.invoke('partner-portal',{body:{action:'portal_document_link',document_id:btn.dataset.partnerDocument}});if(error)throw error;if(r?.error)throw new Error(r.error);if(!r?.url)throw new Error('Lien du document indisponible.');window.open(r.url,'_blank','noopener');}catch(e){alert('Ouverture impossible : '+(e.message||e));}finally{btn.disabled=false;btn.textContent='Ouvrir';}}));
 }
@@ -1106,10 +1115,21 @@ async function loadUserWorkspace(user, preferredOrganizationId = null) {
   }
 currentOrganizationId = organization.id;
  currentOrganizationData = organization;
- if (window.RAMASYS_applyPortalProfile) await window.RAMASYS_applyPortalProfile(organization);
- populateOrganizationProfile(organization);
  currentOrganizationRole = membership.role || 'member';
  window.currentOrganizationId = currentOrganizationId; window.currentOrganizationRole = currentOrganizationRole; window.currentOrganizationData = currentOrganizationData;
+ let subscriptionBlocked = false;
+ try {
+   const billingCheck = await supabaseClient.functions.invoke('platform-billing', { body: { action: 'my_subscription', organization_id: organization.id } });
+   if (billingCheck.error) throw billingCheck.error;
+   if (billingCheck.data?.error) throw new Error(billingCheck.data.error);
+   subscriptionBlocked = billingCheck.data?.access_blocked === true;
+ } catch (billingCheckError) {
+   console.error('Vérification de l’abonnement impossible :', billingCheckError);
+   subscriptionBlocked = true;
+ }
+ window.RAMASYS_SUBSCRIPTION_ACCESS_BLOCKED = subscriptionBlocked;
+ if (!subscriptionBlocked && window.RAMASYS_applyPortalProfile) await window.RAMASYS_applyPortalProfile(organization);
+ populateOrganizationProfile(organization);
  const addMemberButton = document.getElementById('add-member-button');
  if (addMemberButton) addMemberButton.style.display = canManageOperations() ? '' : 'none';
  ['add-branch-button','add-org-unit-button'].forEach(id => { const el=document.getElementById(id); if(el) el.style.display=currentOrganizationRole==='admin'?'':'none'; });
@@ -1132,6 +1152,19 @@ if (memberCountError) {
 
 showApp();
 renderAuthenticatedUser(user);
+if (subscriptionBlocked) {
+  document.querySelectorAll('.nav button[data-page]').forEach(btn => {
+    const allowed = ['settings','security'].includes(btn.dataset.page);
+    btn.style.display = allowed ? '' : 'none';
+    btn.disabled = !allowed;
+  });
+  document.querySelector('.nav button[data-page="security"]')?.click();
+  document.querySelectorAll('.page').forEach(section => section.classList.toggle('active', section.id === 'security'));
+  const heading = document.getElementById('page-title'); if (heading) heading.textContent = 'Abonnement et réactivation';
+  setTimeout(() => window.RAMASYS_MODULES_V20?.refresh?.(), 400);
+  return;
+}
+document.querySelectorAll('.nav button[data-page]').forEach(btn => { btn.style.display = ''; btn.disabled = false; });
 await loadMembers();
 if (typeof window.loadOrganizationBranches === 'function') await window.loadOrganizationBranches();
 if (typeof window.loadOrganizationUnits === 'function') await window.loadOrganizationUnits();
@@ -1409,7 +1442,7 @@ async function handleSupabaseSession(session) {
   const user = session?.user;
   const adminPanel = document.getElementById('platform-admin-panel');
   if (!user) {
-    ramasysWorkspaceUserId = null; currentOrganizationId = null; currentOrganizationRole = null; currentOrganizationData = null;
+    ramasysWorkspaceUserId = null; currentOrganizationId = null; currentOrganizationRole = null; currentOrganizationData = null; window.RAMASYS_SUBSCRIPTION_ACCESS_BLOCKED = false;
     const signOut = document.getElementById('ramasys-signout'); if (signOut) signOut.style.display = 'none';
     if (adminPanel) adminPanel.style.display = 'none';
     showAuth(); return;
@@ -1560,8 +1593,8 @@ const selectedPlan=String(signupMeta.selected_plan_code||localStorage.getItem('r
 const billingInterval=String(signupMeta.billing_interval||localStorage.getItem('ramasys_pending_billing_interval')||'month');
 let billingResult=null,billingError=null;
 // create_organization appelle déjà platform_start_subscription côté serveur.
-// FREE est donc déjà activé à cette étape ; les offres payantes sont confirmées
-// par create_subscription, désormais idempotent pour l'essai créé par le RPC.
+// FREE reçoit un essai d’un mois ; les offres payantes restent en paiement requis
+// jusqu’à la confirmation officielle du règlement Bictorys.
 if(selectedPlan!=='free'){
   const result=await supabaseClient.functions.invoke('platform-billing',{body:{action:'create_subscription',organization_id:data,plan_code:selectedPlan,billing_interval:billingInterval}});
   billingResult=result.data;billingError=result.error;
@@ -1571,7 +1604,7 @@ if(billingError||billingResult?.error){
   message.textContent='Espace créé. Attention : la formule n’a pas pu être confirmée ('+(billingResult?.error||billingError?.message||'erreur')+'). Contactez le support avant de continuer.'+signupLogoWarning;
 } else {
   try{localStorage.removeItem('ramasys_pending_plan_code');localStorage.removeItem('ramasys_pending_billing_interval');localStorage.removeItem('ramasys_pending_organization_type');}catch(_){}
-  message.textContent=(selectedPlan==='free'?'Formule FREE activée.':(billingResult?.message||'Votre essai PRO est activé.'))+signupLogoWarning;
+  message.textContent=(selectedPlan==='free'?'Essai gratuit FREE d’un mois activé.':(billingResult?.message||'Paiement Bictorys requis avant l’accès à la plateforme.'))+signupLogoWarning;
 }
 ramasysWorkspaceUserId = null;
 await loadUserWorkspace(userData.user, data);
@@ -2112,6 +2145,7 @@ window.sendAssistantPrompt=function(){return false;};
  'use strict';
  const $=id=>document.getElementById(id);
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const functionErrorMessage=async error=>{try{const response=error?.context;if(response&&typeof response.clone==='function'){const payload=await response.clone().json();return payload?.detail||payload?.error||error.message||'Erreur du service de paiement.';}}catch(_){}return error?.message||String(error||'Erreur inconnue.');};
  const fmt=n=>new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0}).format(Number(n)||0);
  const when=s=>s?new Date(s).toLocaleString('fr-FR'):'—';
  const dateTag=()=>new Date().toISOString().slice(0,10);
@@ -2242,7 +2276,7 @@ window.sendAssistantPrompt=function(){return false;};
  const panel=(title,sub,body)=>`<div class="panel"><div class="panel-head"><div><h3>${title}</h3><p class="module-intro">${sub||''}</p></div></div>${body}</div>`;
  async function rows(table,fields='*',order='created_at',ascending=false){const r=await client().from(table).select(fields).eq('organization_id',org()).order(order,{ascending}).limit(500);if(r.error)throw r.error;return r.data||[];}
  async function currentUser(){const r=await client().auth.getUser();if(r.error)throw r.error;return r.data.user;}
- function navBind(){document.querySelectorAll('.nav button[data-page]').forEach(b=>{if(b.dataset.ramasysV20Bound)return;b.dataset.ramasysV20Bound='1';b.addEventListener('click',()=>setTimeout(()=>renderPage(b.dataset.page),350));});}
+ function navBind(){document.querySelectorAll('.nav button[data-page]').forEach(b=>{if(b.dataset.ramasysV20Bound)return;b.dataset.ramasysV20Bound='1';b.addEventListener('click',()=>setTimeout(()=>renderPage(b.dataset.page),350));});const shortcut=document.querySelector('.ra-settings-shortcut');if(shortcut&&!shortcut.dataset.ramasysV20Bound){shortcut.dataset.ramasysV20Bound='1';shortcut.addEventListener('click',()=>document.querySelector('.nav button[data-page="settings"]')?.click());}}
  function button(label,attrs=''){return `<button class="btn secondary" type="button" ${attrs}>${label}</button>`;}
 
  async function renderHR(){
@@ -2326,8 +2360,21 @@ window.sendAssistantPrompt=function(){return false;};
   $('v20-impact-refresh').onclick=load;await load();
  }
 
- async function renderBilling(){
-  const page=$('security');if(!page||!ready())return;let target=page.querySelector('#v20-billing-panel');if(!target){target=document.createElement('div');target.id='v20-billing-panel';target.className='panel';page.appendChild(target);}
+ function planPickerMarkup(){return '<div class="ra-form-grid"><label>Formule<select id="ramasys-start-plan"><option value="starter">STARTER — 10 000 FCFA/mois · 100 000 FCFA/an</option><option value="pro">PRO — 25 000 FCFA/mois · 250 000 FCFA/an</option><option value="business">BUSINESS — 50 000 FCFA/mois · 500 000 FCFA/an</option><option value="enterprise">ENTERPRISE — à partir de 100 000 FCFA/mois</option></select></label><label>Périodicité<select id="ramasys-start-interval"><option value="month">Mensuelle</option><option value="year">Annuelle — 2 mois offerts</option></select></label></div><button class="btn" id="ramasys-start-subscription" type="button">Continuer vers le paiement Bictorys</button><p class="subtle">L’accès payant sera activé uniquement après confirmation du paiement par Bictorys.</p>';}
+ function bindPlanCheckout(){const start=$('ramasys-start-subscription');if(!start||start.dataset.bound)return;start.dataset.bound='1';start.onclick=async()=>{start.disabled=true;start.textContent='Préparation…';try{const plan=$('ramasys-start-plan').value,interval=plan==='enterprise'?'month':$('ramasys-start-interval').value;const {data:r,error:e}=await client().functions.invoke('platform-billing',{body:{action:'create_subscription',organization_id:org(),plan_code:plan,billing_interval:interval}});if(e)throw e;if(r?.error)throw new Error(r.error);if(r?.requires_payment===false){const st=$('ramasys-subscription-status');if(st)st.textContent='Cette formule est déjà active et réglée. Aucun nouveau paiement n’a été lancé.';return;}const {data:c,error:ce}=await client().functions.invoke('platform-billing',{body:{action:'create_checkout',organization_id:org()}});if(ce)throw ce;if(c?.error)throw new Error(c.error);if(!c?.checkout_url)throw new Error('Lien Bictorys indisponible.');window.location.href=c.checkout_url;}catch(e){const st=$('ramasys-subscription-status');const message=await functionErrorMessage(e);if(st)st.innerHTML='<p class="ra-error-text">'+esc(message)+'</p>'+planPickerMarkup();bindPlanCheckout();}finally{start.disabled=false;start.textContent='Continuer vers le paiement Bictorys';}};}
+ async function renderSettings(){
+  if(!ready())return;
+  const emailInput=$('ra-account-email');
+  try{const u=await currentUser();if(emailInput&&u?.email)emailInput.value=u.email;}catch(e){console.warn('Lecture du compte impossible',e);}
+  const emailForm=$('ra-account-email-form');
+  if(emailForm&&!emailForm.dataset.bound){emailForm.dataset.bound='1';emailForm.addEventListener('submit',async ev=>{ev.preventDefault();const status=$('ra-account-email-status'),btn=emailForm.querySelector('button[type="submit"]'),email=$('ra-account-email').value.trim();if(!email)return;btn.disabled=true;status.textContent='Mise à jour en cours…';try{const r=await client().auth.updateUser({email});if(r.error)throw r.error;status.textContent='Demande envoyée. Consultez votre nouvelle boîte e-mail et confirmez le changement.';}catch(e){status.textContent='Impossible de modifier l’e-mail : '+(e.message||e);}finally{btn.disabled=false;}});}
+  const passForm=$('ra-account-password-form');
+  if(passForm&&!passForm.dataset.bound){passForm.dataset.bound='1';passForm.addEventListener('submit',async ev=>{ev.preventDefault();const status=$('ra-account-password-status'),btn=passForm.querySelector('button[type="submit"]'),a=$('ra-account-password').value,b=$('ra-account-password-confirm').value;if(a.length<8){status.textContent='Le mot de passe doit contenir au moins 8 caractères.';return;}if(a!==b){status.textContent='Les deux mots de passe ne correspondent pas.';return;}btn.disabled=true;status.textContent='Modification en cours…';try{const r=await client().auth.updateUser({password:a});if(r.error)throw r.error;passForm.reset();status.textContent='Mot de passe modifié avec succès.';}catch(e){status.textContent='Impossible de modifier le mot de passe : '+(e.message||e);}finally{btn.disabled=false;}});}
+  const orgBtn=$('ra-open-organization-settings');if(orgBtn&&!orgBtn.dataset.bound){orgBtn.dataset.bound='1';orgBtn.onclick=()=>document.querySelector('.nav button[data-page="organization"]')?.click();}
+  const secBtn=$('ra-open-security-settings');if(secBtn&&!secBtn.dataset.bound){secBtn.dataset.bound='1';secBtn.onclick=()=>document.querySelector('.nav button[data-page="security"]')?.click();}
+ }
+ async function renderBilling(targetPage='security'){
+  const page=$(targetPage);if(!page||!ready())return;let target=targetPage==='settings'?page.querySelector('#ramasys-settings-billing'):page.querySelector('#v20-billing-panel');if(!target){target=document.createElement('div');target.id='v20-billing-panel';target.className='panel';page.appendChild(target);}
   if(!admin()){target.innerHTML='<h3>Mon abonnement RAMASYS One</h3><p class="module-intro">La consultation et la gestion de l’abonnement sont réservées à l’administrateur de l’organisation.</p>';return;}
   target.innerHTML='<div class="panel-head"><div><h3>Mon abonnement RAMASYS One</h3><p class="module-intro">Cet espace concerne uniquement le paiement de votre abonnement à RAMASYS. Les cotisations, dons, contributions et ventes de votre organisation restent dans vos modules de gestion et ne sont jamais encaissés par RAMASYS.</p></div><span class="pill">XOF</span></div><div id="ramasys-subscription-status">Chargement de votre formule…</div><div id="ramasys-subscription-action" style="margin-top:16px"></div>';
   const status=$('ramasys-subscription-status'),action=$('ramasys-subscription-action');
@@ -2335,18 +2382,18 @@ window.sendAssistantPrompt=function(){return false;};
    const {data,error}=await client().functions.invoke('platform-billing',{body:{action:'my_subscription',organization_id:org()}});
    if(error)throw error;if(data?.error)throw new Error(data.error);
    const sub=data.subscription;
-   if(!sub){status.innerHTML='<p>Aucun abonnement n’est encore associé à cet espace. Choisissez une formule payante pour démarrer votre essai PRO de 30 jours.</p><div class="ra-form-grid"><label>Formule<select id="ramasys-start-plan"><option value="starter">STARTER — 10 000 FCFA/mois · 100 000 FCFA/an</option><option value="pro">PRO — 25 000 FCFA/mois · 250 000 FCFA/an</option><option value="business">BUSINESS — 50 000 FCFA/mois · 500 000 FCFA/an</option><option value="enterprise">ENTERPRISE — à partir de 100 000 FCFA/mois</option></select></label><label>Périodicité<select id="ramasys-start-interval"><option value="month">Mensuelle</option><option value="year">Annuelle — 2 mois offerts</option></select></label></div><button class="btn" id="ramasys-start-subscription" type="button">Activer cette formule</button>';const start=$('ramasys-start-subscription');start.onclick=async()=>{start.disabled=true;try{const plan=$('ramasys-start-plan').value,interval=plan==='enterprise'?'month':$('ramasys-start-interval').value;const {data:r,error:e}=await client().functions.invoke('platform-billing',{body:{action:'create_subscription',organization_id:org(),plan_code:plan,billing_interval:interval}});if(e)throw e;if(r?.error)throw new Error(r.error);await renderBilling();}catch(e){status.innerHTML='<p style="color:#b42318">'+esc(e.message)+'</p><button class="btn" id="ramasys-start-retry" type="button">Réessayer</button>';const retry=$('ramasys-start-retry');if(retry)retry.onclick=()=>renderBilling();}};return;}
+   if(!sub){status.innerHTML='<p>Aucun abonnement n’est associé à cet espace. Choisissez une formule. Seule la formule FREE bénéficie d’un mois d’essai ; toute formule payante doit être réglée avant l’accès.</p>'+planPickerMarkup();bindPlanCheckout();return;}
    const labels={free:'FREE',starter:'STARTER',pro:'PRO',business:'BUSINESS',enterprise:'ENTERPRISE'};
    const states={active:'Actif',trialing:'Essai gratuit en cours',payment_required:'Paiement requis — accès suspendu',past_due:'Paiement en retard',cancelled:'Résilié',expired:'Expiré'};
    const fmt=n=>Number(n||0).toLocaleString('fr-FR')+' FCFA';
    const trial=sub.trial_ends_at?new Date(sub.trial_ends_at).toLocaleDateString('fr-FR'):'—';
    const plan=sub.plan||{};
-   status.innerHTML='<div class="cards"><div class="card"><div class="metric-label">Formule choisie</div><div class="metric">'+(labels[sub.selected_plan_code]||sub.selected_plan_code)+'</div></div><div class="card"><div class="metric-label">Statut</div><div class="metric" style="font-size:18px">'+(states[sub.status]||sub.status)+'</div></div><div class="card"><div class="metric-label">Tarif</div><div class="metric">'+(sub.selected_plan_code==='free'?'Gratuit':fmt(sub.amount)+' / '+(sub.billing_interval==='year'?'an':'mois'))+'</div></div></div>'+(sub.status==='trialing'?'<p class="ra-muted-note">Votre essai PRO se termine le '+trial+'. À cette date, un paiement sera nécessaire pour conserver l’accès aux fonctions payantes. Vos données seront conservées.</p>':'')+(data.access_blocked?'<p class="ra-muted-note" style="color:#b42318">L’accès à l’espace est bloqué en attente du règlement. Vos données ne sont pas supprimées.</p>':'')+(plan.limits?'<p class="module-intro">Limites de la formule : '+Object.entries(plan.limits).map(([k,v])=>k+': '+v).join(' · ')+'</p>':'');
-   if(sub.selected_plan_code!=='free')action.innerHTML='<button class="btn" id="ramasys-pay-subscription" type="button">Payer / renouveler mon abonnement</button><p class="module-intro">Paiement sécurisé par Bictorys (mobile money et moyens disponibles selon votre compte marchand).</p>';
-   const pay=$('ramasys-pay-subscription');if(pay)pay.onclick=async()=>{pay.disabled=true;pay.textContent='Préparation du paiement…';try{const {data:checkout,error}=await client().functions.invoke('platform-billing',{body:{action:'create_checkout',organization_id:org()}});if(error)throw error;if(checkout?.error)throw new Error(checkout.error);if(!checkout?.checkout_url)throw new Error('Lien de paiement indisponible.');window.location.href=checkout.checkout_url;}catch(e){action.innerHTML='<p style="color:#b42318">'+esc(e.message)+'</p><button class="btn" id="ramasys-pay-retry" type="button">Réessayer</button>';const retry=$('ramasys-pay-retry');if(retry)retry.onclick=()=>renderBilling();}};
-  }catch(e){status.innerHTML='<p style="color:#b42318">Impossible de charger votre abonnement : '+esc(e.message)+'</p>';}
+   status.innerHTML='<div class="cards"><div class="card"><div class="metric-label">Formule choisie</div><div class="metric">'+(labels[sub.selected_plan_code]||sub.selected_plan_code)+'</div></div><div class="card"><div class="metric-label">Statut</div><div class="metric" style="font-size:18px">'+(states[sub.status]||sub.status)+'</div></div><div class="card"><div class="metric-label">Tarif</div><div class="metric">'+(sub.selected_plan_code==='free'?'Gratuit':fmt(sub.amount)+' / '+(sub.billing_interval==='year'?'an':'mois'))+'</div></div></div>'+(sub.status==='trialing'?'<p class="ra-muted-note">Votre essai gratuit FREE se termine le '+trial+'. À cette date, l’accès sera suspendu si aucun abonnement payant n’est réglé. Vos données seront conservées et restaurées après réabonnement.</p>':'')+(data.access_blocked?'<p class="ra-muted-note" style="color:#b42318">L’accès à l’espace est bloqué en attente du règlement. Vos données ne sont pas supprimées.</p>':'')+(plan.limits?'<p class="module-intro">Limites de la formule : '+Object.entries(plan.limits).map(([k,v])=>({users:'Utilisateurs',storage_gb:'Stockage (Go)',active_projects:'Projets actifs'}[k]||k)+': '+(v===-1?'Illimité':v)).join(' · ')+'</p>':'');
+   if(sub.selected_plan_code!=='free'){action.innerHTML='<button class="btn" id="ramasys-pay-subscription" type="button">Payer / renouveler mon abonnement</button><p class="module-intro">Paiement des abonnements exclusivement via Bictorys.</p><details style="margin-top:14px"><summary style="cursor:pointer;color:#a85a00;font-weight:700">Changer de formule</summary><div style="margin-top:12px">'+planPickerMarkup()+'</div></details>';bindPlanCheckout(); }else if(sub.status==='trialing'||data.access_blocked){action.innerHTML='<h4>Passer à une formule payante</h4>'+planPickerMarkup();bindPlanCheckout();}
+   const pay=$('ramasys-pay-subscription');if(pay)pay.onclick=async()=>{pay.disabled=true;pay.textContent='Préparation du paiement…';try{const {data:checkout,error}=await client().functions.invoke('platform-billing',{body:{action:'create_checkout',organization_id:org()}});if(error)throw error;if(checkout?.error)throw new Error(checkout.error);if(!checkout?.checkout_url)throw new Error('Lien de paiement indisponible.');window.location.href=checkout.checkout_url;}catch(e){const message=await functionErrorMessage(e);action.innerHTML='<p style="color:#b42318">'+esc(message)+'</p><button class="btn" id="ramasys-pay-retry" type="button">Réessayer</button>';const retry=$('ramasys-pay-retry');if(retry)retry.onclick=()=>renderBilling(targetPage);}};
+  }catch(e){const message=await functionErrorMessage(e);status.innerHTML='<p style="color:#b42318">Impossible de charger votre abonnement : '+esc(message)+'</p>';}
  }
- async function renderPage(page){if(!ready())return;try{if(page==='operations')await renderHR();if(page==='communication')await renderCalendar();if(page==='partners')await renderPartners();if(page==='impact')await renderImpact();if(page==='security')await renderBilling();}catch(e){console.error('RAMASYS v2 module error',page,e);}}
+ async function renderPage(page){if(!ready())return;try{if(page==='operations')await renderHR();if(page==='communication')await renderCalendar();if(page==='partners')await renderPartners();if(page==='impact')await renderImpact();if(page==='settings'){await renderSettings();await renderBilling('settings');}if(page==='security')await renderBilling('security');}catch(e){console.error('RAMASYS v2 module error',page,e);}}
  let moduleChannel=null;
  function bindModuleRealtime(){if(!ready())return;if(moduleChannel)client().removeChannel(moduleChannel);moduleChannel=client().channel('ramasys-modules-'+org());['hr_staff','hr_leave_requests','hr_trainings','organization_events','organization_partners','organization_impact_indicators','impact_collection_forms','impact_submissions'].forEach(table=>moduleChannel.on('postgres_changes',{event:'*',schema:'public',table,filter:'organization_id=eq.'+org()},()=>{const active=document.querySelector('.page.active')?.id;if(['operations','communication','partners','impact','security'].includes(active))renderPage(active);}));moduleChannel.subscribe();}
  async function start(){if(!ready())return;navBind();bindModuleRealtime();const active=document.querySelector('.page.active')?.id;if(active)await renderPage(active);}
@@ -2463,6 +2510,22 @@ window.sendAssistantPrompt=function(){return false;};
 #platform-admin-panel .ra-audit-action{font-weight:800;color:#0b6740}
 #platform-admin-panel .ra-note{margin:12px 0;padding:12px 14px;border-radius:12px;background:#fff6e9;border:1px solid #f2dfbf;color:#81520d;font-size:12px;line-height:1.5}
 @media(max-width:620px){#platform-admin-panel .ra-form-grid{grid-template-columns:1fr}#platform-admin-panel .ra-toolbar input{max-width:none;width:100%}}
+
+/* RAMASYS One — lisibilité et paramètres */
+.ra-settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:16px}
+.ra-settings-card{background:#fff;border:1px solid #dce9df;border-radius:15px;padding:18px;min-width:0}
+.ra-settings-card h4{margin:0 0 8px;color:#064b38;font-size:16px}
+.ra-settings-card label{display:block;color:#173f30;font-weight:650;margin:12px 0 6px}
+.ra-settings-card input{display:block;width:100%;margin-top:6px;min-height:42px;padding:10px 12px;border:1px solid #b9cfc0;border-radius:9px;background:#fff;color:#173f30}
+.ra-settings-card .btn{margin-top:10px}
+.ra-settings-card hr{border:0;border-top:1px solid #e3ece5;margin:20px 0}
+.ra-settings-card .subtle,.ra-muted-note,.module-intro{color:#496457}
+#ramasys-settings-billing .metric{color:#064b38}
+#ramasys-settings-billing .metric-label{color:#355d4a}
+#ramasys-settings-billing .ra-muted-note{background:#fff7ed;border-left:3px solid #f28a00;padding:10px 12px;border-radius:8px;color:#824400}
+#ramasys-settings-billing .ra-plan-limit{color:#355d4a;font-size:13px}
+button:disabled{opacity:.58;cursor:not-allowed}
+@media(max-width:760px){.ra-settings-grid{grid-template-columns:1fr}}
 </style>
 <div id="platform-admin-panel" style="display:none;">
  <div class="ra-shell">
