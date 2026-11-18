@@ -207,7 +207,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
 .ramasys-account-area .user{display:flex;align-items:center;gap:10px;min-width:0}
 .ramasys-account-area .user-name{overflow-wrap:anywhere;font-size:13px}
 .ramasys-account-area .avatar{flex:0 0 38px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-weight:700}
-.ramasys-account-area #ramasys-signout{margin:0}
+.ramasys-account-area #ramasys-signout{margin:0!important;display:inline-flex!important;align-items:center;justify-content:center;background:#f28c28!important;border:1px solid #e97812!important;color:#fff!important;font-weight:800;min-height:42px;padding:10px 18px;border-radius:10px;cursor:pointer}.ramasys-account-area #ramasys-signout:hover{background:#e97812!important}.btn:not(.secondary){background:#f28c28;border-color:#e97812}.btn:not(.secondary):hover{background:#e97812}
 @media(max-width:620px){.top-brand-area{max-width:150px}.top-brand-area .brand-logo img{max-width:145px;max-height:52px}.ramasys-account-area{justify-content:flex-start}}
 </style>
 </head>
@@ -573,7 +573,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
   </div>
 </section>
 <section class="page" id="reports"><div class="panel"><h3>Rapports & indicateurs</h3><p class="module-intro">Visualisez les résultats et préparez vos comptes rendus.</p><div class="empty">Les rapports d’activités, tableaux de bord d’impact et exports seront construits à partir des données saisies.</div></div></section>
-<section class="page" id="settings"><div class="panel"><h3>Paramètres de l’organisation</h3><p class="module-intro">Configurez l’identité et les préférences de votre espace.</p><p>Les paramètres de votre organisation seront affichés ici après leur enregistrement.</p><div class="empty">Les paramètres de sécurité et les rôles sont gérés par les administrateurs. Retrouvez votre formule et vos paiements RAMASYS dans le module Sécurité → Mon abonnement.</div></div><div class="panel" id="ramasys-module-catalog-panel"><div class="panel-head"><div><h3>Catalogue des modules</h3><p class="module-intro">Les outils disponibles sont adaptés au type de votre organisation et à votre formule.</p></div><button class="btn secondary" id="ramasys-refresh-modules" type="button">Actualiser</button></div><div id="ramasys-module-catalog-status" class="subtle" role="status">Chargement…</div><div id="ramasys-module-catalog-list" class="ramasys-module-grid"></div></div></section>
+<section class="page" id="settings"><div class="panel"><h3>Paramètres de l’organisation</h3><p class="module-intro">Espace réservé à l’administrateur pour gérer les informations et les paramètres de la structure.</p><p>La fiche d’identité et l’identité visuelle se trouvent dans « Organisation & administration ».</p></div><div class="panel" id="v20-billing-panel"><h3>Mon abonnement RAMASYS One</h3><p class="module-intro">Chargement de votre abonnement…</p></div><div class="panel" id="ramasys-module-catalog-panel"><div class="panel-head"><div><h3>Catalogue des modules</h3><p class="module-intro">Les outils disponibles sont adaptés au type de votre organisation et à votre formule.</p></div><button class="btn secondary" id="ramasys-refresh-modules" type="button">Actualiser</button></div><div id="ramasys-module-catalog-status" class="subtle" role="status">Chargement…</div><div id="ramasys-module-catalog-list" class="ramasys-module-grid"></div></div></section>
 
 <section class="page" id="organization">
  <div class="panel"><div class="panel-head"><div><h3>Organisation & administration</h3><div class="subtle">Identité, structure, espaces et configuration de votre organisation.</div></div><button class="btn" id="save-organization-button">Enregistrer les modifications</button></div>
@@ -644,7 +644,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
  <div class="cards"><div class="card"><div class="metric-label">Comptes utilisateurs</div><div class="metric" id="security-user-count">0</div></div><div class="card"><div class="metric-label">Brouillons locaux</div><div class="metric" id="security-invitation-count">0</div></div><div class="card"><div class="metric-label">Authentification renforcée</div><div class="metric">Non configurée</div></div><div class="card"><div class="metric-label">Formule</div><div class="metric" style="font-size:20px">Non définie</div></div></div>
  <div class="content-grid"><div class="panel"><h3>Utilisateurs et permissions</h3><table class="table"><thead><tr><th>Utilisateur</th><th>Rôle</th><th>Accès</th><th>Statut</th></tr></thead><tbody id="security-users-table"><tr><td colspan="4">Aucun compte utilisateur configuré en mode local.</td></tr></tbody></table><button class="btn secondary" onclick="return false" disabled title="Les permissions multi-utilisateurs nécessitent le serveur">Gestion des rôles non activée</button></div>
  <div class="panel"><h3>Protection et traçabilité</h3><div class="activity"><i class="dot"></i><div><b>Authentification multifacteur</b><small>Paramètre à configurer</small></div></div><div class="activity"><i class="dot"></i><div><b>Sessions et appareils</b><small>Gestion des connexions</small></div></div><div class="activity"><i class="dot"></i><div><b>Journal d'audit</b><small>Actions et validations</small></div></div><div class="activity"><i class="dot"></i><div><b>Sauvegardes</b><small>État et restauration</small></div></div></div></div>
- <div class="panel"><h3>Abonnement et facturation</h3><div class="form-grid"><label>Formule<select disabled><option value="">Sélectionner une formule</option><option>Free</option><option>Starter</option><option>Pro</option><option>Business</option><option>Enterprise</option></select></label><label>Cycle<select disabled><option>Mensuel</option><option>Annuel</option></select></label><label>Mode de paiement<select disabled><option>Wave</option><option>Orange Money</option><option>Virement bancaire</option><option>Carte bancaire</option><option>Validation manuelle</option></select></label><label>Prochaine échéance<input type="date" disabled></label></div><button class="btn secondary" onclick="return false" disabled title="La facturation n’est pas activée dans cette version">Facturation non activée</button><p class="subtle">Aucune formule ni aucun paiement n’est enregistré ou prélevé en mode local.</p></div>
+ <div class="panel"><h3>Abonnement et facturation</h3><p class="subtle">Consultez votre formule, son statut, les échéances et les options de renouvellement dans les paramètres de votre organisation.</p><button class="btn" type="button" onclick="document.querySelector('.nav button[data-page=\'settings\']')?.click()">Gérer mon abonnement</button></div>
  </div>
 <div id="ramasys-role-management" class="ramasys-role-management">
  <div class="panel-head"><div><h3>Rôles et habilitations détaillés</h3><p class="subtle">Attribuez les rôles prédéfinis ou créez des profils d’accès propres à votre organisation.</p></div><button class="btn secondary" type="button" id="ramasys-reload-team">Actualiser</button></div>
@@ -677,7 +677,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
    <div class="panel"><h4 id="ramasys-business-form-title">Nouvel enregistrement</h4><form id="ramasys-business-form"><div id="ramasys-business-fields" class="ramasys-role-form-grid"></div><button class="btn" type="submit" id="ramasys-business-save">Enregistrer</button></form></div>
    <div class="panel"><h4>Enregistrements récents</h4><div style="overflow-x:auto"><table class="table"><thead id="ramasys-business-head"></thead><tbody id="ramasys-business-rows"><tr><td>Chargement…</td></tr></tbody></table></div></div>
   </div></div>
- <div class="ramasys-account-area" aria-label="Compte connecté"><div class="user"><div class="avatar">—</div><div class="user-name"><strong>Utilisateur</strong><br><span class="subtle">Connecté · Supabase</span></div></div></div>
+ <div class="ramasys-account-area" aria-label="Compte connecté"><div class="user"><div class="avatar">—</div><div class="user-name"><strong>Utilisateur</strong><br><span class="subtle">Connecté · Supabase</span></div></div><button class="btn" id="ramasys-signout" type="button">Déconnexion</button></div>
 </section>
 
 <footer>
@@ -815,21 +815,20 @@ function renderAuthenticatedUser(user) {
   });
   const avatar = document.querySelector('.user .avatar');
   if (avatar) avatar.textContent = (display.match(/[A-Za-zÀ-ÿ]/g) || ['U']).slice(0,2).join('').toUpperCase();
-  let signOut = document.getElementById('ramasys-signout');
-  if (!signOut) {
-    signOut = document.createElement('button');
-    signOut.id = 'ramasys-signout'; signOut.type = 'button'; signOut.className = 'btn secondary';
-    signOut.textContent = 'Déconnexion'; signOut.style.marginLeft = '10px';
-    document.querySelector('.ramasys-account-area')?.appendChild(signOut);
+  const signOut = document.getElementById('ramasys-signout');
+  if (signOut && !signOut.dataset.bound) {
+    signOut.dataset.bound = '1';
     signOut.addEventListener('click', async () => {
       if (!supabaseClient) return;
       signOut.disabled = true;
+      signOut.textContent = 'Déconnexion…';
       const { error } = await supabaseClient.auth.signOut();
       signOut.disabled = false;
+      signOut.textContent = 'Déconnexion';
       if (error) alert('Déconnexion impossible : ' + error.message);
     });
   }
-  signOut.style.display = '';
+  if (signOut) signOut.style.display = 'inline-flex';
 }
 
 function enterLocalMode(){
@@ -1062,14 +1061,42 @@ document.getElementById('save-organization-button')?.addEventListener('click', a
   finally { button.disabled = false; button.textContent = 'Enregistrer les modifications'; }
 });
 
-document.getElementById('org-logo-file')?.addEventListener('change', (event) => {
-  const file = event.target.files?.[0]; if (!file) return;
+// Recadrage interactif commun aux logos d'inscription et de l'espace organisation.
+function cropOrganizationLogo(file) {
+  return new Promise((resolve, reject) => {
+    const sourceUrl = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:100000;background:rgba(8,15,30,.78);display:flex;align-items:center;justify-content:center;padding:16px;';
+      overlay.innerHTML = `<section style="width:min(94vw,470px);background:#fff;border-radius:18px;padding:20px;box-shadow:0 20px 70px #0006;color:#172033"><h3 style="margin:0 0 6px">Ajuster le logo</h3><p style="margin:0 0 14px;color:#64748b;font-size:14px">Déplacez l’image et ajustez le zoom pour choisir la partie à conserver.</p><canvas width="320" height="320" style="display:block;width:min(78vw,320px);height:min(78vw,320px);max-height:55vh;margin:auto;border:2px solid #f28c28;border-radius:12px;touch-action:none;cursor:grab;background:#f1f5f9"></canvas><label style="display:block;margin:16px 0 8px;font-weight:600">Zoom</label><input type="range" min="1" max="3" step="0.01" value="1" style="width:100%;accent-color:#f28c28"><div style="display:flex;justify-content:flex-end;gap:10px;margin-top:18px"><button type="button" data-cancel style="padding:10px 16px;border:1px solid #cbd5e1;border-radius:9px;background:white">Annuler</button><button type="button" data-apply style="padding:10px 18px;border:0;border-radius:9px;background:#f28c28;color:white;font-weight:700">Valider le recadrage</button></div></section>`;
+      document.body.appendChild(overlay);
+      const canvas=overlay.querySelector('canvas'),ctx=canvas.getContext('2d'),zoom=overlay.querySelector('input[type=range]');
+      const base=Math.max(320/img.width,320/img.height);let scale=1,ox=0,oy=0,drag=null;
+      function draw(){const w=img.width*base*scale,h=img.height*base*scale;ox=Math.min(0,Math.max(320-w,ox));oy=Math.min(0,Math.max(320-h,oy));ctx.clearRect(0,0,320,320);ctx.fillStyle='#f1f5f9';ctx.fillRect(0,0,320,320);ctx.drawImage(img,ox,oy,w,h);}
+      draw();zoom.oninput=()=>{const old=scale;scale=Number(zoom.value);const ratio=scale/old;ox=160-(160-ox)*ratio;oy=160-(160-oy)*ratio;draw();};
+      canvas.onpointerdown=e=>{drag={x:e.clientX,y:e.clientY,ox,oy};canvas.setPointerCapture(e.pointerId);};
+      canvas.onpointermove=e=>{if(!drag)return;const r=canvas.getBoundingClientRect(),k=320/r.width;ox=drag.ox+(e.clientX-drag.x)*k;oy=drag.oy+(e.clientY-drag.y)*k;draw();};
+      canvas.onpointerup=canvas.onpointercancel=()=>{drag=null;};
+      const cleanup=()=>{overlay.remove();URL.revokeObjectURL(sourceUrl);};
+      overlay.querySelector('[data-cancel]').onclick=()=>{cleanup();reject(new Error('Recadrage annulé.'));};
+      overlay.querySelector('[data-apply]').onclick=()=>{const out=document.createElement('canvas');out.width=800;out.height=800;out.getContext('2d').drawImage(img,-ox*(800/320),-oy*(800/320),img.width*base*scale*(800/320),img.height*base*scale*(800/320));out.toBlob(blob=>{if(!blob){cleanup();reject(new Error('Impossible de créer le logo recadré.'));return;}cleanup();resolve(new File([blob],'logo-recadre.png',{type:'image/png',lastModified:Date.now()}));},'image/png');};
+    };
+    img.onerror=()=>{URL.revokeObjectURL(sourceUrl);reject(new Error('Impossible d’ouvrir cette image.'));};img.src=sourceUrl;
+  });
+}
+
+document.getElementById('org-logo-file')?.addEventListener('change', async (event) => {
+  const original = event.target.files?.[0]; if (!original) return;
   const preview = document.getElementById('org-logo-preview');
   const status = document.getElementById('org-logo-status');
-  RAMASYS_SECURITY.validateLogoFile(file).then(() => {
-    preview.src = URL.createObjectURL(file); preview.style.display = 'block';
-    status.textContent = file.name; status.style.color = '';
-  }).catch(error => { event.target.value = ''; status.textContent = error.message; status.style.color = '#b42318'; });
+  try {
+    await RAMASYS_SECURITY.validateLogoFile(original);
+    const cropped = await cropOrganizationLogo(original);
+    const transfer = new DataTransfer(); transfer.items.add(cropped); event.target.files = transfer.files;
+    preview.src = URL.createObjectURL(cropped); preview.style.display = 'block';
+    status.textContent = 'Logo recadré — cliquez sur « Enregistrer les modifications » pour l’enregistrer.'; status.style.color = '';
+  } catch(error) { event.target.value = ''; status.textContent = error.message; status.style.color = '#b42318'; }
 });
 document.getElementById('preview-identity-button')?.addEventListener('click', () => {
   const primary = document.getElementById('org-primary-color').value;
@@ -1490,24 +1517,20 @@ if (supabaseClient) {
 }
 
 document.getElementById('signup-org-logo')?.addEventListener('change', async (event) => {
-  const file = event.target.files?.[0];
+  const original = event.target.files?.[0];
   const preview = document.getElementById('signup-org-logo-preview');
   const status = document.getElementById('signup-org-logo-status');
-  if (!file) { preview.style.display = 'none'; status.textContent = 'PNG, JPG ou WEBP — 3 Mo maximum.'; return; }
+  if (!original) { preview.style.display = 'none'; status.textContent = 'PNG, JPG ou WEBP — 3 Mo maximum.'; return; }
   try {
-    await RAMASYS_SECURITY.validateLogoFile(file);
+    await RAMASYS_SECURITY.validateLogoFile(original);
+    const cropped = await cropOrganizationLogo(original);
+    const transfer = new DataTransfer(); transfer.items.add(cropped); event.target.files = transfer.files;
     if (preview.dataset.objectUrl) URL.revokeObjectURL(preview.dataset.objectUrl);
-    const objectUrl = URL.createObjectURL(file);
-    preview.dataset.objectUrl = objectUrl;
-    preview.src = objectUrl;
-    preview.style.display = 'block';
-    status.textContent = file.name;
-    status.style.color = '';
+    const objectUrl = URL.createObjectURL(cropped); preview.dataset.objectUrl = objectUrl; preview.src = objectUrl;
+    preview.style.display = 'block'; status.textContent = 'Logo recadré : ' + cropped.name; status.style.color = '';
   } catch (error) {
     event.target.value = '';
-    preview.style.display = 'none';
-    status.textContent = error.message;
-    status.style.color = '#b42318';
+    preview.style.display = 'none'; status.textContent = error.message; status.style.color = '#b42318';
   }
 });
 
@@ -2337,7 +2360,7 @@ window.sendAssistantPrompt=function(){return false;};
  }
 
  async function renderBilling(){
-  const page=$('security');if(!page||!ready())return;let target=page.querySelector('#v20-billing-panel');if(!target){target=document.createElement('div');target.id='v20-billing-panel';target.className='panel';page.appendChild(target);}
+  const page=$('settings');if(!page||!ready())return;let target=page.querySelector('#v20-billing-panel');if(!target){target=document.createElement('div');target.id='v20-billing-panel';target.className='panel';page.appendChild(target);}
   if(!admin()){target.innerHTML='<h3>Mon abonnement RAMASYS One</h3><p class="module-intro">La consultation et la gestion de l’abonnement sont réservées à l’administrateur de l’organisation.</p>';return;}
   target.innerHTML='<div class="panel-head"><div><h3>Mon abonnement RAMASYS One</h3><p class="module-intro">Cet espace concerne uniquement le paiement de votre abonnement à RAMASYS. Les cotisations, dons, contributions et ventes de votre organisation restent dans vos modules de gestion et ne sont jamais encaissés par RAMASYS.</p></div><span class="pill">XOF</span></div><div id="ramasys-subscription-status">Chargement de votre formule…</div><div id="ramasys-subscription-action" style="margin-top:16px"></div>';
   const status=$('ramasys-subscription-status'),action=$('ramasys-subscription-action');
@@ -2351,12 +2374,13 @@ window.sendAssistantPrompt=function(){return false;};
    const fmt=n=>Number(n||0).toLocaleString('fr-FR')+' FCFA';
    const trial=sub.trial_ends_at?new Date(sub.trial_ends_at).toLocaleDateString('fr-FR'):'—';
    const plan=sub.plan||{};
-   status.innerHTML='<div class="cards"><div class="card"><div class="metric-label">Formule choisie</div><div class="metric">'+(labels[sub.selected_plan_code]||sub.selected_plan_code)+'</div></div><div class="card"><div class="metric-label">Statut</div><div class="metric" style="font-size:18px">'+(states[sub.status]||sub.status)+'</div></div><div class="card"><div class="metric-label">Tarif</div><div class="metric">'+(sub.selected_plan_code==='free'?'Gratuit':fmt(sub.amount)+' / '+(sub.billing_interval==='year'?'an':'mois'))+'</div></div></div>'+(sub.status==='trialing'?'<p class="ra-muted-note">Votre essai PRO se termine le '+trial+'. À cette date, un paiement sera nécessaire pour conserver l’accès aux fonctions payantes. Vos données seront conservées.</p>':'')+(data.access_blocked?'<p class="ra-muted-note" style="color:#b42318">L’accès à l’espace est bloqué en attente du règlement. Vos données ne sont pas supprimées.</p>':'')+(plan.limits?'<p class="module-intro">Limites de la formule : '+Object.entries(plan.limits).map(([k,v])=>k+': '+v).join(' · ')+'</p>':'');
+   const due=sub.current_period_end?new Date(sub.current_period_end).toLocaleDateString('fr-FR'):(sub.trial_ends_at?new Date(sub.trial_ends_at).toLocaleDateString('fr-FR'):'—');
+   status.innerHTML='<div class="cards"><div class="card"><div class="metric-label">Formule choisie</div><div class="metric">'+(labels[sub.selected_plan_code]||sub.selected_plan_code)+'</div></div><div class="card"><div class="metric-label">Statut</div><div class="metric" style="font-size:18px">'+(states[sub.status]||sub.status)+'</div></div><div class="card"><div class="metric-label">Tarif</div><div class="metric">'+(sub.selected_plan_code==='free'?'Gratuit':fmt(sub.amount)+' / '+(sub.billing_interval==='year'?'an':'mois'))+'</div></div><div class="card"><div class="metric-label">Prochaine échéance</div><div class="metric" style="font-size:18px">'+due+'</div></div></div>'+(sub.status==='trialing'?'<p class="ra-muted-note">Votre essai PRO se termine le '+trial+'. À cette date, un paiement sera nécessaire pour conserver l’accès aux fonctions payantes. Vos données seront conservées.</p>':'')+(data.access_blocked?'<p class="ra-muted-note" style="color:#b42318">L’accès à l’espace est bloqué en attente du règlement. Vos données ne sont pas supprimées.</p>':'')+(plan.limits?'<p class="module-intro">Limites de la formule : '+Object.entries(plan.limits).map(([k,v])=>k+': '+v).join(' · ')+'</p>':'');
    if(sub.selected_plan_code!=='free')action.innerHTML='<button class="btn" id="ramasys-pay-subscription" type="button">Payer / renouveler mon abonnement</button><p class="module-intro">Paiement sécurisé par Bictorys (mobile money et moyens disponibles selon votre compte marchand).</p>';
    const pay=$('ramasys-pay-subscription');if(pay)pay.onclick=async()=>{pay.disabled=true;pay.textContent='Préparation du paiement…';try{const {data:checkout,error}=await client().functions.invoke('platform-billing',{body:{action:'create_checkout',organization_id:org()}});if(error)throw error;if(checkout?.error)throw new Error(checkout.error);if(!checkout?.checkout_url)throw new Error('Lien de paiement indisponible.');window.location.href=checkout.checkout_url;}catch(e){action.innerHTML='<p style="color:#b42318">'+esc(e.message)+'</p><button class="btn" id="ramasys-pay-retry" type="button">Réessayer</button>';const retry=$('ramasys-pay-retry');if(retry)retry.onclick=()=>renderBilling();}};
   }catch(e){status.innerHTML='<p style="color:#b42318">Impossible de charger votre abonnement : '+esc(e.message)+'</p>';}
  }
- async function renderPage(page){if(!ready())return;try{if(page==='operations')await renderHR();if(page==='communication')await renderCalendar();if(page==='partners')await renderPartners();if(page==='impact')await renderImpact();if(page==='security')await renderBilling();}catch(e){console.error('RAMASYS v2 module error',page,e);}}
+ async function renderPage(page){if(!ready())return;try{if(page==='operations')await renderHR();if(page==='communication')await renderCalendar();if(page==='partners')await renderPartners();if(page==='impact')await renderImpact();if(page==='security'||page==='settings')await renderBilling();}catch(e){console.error('RAMASYS v2 module error',page,e);}}
  let moduleChannel=null;
  function bindModuleRealtime(){if(!ready())return;if(moduleChannel)client().removeChannel(moduleChannel);moduleChannel=client().channel('ramasys-modules-'+org());['hr_staff','hr_leave_requests','hr_trainings','organization_events','organization_partners','organization_impact_indicators','impact_collection_forms','impact_submissions'].forEach(table=>moduleChannel.on('postgres_changes',{event:'*',schema:'public',table,filter:'organization_id=eq.'+org()},()=>{const active=document.querySelector('.page.active')?.id;if(['operations','communication','partners','impact','security'].includes(active))renderPage(active);}));moduleChannel.subscribe();}
  async function start(){if(!ready())return;navBind();bindModuleRealtime();const active=document.querySelector('.page.active')?.id;if(active)await renderPage(active);}
