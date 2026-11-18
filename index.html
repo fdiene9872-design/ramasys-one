@@ -320,7 +320,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
 <header class="top"><div><div class="eyebrow">Espace de gestion</div><h1 id="page-title">Vue d’ensemble</h1></div><div class="user"><div class="avatar">—</div><div class="user-name"><strong>Mode local</strong><br><span class="subtle">Administrateur local</span></div></div></header>
 
 <section class="page active" id="dashboard">
-  <div class="welcome"><div><h2>Bienvenue dans RAMASYS One</h2><p>Pilotez votre organisation depuis un espace unique.</p></div><div class="date"><strong>Tableau de bord</strong><br><span>Vos données réelles apparaîtront ici.</span></div></div>
+  <div class="welcome"><div class="ra-dashboard-org-brand"><img id="dashboard-org-logo" alt="Logo de l’organisation" style="display:none"><div><div class="ra-dashboard-org-name" id="dashboard-org-name">Votre organisation</div><h2>Bienvenue dans RAMASYS One</h2><p>Pilotez votre organisation depuis un espace unique.</p></div></div><div class="date"><strong>Tableau de bord</strong><br><span>Vos données réelles apparaîtront ici.</span></div></div>
   <div class="cards">
     <div class="card">
   <div class="metric-label">Membres & bénévoles</div>
@@ -2696,6 +2696,12 @@ document.getElementById('platform-admin-refresh')?.addEventListener('click',()=>
  const today=()=>new Date().toISOString().slice(0,10);
  const user=async()=>{const r=await client().auth.getUser();if(r.error)throw r.error;return r.data.user;};
  const commonStyles=`
+  .ra-dashboard-org-brand{display:flex;align-items:center;gap:14px;min-width:0}
+  .ra-dashboard-org-brand img{width:68px;height:68px;flex:0 0 68px;object-fit:contain;padding:5px;border:1px solid #e0e9e2;border-radius:12px;background:#fff}
+  .ra-dashboard-org-name{font-size:12px;font-weight:750;letter-spacing:.06em;text-transform:uppercase;color:var(--primary,#0b5b3b);margin-bottom:4px}
+  .ra-dashboard-org-brand h2{margin:0 0 5px}
+  .ra-dashboard-org-brand p{margin:0}
+  @media(max-width:620px){.ra-dashboard-org-brand img{width:52px;height:52px;flex-basis:52px}}
   .ra-v3-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin:14px 0}
   .ra-v3-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
   .ra-v3-form label{display:grid;gap:5px;font-size:13px;font-weight:650;color:#274536}
@@ -2723,6 +2729,15 @@ document.getElementById('platform-admin-refresh')?.addEventListener('click',()=>
   if(!ready()||dashboardBusy)return;dashboardBusy=true;
   try{
    const id=org();
+   const organization=window.currentOrganizationData||{};
+   const logo=$('dashboard-org-logo');
+   const orgName=$('dashboard-org-name');
+   if(orgName)orgName.textContent=organization.name||organization.acronym||'Votre organisation';
+   if(logo){
+    const logoUrl=organization.logo_url||null;
+    if(logoUrl){logo.src=logoUrl;logo.style.display='block';logo.onerror=()=>{logo.removeAttribute('src');logo.style.display='none';};}
+    else{logo.removeAttribute('src');logo.style.display='none';}
+   }
    const jobs=[
     client().from('members').select('id',{count:'exact',head:true}).eq('organization_id',id).eq('status','active'),
     client().from('projects').select('id,name,status,progress_percentage,created_at').eq('organization_id',id).order('created_at',{ascending:false}).limit(6),
