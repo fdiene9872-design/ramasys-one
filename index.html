@@ -170,6 +170,20 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
 #organization-setup-screen.active { display: flex; }
 #platform-admin-panel[style*="display:none"] { display: none !important; }
 </style>
+
+<style id="ramasys-one-brand-refresh">
+:root{--navy:#064b38;--purple:#159447;--lav:#eaf6e9;--bg:#f4f8f4;--ink:#123b2d;--muted:#63796e;--line:#dce9df;--white:#fff;--green:#159447;--ram-orange:#f28a00;--ram-green-dark:#064b38;--ram-green:#159447;}
+body{background:var(--bg);color:var(--ink)}
+.sidebar{background:linear-gradient(180deg,#064b38 0%,#073d30 100%);box-shadow:5px 0 24px rgba(6,75,56,.10)}
+.brand-logo{padding:10px 8px 16px!important;margin-bottom:12px}.brand-logo img{max-width:100%;height:auto;max-height:92px;object-fit:contain;border-radius:12px;background:#fff;padding:6px}
+.org{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.16);border-radius:14px}
+.nav button{border-radius:11px;transition:background .18s ease,color .18s ease}.nav button:hover{background:rgba(255,255,255,.12)}.nav button.active{background:linear-gradient(90deg,#159447,#32ad50);color:#fff;box-shadow:0 5px 14px rgba(21,148,71,.25)}.nav button span{color:#ffb23e}.nav-label{color:#b5d4c3}
+main{background:linear-gradient(135deg,#f7faf6 0%,#f1f7f1 100%)}
+.top{background:rgba(255,255,255,.92);border:1px solid #e3eee5;border-radius:18px;padding:15px 20px;margin:-5px 0 26px;box-shadow:0 5px 18px rgba(9,65,45,.05);position:relative}.eyebrow{color:#159447!important;letter-spacing:1.3px;font-weight:700}.top h1{color:#0b4735}.user.ramasys-top-user{gap:12px;position:relative}.ra-notification-button,.ra-settings-shortcut{height:42px;border:1px solid #dce9df;background:#fff;color:#0b573c;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}.ra-notification-button{width:42px;position:relative}.ra-notification-button svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.ra-notification-button:hover,.ra-settings-shortcut:hover{background:#edf8ee;border-color:#a9d8b4}.ra-notification-dot{position:absolute;right:8px;top:7px;width:8px;height:8px;background:#f28a00;border:2px solid white;border-radius:50%}.ra-settings-shortcut{padding:0 12px;gap:7px;font-size:12px;font-weight:700}.ra-settings-shortcut span:first-child{font-size:18px}.ra-top-org-logo{width:42px;height:42px;object-fit:contain;border-radius:12px;background:#fff;border:1px solid #dce9df;padding:4px}.ra-notification-popover{position:absolute;right:175px;top:52px;z-index:1000;width:240px;padding:16px;background:#fff;border:1px solid #dce9df;border-radius:14px;box-shadow:0 12px 32px rgba(8,55,39,.16);font-size:13px}.ra-notification-popover[hidden]{display:none}.ra-notification-popover strong{color:#064b38}.ra-notification-popover p{margin:8px 0 0;color:#63796e}.top .user-name{color:#123b2d}.top .user-name .subtle{color:#63796e}.top #ramasys-signout{height:40px;border-radius:11px;border:0;background:#fff0e2;color:#a95300;font-weight:700;padding:0 13px}.top #ramasys-signout:hover{background:#ffe4c8}
+.welcome{background:linear-gradient(115deg,#e8f5e8 0%,#f8fbf3 65%,#fff4e4 100%);border:1px solid #d8ead9;border-radius:20px;box-shadow:0 8px 24px rgba(8,75,48,.06)}.welcome h2{color:#064b38}.welcome .date strong{color:#159447}.cards .card{border:1px solid #e0ebe1;border-radius:17px;box-shadow:0 5px 16px rgba(8,75,48,.045);background:#fff}.cards .card:nth-child(4n+2){background:linear-gradient(145deg,#fff,#fff8ee)}.cards .card:nth-child(4n+3){background:linear-gradient(145deg,#fff,#eff9f5)}.cards .card:nth-child(4n+4){background:linear-gradient(145deg,#fff,#f5f8ed)}.metric{color:#07543a}.metric-label{color:#345a49}.panel{border:1px solid #e1ebe3;border-radius:17px;box-shadow:0 5px 18px rgba(8,75,48,.04)}.btn:not(.secondary),button.btn:not(.secondary){background:linear-gradient(100deg,#159447,#08734a);border-color:#159447}.btn:not(.secondary):hover{filter:brightness(.96)}.btn.secondary{border-color:#cfe2d2;color:#07543a;background:#f7fbf7}
+@media(max-width:850px){.top{align-items:flex-start;flex-wrap:wrap}.user.ramasys-top-user{width:100%;justify-content:flex-end;flex-wrap:wrap}.ra-notification-popover{right:130px}}
+</style>
+
 </head>
 <body>
 
@@ -317,7 +331,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
   <div class="side-bottom">RAMASYS One<br>Portail sécurisé · Supabase</div>
 </aside>
 <main>
-<header class="top"><div><div class="eyebrow">Espace de gestion</div><h1 id="page-title">Vue d’ensemble</h1></div><div class="user"><div class="avatar">—</div><div class="user-name"><strong>Mode local</strong><br><span class="subtle">Administrateur local</span></div></div></header>
+<header class="top"><div><div class="eyebrow">RAMASYS ONE · ESPACE DE GESTION</div><h1 id="page-title">Vue d’ensemble</h1></div><div class="user ramasys-top-user"><button type="button" class="ra-notification-button" id="ramasys-notification-button" aria-label="Notifications" title="Notifications"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span class="ra-notification-dot"></span></button><div class="ra-notification-popover" id="ramasys-notification-popover" hidden><strong>Notifications</strong><p>Aucune nouvelle notification.</p></div><button type="button" class="ra-settings-shortcut" data-page="settings" title="Paramètres"><span aria-hidden="true">⚙</span><span>Paramètres</span></button><img id="ramasys-top-org-logo" class="ra-top-org-logo" alt="Logo de l’organisation" style="display:none"><div class="avatar">—</div><div class="user-name"><strong>Mon espace</strong><br><span class="subtle">Compte connecté</span></div></div></header>
+<script>
+(()=>{const b=document.getElementById('ramasys-notification-button'),p=document.getElementById('ramasys-notification-popover');if(b&&p&&!b.dataset.bound){b.dataset.bound='1';b.addEventListener('click',()=>{p.hidden=!p.hidden;});document.addEventListener('click',e=>{if(!b.contains(e.target)&&!p.contains(e.target))p.hidden=true;});}})();
+</script>
 
 <section class="page active" id="dashboard">
   <div class="welcome"><div class="ra-dashboard-org-brand"><img id="dashboard-org-logo" alt="Logo de l’organisation" style="display:none"><div><div class="ra-dashboard-org-name" id="dashboard-org-name">Votre organisation</div><h2>Bienvenue dans RAMASYS One</h2><p>Pilotez votre organisation depuis un espace unique.</p></div></div><div class="date"><strong>Tableau de bord</strong><br><span>Vos données réelles apparaîtront ici.</span></div></div>
@@ -2738,6 +2755,8 @@ document.getElementById('platform-admin-refresh')?.addEventListener('click',()=>
     if(logoUrl){logo.src=logoUrl;logo.style.display='block';logo.onerror=()=>{logo.removeAttribute('src');logo.style.display='none';};}
     else{logo.removeAttribute('src');logo.style.display='none';}
    }
+   const topOrgLogo=document.getElementById('ramasys-top-org-logo');
+   if(topOrgLogo){const logoUrl=organization.logo_url||null;if(logoUrl){topOrgLogo.src=logoUrl;topOrgLogo.style.display='block';topOrgLogo.onerror=()=>{topOrgLogo.removeAttribute('src');topOrgLogo.style.display='none';};}else{topOrgLogo.removeAttribute('src');topOrgLogo.style.display='none';}}
    const jobs=[
     client().from('members').select('id',{count:'exact',head:true}).eq('organization_id',id).eq('status','active'),
     client().from('projects').select('id,name,status,progress_percentage,created_at').eq('organization_id',id).order('created_at',{ascending:false}).limit(6),
