@@ -187,7 +187,7 @@ main{background:linear-gradient(135deg,#f7faf6 0%,#f1f7f1 100%)}
 @media(max-width:850px){.top{align-items:flex-start;flex-wrap:wrap}.user.ramasys-top-user{width:100%;justify-content:flex-end;flex-wrap:wrap}.ra-notification-popover{right:130px}}
 </style>
 
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=ramasysTurnstileReady&render=explicit" async defer></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer onload="if(window.ramasysTurnstileReady)window.ramasysTurnstileReady()"></script>
 <style id="ramasys-captcha-style">#ramasys-turnstile{margin:14px 0;min-height:65px}.ra-captcha-note{font-size:12px;color:#66756d;margin:6px 0 12px}.ra-wave-review{margin-top:16px;padding:16px;border:1px solid #d6e6da;border-radius:12px;background:#f8fcf8}.ra-wave-review label{display:block;margin:9px 0 5px;font-weight:600}.ra-wave-review input{width:100%;padding:10px;border:1px solid #cbd8ce;border-radius:8px}.ra-wave-admin-actions{display:flex;gap:8px;flex-wrap:wrap}.ra-wave-admin-actions button{padding:8px 12px;border:0;border-radius:7px;cursor:pointer}.ra-wave-approve{background:#16834a;color:white}.ra-wave-reject{background:#fff0ed;color:#a43d2e}</style>
 <meta name="ramasys-upgrade" content="v2.23-prepared-2026-11-19">
 <meta name="ramasys-build" content="v2.24-portails-corriges">
@@ -911,21 +911,31 @@ window.ramasysTurnstileReady = function(){
   const status=document.getElementById('ramasys-captcha-status');
   const button=document.getElementById('signup-button');
   if(!host||!window.turnstile)return;
-  if(host.offsetParent===null){if(status)status.textContent='La vérification apparaîtra à cette étape.';return;}
+  // Le formulaire d'inscription est affiché après le choix du type d'organisation.
+  if(host.offsetParent===null)return;
   if(ramasysTurnstileWidgetId!==null)return;
   if(!RAMASYS_TURNSTILE_SITE_KEY || RAMASYS_TURNSTILE_SITE_KEY.startsWith('REMPLACER_')){
-    if(status)status.textContent='La protection anti-robot doit être configurée avec la clé de site Cloudflare avant d’activer les inscriptions.';
+    if(status)status.textContent='La protection anti-robot n’est pas correctement configurée.';
     if(button)button.disabled=true;
     return;
   }
-  ramasysTurnstileWidgetId=window.turnstile.render(host,{
-    sitekey:RAMASYS_TURNSTILE_SITE_KEY,
-    theme:'light',
-    callback:function(token){ramasysTurnstileToken=token;if(button)button.disabled=false;if(status)status.textContent='Vérification réussie.';},
-    'expired-callback':function(){ramasysTurnstileToken='';if(button)button.disabled=true;if(status)status.textContent='La vérification a expiré. Recommencez.';},
-    'error-callback':function(){ramasysTurnstileToken='';if(button)button.disabled=true;if(status)status.textContent='Vérification indisponible. Rechargez le défi.';}
-  });
+  try {
+    ramasysTurnstileWidgetId=window.turnstile.render(host,{
+      sitekey:RAMASYS_TURNSTILE_SITE_KEY,
+      theme:'light',
+      callback:function(token){ramasysTurnstileToken=token;if(button)button.disabled=false;if(status)status.textContent='Vérification réussie.';},
+      'expired-callback':function(){ramasysTurnstileToken='';if(button)button.disabled=true;if(status)status.textContent='La vérification a expiré. Recommencez.';},
+      'error-callback':function(errorCode){ramasysTurnstileToken='';if(button)button.disabled=true;if(status)status.textContent='Vérification Cloudflare indisponible ('+(errorCode||'erreur')+'). Vérifiez le domaine autorisé.';}
+    });
+  } catch(error) {
+    ramasysTurnstileWidgetId=null;
+    if(button)button.disabled=true;
+    if(status)status.textContent='Impossible de charger la vérification Cloudflare. Rechargez la page.';
+    console.error('RAMASYS Turnstile render error:',error);
+  }
 };
+// Couvre les deux cas : script Cloudflare chargé avant ou après ce code.
+if(window.turnstile)window.ramasysTurnstileReady();
 
 document.getElementById('signup-button').addEventListener('click', async () => {
   if (!supabaseClient) { showMessage('Le service de connexion n’a pas été chargé. Rechargez la page.', true); return; }
