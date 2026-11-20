@@ -178,8 +178,6 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
       <input type="password" id="login-password" placeholder="Votre mot de passe">
 
       <button class="auth-button" id="login-button">Se connecter</button>
-      <button type="button" class="auth-button" id="local-mode-button" style="margin-top:9px;background:#e9f4ed;color:#155b39;border:1px solid #c7dfcf;">Mode local de démonstration (sans synchronisation)</button>
-      <p style="font-size:11px;color:#718078;margin:8px 0 0;">Le mode local est isolé de Supabase : ses données ne sont ni partagées ni synchronisées.</p>
 
       <div class="auth-switch">
         Pas encore de compte ?
@@ -269,11 +267,12 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
     <button data-page="operations"><span>▧</span>RH & opérations</button>
     <button data-page="intelligence"><span>✧</span>Intelligence & assistance</button>
     <button data-page="security"><span>♜</span>Utilisateurs, sécurité & abonnements</button>
+    <button data-page="compliance"><span>⚖</span>Conformité réglementaire</button>
   </nav>
   <div class="side-bottom">RAMASYS One<br>Version locale v1.6</div>
 </aside>
 <main>
-<header class="top"><div><div class="eyebrow">Espace de gestion</div><h1 id="page-title">Vue d’ensemble</h1></div><div class="user"><div class="avatar">—</div><div class="user-name"><strong>Mode local</strong><br><span class="subtle">Administrateur local</span></div></div></header>
+<header class="top"><div><div class="eyebrow">Espace de gestion</div><h1 id="page-title">Vue d’ensemble</h1></div><div class="user"><div class="avatar">—</div><div class="user-name"><strong>RAMASYS One</strong><br><span class="subtle">Espace sécurisé</span></div></div></header>
 
 <section class="page active" id="dashboard">
   <div class="welcome"><div><h2>Bienvenue dans RAMASYS One</h2><p>Pilotez votre organisation depuis un espace unique.</p></div><div class="date"><strong>Tableau de bord</strong><br><span>Vos données réelles apparaîtront ici.</span></div></div>
@@ -382,7 +381,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
 </table>
 
     <p class="subtle" id="members-empty-message"></p>
-    <p class="subtle" id="members-permission-note">En mode local, les droits sont simulés dans cette interface et ne constituent pas une sécurité multi-utilisateur.</p>
+    <p class="subtle" id="members-permission-note">Les accès sont contrôlés par les permissions du serveur Supabase.</p>
   </div>
 </section>
 
@@ -428,7 +427,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
   <tr><td>Commentaires internes</td><td>Non accessibles</td><td>Consultation et contribution</td></tr>
   <tr><td>Budgets détaillés, dépenses et justificatifs</td><td>Non accessibles</td><td>Consultation et gestion</td></tr>
   <tr><td>Bénéficiaires, partenaires, rapports, risques et documents</td><td>Non accessibles</td><td>Consultation et gestion</td></tr>
- </tbody></table></div><p class="subtle">En mode local, ces règles sont indicatives. Une véritable sécurité multi-utilisateur devra être appliquée côté serveur lors d’une future intégration.</p></div>
+ </tbody></table></div><p class="subtle">Les permissions effectives sont contrôlées côté serveur Supabase.</p></div>
 </section>
 
 <section class="page" id="finance">
@@ -517,7 +516,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
  <div class="cards"><div class="card"><div class="metric-label">Partenaires référencés</div><div class="metric" id="partner-count">0</div></div><div class="card"><div class="metric-label">Conventions actives</div><div class="metric">Non suivi</div></div><div class="card"><div class="metric-label">Opportunités suivies</div><div class="metric">Non suivi</div></div><div class="card"><div class="metric-label">Financements sollicités</div><div class="metric">Non suivi</div></div></div>
  <div class="toolbar"><input id="partner-search" placeholder="Rechercher un partenaire..." /><select id="partner-sector-filter"><option value="">Tous les secteurs</option><option>Institutionnel</option><option>Privé</option><option>Associatif</option><option>Financement</option></select><select id="partner-status-filter"><option value="">Tous les statuts</option><option value="Prospect">Prospect</option><option value="Actif">Partenaire actif</option><option value="Ancien">Ancien partenaire</option></select></div>
  <table class="table"><thead><tr><th>Partenaire</th><th>Secteur</th><th>Type de relation</th><th>Dernier échange</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="partners-table-body"><tr><td colspan="6">Aucun partenaire enregistré.</td></tr></tbody></table>
- <div class="content-grid"><div class="panel"><h3>Pipeline des opportunités</h3><div class="empty">Les opportunités apparaîtront ici après leur enregistrement.</div></div><div class="panel"><h3>Portail partenaire</h3><p class="subtle">Portail externe non activé en mode local. Sa gestion nécessitera une authentification et des permissions côté serveur.</p><button class="btn secondary" onclick="return false" disabled title="Portail non disponible en mode local">Portail non activé</button></div></div>
+ <div class="content-grid"><div class="panel"><h3>Pipeline des opportunités</h3><div class="empty">Les opportunités apparaîtront ici après leur enregistrement.</div></div><div class="panel"><h3>Portail partenaire</h3><p class="subtle">Portail externe non activé. Sa gestion nécessitera une authentification et des permissions côté serveur.</p><button class="btn secondary" onclick="return false" disabled title="Portail non disponible en mode local">Portail non activé</button></div></div>
  </div>
 </section>
 
@@ -525,7 +524,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
  <div class="panel"><div class="panel-head"><div><h3>Suivi & impact</h3><div class="subtle">Mesurez les réalisations, les résultats et les changements observés.</div></div><button class="btn" onclick="openLocalRecordForm('Création d’un indicateur')">+ Nouvel indicateur</button></div>
  <div class="cards"><div class="card"><div class="metric-label">Indicateurs suivis</div><div class="metric" id="indicator-count">0</div></div><div class="card"><div class="metric-label">Cibles atteintes</div><div class="metric" id="impact-achievement-rate">0 %</div></div><div class="card"><div class="metric-label">Bénéficiaires recensés</div><div class="metric">Non suivi</div></div><div class="card"><div class="metric-label">Collectes en attente</div><div class="metric">Non suivi</div></div></div>
  <div class="panel"><h3>Cadre de résultats</h3><table class="table"><thead><tr><th>Objectif / résultat</th><th>Indicateur</th><th>Référence</th><th>Cible</th><th>Réalisé</th><th>Progression</th><th>Actions</th></tr></thead><tbody id="impact-indicators-body"><tr><td colspan="7">Aucun indicateur enregistré.</td></tr></tbody></table></div>
- <div class="content-grid"><div class="panel"><h3>Formulaires de collecte</h3><p class="subtle">Créer des formulaires de terrain, enquêtes, fiches de présence et questionnaires de suivi.</p><button class="btn secondary" onclick="openLocalRecordForm('Création de formulaire de collecte')">Créer un formulaire</button><button class="btn secondary" onclick="return false" disabled title="La collecte des réponses sera développée ultérieurement">Collectes non disponibles</button></div><div class="panel"><h3>Collecte hors connexion</h3><div class="status-line"><span class="status-dot"></span> Mode local</div><p class="subtle">Les formulaires pourront être remplis hors ligne puis synchronisés au retour de la connexion, avec détection des conflits.</p><button class="btn secondary" onclick="return false" disabled title="La synchronisation distante est désactivée">Synchronisation non activée</button></div></div>
+ <div class="content-grid"><div class="panel"><h3>Formulaires de collecte</h3><p class="subtle">Créer des formulaires de terrain, enquêtes, fiches de présence et questionnaires de suivi.</p><button class="btn secondary" onclick="openLocalRecordForm('Création de formulaire de collecte')">Créer un formulaire</button><button class="btn secondary" onclick="return false" disabled title="La collecte des réponses sera développée ultérieurement">Collectes non disponibles</button></div><div class="panel"><h3>Collecte connectée</h3><div class="status-line"><span class="status-dot"></span> Connexion Supabase requise</div><p class="subtle">La saisie hors ligne est désactivée. Les données sont enregistrées uniquement après confirmation par Supabase.</p><button class="btn secondary" onclick="return false" disabled title="La synchronisation distante est désactivée">Synchronisation non activée</button></div></div>
  </div>
 </section>
 
@@ -547,7 +546,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
 
 <section class="page" id="intelligence">
  <div class="panel"><div class="panel-head"><div><h3>Intelligence & assistance</h3><div class="subtle">Un assistant transversal pour préparer, analyser et faciliter le travail.</div></div><span class="pill">Assistant non connecté</span></div>
- <div class="content-grid"><div class="panel"><h3>Assistant RAMASYS</h3><div class="chat-box" id="assistant-chat-history"><div class="empty">Aucun échange. L’assistant IA n’est pas encore connecté.</div></div><div class="toolbar"><input id="assistant-prompt" placeholder="Assistant indisponible en mode local" disabled /><button class="btn" type="button" disabled>Envoyer</button></div><p class="subtle">Le module sera activé après connexion d’un moteur IA. Aucun message fictif n’est généré.</p></div>
+ <div class="content-grid"><div class="panel"><h3>Assistant RAMASYS</h3><div class="chat-box" id="assistant-chat-history"><div class="empty">Aucun échange. L’assistant IA n’est pas encore connecté.</div></div><div class="toolbar"><input id="assistant-prompt" placeholder="Assistant non configuré" disabled /><button class="btn" type="button" disabled>Envoyer</button></div><p class="subtle">Le module sera activé après connexion d’un moteur IA. Aucun message fictif n’est généré.</p></div>
  <div class="panel"><h3>Analyses transversales</h3><div class="activity"><i class="dot"></i><div><b>Analyse des projets</b><small>Avancement, retards et dépendances</small></div></div><div class="activity"><i class="dot"></i><div><b>Analyse financière</b><small>Écarts budgétaires et tendances</small></div></div><div class="activity"><i class="dot"></i><div><b>Analyse d'impact</b><small>Résultats, indicateurs et limites</small></div></div><button class="btn secondary" onclick="return false" disabled title="Le moteur d’analyse n’est pas connecté">Analyse non activée</button></div></div>
  <div class="panel"><h3>Actions autorisées</h3><p class="subtle">Les tâches simples pourront être préparées automatiquement. Les paiements, suppressions définitives, validations financières, changements de droits et communications sensibles demanderont une confirmation humaine.</p><div class="check-row"><label><input type="checkbox" checked disabled> Préparer des brouillons (à venir)</label><label><input type="checkbox" checked disabled> Proposer des tâches (à venir)</label><label><input type="checkbox" checked disabled> Suggérer une classification (à venir)</label><label><input type="checkbox" disabled> Exécuter des actions sensibles sans validation (désactivé)</label></div></div>
  </div>
@@ -556,10 +555,35 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
 <section class="page" id="security">
  <div class="panel"><div class="panel-head"><div><h3>Utilisateurs, sécurité & abonnements</h3><div class="subtle">Contrôlez les accès, protégez les données et gérez les formules.</div></div><button class="btn" onclick="openLocalRecordForm('Invitation d’un utilisateur')">+ Préparer une fiche utilisateur locale</button></div>
  <div class="cards"><div class="card"><div class="metric-label">Comptes utilisateurs</div><div class="metric" id="security-user-count">0</div></div><div class="card"><div class="metric-label">Brouillons locaux</div><div class="metric" id="security-invitation-count">0</div></div><div class="card"><div class="metric-label">Authentification renforcée</div><div class="metric">Non configurée</div></div><div class="card"><div class="metric-label">Formule</div><div class="metric" style="font-size:20px">Non définie</div></div></div>
- <div class="content-grid"><div class="panel"><h3>Utilisateurs et permissions</h3><table class="table"><thead><tr><th>Utilisateur</th><th>Rôle</th><th>Accès</th><th>Statut</th></tr></thead><tbody id="security-users-table"><tr><td colspan="4">Aucun compte utilisateur configuré en mode local.</td></tr></tbody></table><button class="btn secondary" onclick="return false" disabled title="Les permissions multi-utilisateurs nécessitent le serveur">Gestion des rôles non activée</button></div>
+ <div class="content-grid"><div class="panel"><h3>Utilisateurs et permissions</h3><table class="table"><thead><tr><th>Utilisateur</th><th>Rôle</th><th>Accès</th><th>Statut</th></tr></thead><tbody id="security-users-table"><tr><td colspan="4">Les comptes et rôles sont gérés depuis Supabase.</td></tr></tbody></table><button class="btn secondary" onclick="return false" disabled title="Les permissions multi-utilisateurs nécessitent le serveur">Gestion des rôles non activée</button></div>
  <div class="panel"><h3>Protection et traçabilité</h3><div class="activity"><i class="dot"></i><div><b>Authentification multifacteur</b><small>Paramètre à configurer</small></div></div><div class="activity"><i class="dot"></i><div><b>Sessions et appareils</b><small>Gestion des connexions</small></div></div><div class="activity"><i class="dot"></i><div><b>Journal d'audit</b><small>Actions et validations</small></div></div><div class="activity"><i class="dot"></i><div><b>Sauvegardes</b><small>État et restauration</small></div></div></div></div>
  <div class="panel"><h3>Abonnement et facturation</h3><div class="form-grid"><label>Formule<select disabled><option value="">Sélectionner une formule</option><option>Free</option><option>Starter</option><option>Pro</option><option>Business</option><option>Enterprise</option></select></label><label>Cycle<select disabled><option>Mensuel</option><option>Annuel</option></select></label><label>Mode de paiement<select disabled><option>Wave</option><option>Orange Money</option><option>Virement bancaire</option><option>Carte bancaire</option><option>Validation manuelle</option></select></label><label>Prochaine échéance<input type="date" disabled></label></div><button class="btn secondary" onclick="return false" disabled title="La facturation n’est pas activée dans cette version">Facturation non activée</button><p class="subtle">Aucune formule ni aucun paiement n’est enregistré ou prélevé en mode local.</p></div>
  </div>
+</section>
+
+<section class="page" id="compliance">
+  <div class="panel"><div class="panel-head"><div><h3>Conformité réglementaire — Sénégal</h3><p class="module-intro">Évaluez les obligations selon la forme juridique, le secteur, les activités et la situation réelle de votre organisation. Les règles restent soumises à vérification professionnelle.</p></div><span class="pill">Sénégal · Supabase</span></div>
+  <div id="ra-compliance-status" class="subtle" role="status" aria-live="polite">Chargement du profil de conformité…</div></div>
+  <div class="panel"><h3>Profil juridique et réglementaire</h3>
+  <form id="ra-compliance-form" class="ra-form-grid">
+    <label>Type de structure<select name="organization_type" required><option value="">Sélectionner</option><option value="Association/ONG">Association / ONG</option><option value="Entreprise/PME">Entreprise / PME</option><option value="Collectif communautaire">Collectif communautaire</option><option value="Institution/Structure publique">Institution / Structure publique</option></select></label>
+    <label>Forme juridique exacte<input name="legal_form" required placeholder="Association déclarée, SARL, GIE, établissement public…"></label>
+    <label>Secteur d’activité<input name="sector_code" placeholder="Agriculture, santé, éducation, commerce…"></label>
+    <label>Autorité d’enregistrement<input name="registration_authority"></label>
+    <label>Référence d’enregistrement<input name="registration_reference"></label>
+    <label>NINEA<input name="ninea"></label><label>RCCM<input name="rccm"></label>
+    <label>Régime fiscal<input name="tax_regime" placeholder="À confirmer selon la situation réelle"></label>
+    <label>Autorité de tutelle publique<input name="public_supervisory_authority"></label>
+    <label>Effectif total<input name="workforce_size" type="number" min="0" step="1"></label>
+    <label class="ra-wide">Description précise des activités<input name="activity_description" required placeholder="Décrivez les activités réellement exercées"></label>
+    <label class="ra-check"><input name="employs_staff" type="checkbox"> Emploie du personnel salarié</label>
+    <label class="ra-check"><input name="handles_personal_data" type="checkbox"> Traite des données personnelles</label>
+    <label class="ra-check"><input name="uses_public_funds" type="checkbox"> Utilise des fonds publics</label>
+    <label class="ra-check"><input name="operates_regulated_activity" type="checkbox"> Exerce une activité réglementée</label>
+    <div class="ra-wide"><button class="btn" type="submit">Enregistrer le profil</button></div>
+  </form></div>
+  <div class="panel"><div class="panel-head"><div><h3>Obligations et échéances</h3><p class="module-intro">Les obligations ne sont proposées qu’à partir des règles et sources officiellement vérifiées et des critères renseignés.</p></div><button class="btn secondary" id="ra-compliance-refresh" type="button">Actualiser</button></div><div id="ra-compliance-alerts" class="cards"></div><div style="overflow-x:auto"><table class="table"><thead><tr><th>Obligation</th><th>Domaine</th><th>Statut</th><th>Échéance</th><th>Source</th></tr></thead><tbody id="ra-compliance-obligations"><tr><td colspan="5">Chargement…</td></tr></tbody></table></div></div>
+  <div class="panel"><h3>Déposer un justificatif</h3><form id="ra-compliance-evidence-form" class="ra-form-grid"><label class="ra-wide">Obligation concernée<select name="obligation_id" id="ra-compliance-evidence-obligation" required><option value="">Sélectionner une obligation</option></select></label><label class="ra-wide">Fichier (PDF, JPG, PNG ou WebP)<input name="evidence_file" type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" required></label><div><button class="btn" type="submit">Téléverser le justificatif</button></div></form><div id="ra-compliance-evidence-status" class="subtle" role="status"></div></div>
 </section>
 
 <footer>RAMASYS One — v1.9. Les modules connectés utilisent votre espace Supabase ; les fonctions nécessitant un prestataire externe restent signalées comme non configurées.</footer>
@@ -568,7 +592,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid #44B331;outline-offset
 <script>
 // Navigation unique et documents en mode local.
 (function(){
-  const titles={dashboard:'Vue d’ensemble',people:'Membres & équipes',projects:'Projets & activités',finance:'Finances',documents:'Documents',reports:'Rapports & indicateurs',settings:'Paramètres',organization:'Organisation & administration',partners:'Partenaires & relations',impact:'Suivi & impact',communication:'Communication & réunions',operations:'RH & opérations',intelligence:'Intelligence & assistance',security:'Utilisateurs, sécurité & abonnements'};
+  const titles={compliance:"Conformité réglementaire",dashboard:'Vue d’ensemble',people:'Membres & équipes',projects:'Projets & activités',finance:'Finances',documents:'Documents',reports:'Rapports & indicateurs',settings:'Paramètres',organization:'Organisation & administration',partners:'Partenaires & relations',impact:'Suivi & impact',communication:'Communication & réunions',operations:'RH & opérations',intelligence:'Intelligence & assistance',security:'Utilisateurs, sécurité & abonnements'};
   document.querySelectorAll('.nav button[data-page]').forEach(btn=>btn.addEventListener('click',()=>{
     const target=btn.dataset.page;
     if(!document.getElementById(target)) return;
@@ -653,15 +677,7 @@ function renderAuthenticatedUser(user) {
   signOut.style.display = '';
 }
 
-function enterLocalMode(){
-  const org=RAMASYSStorage.get('local:organization',{name:'',country:''});
-  window.RAMASYS_LOCAL_MODE=true;currentOrganizationId='local-organization';currentOrganizationRole='admin';
-  currentOrganizationData={id:'local-organization',name:org.name||'Votre organisation',country:org.country||''};window.currentOrganizationId=currentOrganizationId;window.currentOrganizationRole=currentOrganizationRole;window.currentOrganizationData=currentOrganizationData;
-  const n=document.getElementById('organization-name'),c=document.getElementById('organization-country');if(n)n.textContent=window.currentOrganizationData.name;if(c)c.textContent=window.currentOrganizationData.country;
-  document.querySelectorAll('.user-name').forEach(el=>el.innerHTML='<strong>Mode local</strong><br><span class="subtle">Administrateur local</span>');
-  showApp();if(typeof loadMembers==='function')loadMembers();if(typeof window.RAMASYS_refreshFinance==='function')window.RAMASYS_refreshFinance();
-}
-document.getElementById('local-mode-button')?.addEventListener('click',enterLocalMode);
+function enterLocalMode(){ showMessage('Le mode local est désactivé. Connectez-vous avec votre compte RAMASYS. ', true); return false; }
 window.RAMASYS_enterLocalMode=enterLocalMode;
 
 function showOrganizationSetup() {
@@ -1333,14 +1349,14 @@ window.sendAssistantPrompt=function(){return false;};
   {match:/analyse|assistant|synchronisation|portail|accès|rôle|permission|facture|abonnement|personnalisation|logo|sauvegarde|session|formation|recrutement|congé|stock|inventaire|véhicule|mission/i,key:'workspace_actions',name:'Paramétrage',fields:[['Intitulé','text',1],['Responsable','text'],['Date','date'],['Statut','select',['À traiter','En cours','Terminé']],['Détails','textarea',1]]}
  ];
  function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
- // Couche de stockage locale centralisée, versionnée et isolée par module.
- window.RAMASYSStorage=window.RAMASYSStorage||(function(){
-  const prefix='ramasys_one_v15:';
-  function get(key,fallback=[]){try{const raw=localStorage.getItem(prefix+key);return raw===null?fallback:JSON.parse(raw);}catch(error){console.error('RAMASYSStorage.get',key,error);return fallback;}}
-  function set(key,value){try{localStorage.setItem(prefix+key,JSON.stringify(value));return true;}catch(error){console.error('RAMASYSStorage.set',key,error);alert('Enregistrement local impossible. Vérifiez l’espace disponible dans votre navigateur.');return false;}}
-  function remove(key){try{localStorage.removeItem(prefix+key);return true;}catch(error){console.error(error);return false;}}
-  return {get,set,remove,key:key=>prefix+key};
- })();
+ // RAMASYS One : aucune persistance métier dans le navigateur. Les écritures doivent passer par Supabase.
+ window.RAMASYSStorage={
+  get:function(key,fallback=[]){return fallback;},
+  set:function(key,value){console.error('Écriture locale bloquée :',key);return false;},
+  remove:function(key){return false;},
+  key:function(key){return key;}
+ };
+
  function read(key){const value=RAMASYSStorage.get('records:'+key,[]);return Array.isArray(value)?value:[];}
  function write(key,data){return RAMASYSStorage.set('records:'+key,data);}
  window.RAMASYS_refreshFinance=function(){
@@ -1640,16 +1656,13 @@ window.sendAssistantPrompt=function(){return false;};
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const storage=()=>window.RAMASYSStorage;
   if(!storage()) return;
-  // Les clés demo:* ne sont jamais utilisées comme données métier. Seules ces anciennes clés de démonstration sont purgées.
-  ['demo:projects_tasks','demo:activities','demo:finance_entries','demo:partners','demo:indicators','demo:events','demo:announcements','demo:people','demo:branches','demo:collections','demo:workspace_actions'].forEach(key=>storage().remove(key));
-  try{for(let i=localStorage.length-1;i>=0;i--){const key=localStorage.key(i);if(key&&(key.startsWith('ramasys_demo_')||key.startsWith('ramasys_one_v15:demo:')))localStorage.removeItem(key);}}catch(error){console.warn('Nettoyage des anciennes clés de démonstration indisponible.',error);}
-  try{for(let i=localStorage.length-1;i>=0;i--){const key=localStorage.key(i);if(key&&(key.startsWith('ramasys_demo_')||key.startsWith('ramasys_one_v15:demo:')))localStorage.removeItem(key);}}catch(error){console.warn('Nettoyage des anciennes clés de démonstration indisponible.',error);}
-  const records=key=>{const value=storage().get('records:'+key,[]);return Array.isArray(value)?value:[];};
+ // Les anciennes données de démonstration ne sont plus lues.
+ const records=key=>{const value=storage().get('records:'+key,[]);return Array.isArray(value)?value:[];};
   const save=(key,value)=>storage().set('records:'+key,value);
   const format=n=>new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0}).format(Number(n)||0);
 
-  // Le mode local reste disponible, mais l’authentification Supabase est désormais activée.
-  window.RAMASYS_LOCAL_MODE=window.RAMASYS_LOCAL_MODE===true;
+  // Les données métier doivent être lues et enregistrées dans Supabase.
+  window.RAMASYS_LOCAL_MODE=false;
 
   function renderProjectsAndActivities(){
     const projects=records('projects_tasks'), activities=records('activities');
@@ -2011,9 +2024,43 @@ window.sendAssistantPrompt=function(){return false;};
   await load();
  }
 
- async function renderPage(page){if(!ready())return;try{if(page==='operations')await renderHR();if(page==='communication')await renderCalendar();if(page==='partners')await renderPartners();if(page==='impact')await renderImpact();if(page==='security')await renderBilling();}catch(e){console.error('RAMASYS v2 module error',page,e);}}
+  async function renderCompliance(){
+   const page=$('compliance');if(!page||!ready())return;
+   const status=$('ra-compliance-status'),form=$('ra-compliance-form'),body=$('ra-compliance-obligations'),alerts=$('ra-compliance-alerts'),evidenceForm=$('ra-compliance-evidence-form');
+   const say=(el,t,bad=false)=>msg(el,t,bad);
+   const load=async()=>{
+    try{
+     say(status,'Chargement du profil et des obligations…');
+     const [pr,ob,al]=await Promise.all([
+      client().from('organization_compliance_profiles').select('*').eq('organization_id',org()).maybeSingle(),
+      client().from('organization_compliance_obligation_details').select('*').eq('organization_id',org()).order('due_date',{ascending:true}),
+      client().from('organization_compliance_alerts').select('*').eq('organization_id',org()).order('due_date',{ascending:true})
+     ]);
+     if(pr.error)throw pr.error;if(ob.error)throw ob.error;if(al.error)throw al.error;
+     const p=pr.data||{};
+     for(const [k,v] of Object.entries(p)){const el=form.elements.namedItem(k);if(!el)continue;if(el.type==='checkbox')el.checked=!!v;else if(v!==null&&v!==undefined)el.value=v;}
+     if(!p.organization_type&&window.currentOrganizationData){form.elements.organization_type.value=window.currentOrganizationData.organization_type||window.currentOrganizationData.type||'';}
+     const obligations=ob.data||[];
+     body.innerHTML=obligations.length?obligations.map(x=>`<tr><td><b>${esc(x.rule_title||x.title||x.rule_code||'Obligation')}</b><br><small>${esc(x.description||'')}</small></td><td>${esc(x.domain||'—')}</td><td>${esc(x.status||'à évaluer')}</td><td>${date(x.due_date)}</td><td>${esc(x.source_title||x.source_code||'Source à vérifier')}</td></tr>`).join(''):'<tr><td colspan="5">Aucune obligation générée. Complétez le profil et attendez la validation des sources réglementaires.</td></tr>';
+     const counts={overdue:0,due_soon:0,upcoming:0,normal:0};(al.data||[]).forEach(x=>{if(counts[x.alert_level]!==undefined)counts[x.alert_level]++;});
+     alerts.innerHTML=Object.entries({overdue:'En retard',due_soon:'À échéance proche',upcoming:'À venir',normal:'Sans alerte'}).map(([k,v])=>`<div class="card"><div class="metric-label">${v}</div><div class="metric">${counts[k]}</div></div>`).join('');
+     const sel=$('ra-compliance-evidence-obligation');sel.innerHTML='<option value="">Sélectionner une obligation</option>'+obligations.map(x=>`<option value="${esc(x.obligation_id||x.id)}">${esc(x.rule_title||x.title||x.rule_code||x.id)}</option>`).join('');
+     say(status,p.verification_status==='verified'?'Profil vérifié. Les obligations affichées dépendent des règles publiées.':'Profil enregistré ou à compléter. La validation juridique reste nécessaire.');
+    }catch(e){say(status,'Lecture du registre impossible : '+e.message,true);body.innerHTML='<tr><td colspan="5">Vérifiez les droits Supabase et les vues de conformité.</td></tr>';}
+   };
+   if(!form.dataset.bound){form.dataset.bound='1';form.onsubmit=async e=>{
+    e.preventDefault();const fd=new FormData(form),payload={organization_id:org(),organization_type:fd.get('organization_type'),legal_form:String(fd.get('legal_form')||'').trim(),sector_code:fd.get('sector_code')||null,registration_authority:fd.get('registration_authority')||null,registration_reference:fd.get('registration_reference')||null,ninea:fd.get('ninea')||null,rccm:fd.get('rccm')||null,tax_regime:fd.get('tax_regime')||null,public_supervisory_authority:fd.get('public_supervisory_authority')||null,workforce_size:fd.get('workforce_size')?Number(fd.get('workforce_size')):null,activity_description:String(fd.get('activity_description')||'').trim(),employs_staff:fd.has('employs_staff'),handles_personal_data:fd.has('handles_personal_data'),uses_public_funds:fd.has('uses_public_funds'),operates_regulated_activity:fd.has('operates_regulated_activity'),verification_status:'pending'};
+    say(status,'Enregistrement du profil…');const r=await client().from('organization_compliance_profiles').upsert(payload,{onConflict:'organization_id'});if(r.error){say(status,'Enregistrement impossible : '+r.error.message,true);return;}say(status,'Profil enregistré. Les règles vérifiées applicables seront évaluées automatiquement.');await load();
+   };}
+   if(!evidenceForm.dataset.bound){evidenceForm.dataset.bound='1';evidenceForm.onsubmit=async e=>{
+    e.preventDefault();const fd=new FormData(evidenceForm),file=fd.get('evidence_file'),obligationId=fd.get('obligation_id');if(!file||!file.size)return;
+    const out=$('ra-compliance-evidence-status');say(out,'Téléversement sécurisé…');try{const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,'_'),path=org()+'/'+obligationId+'/'+Date.now()+'_'+safe;const up=await client().storage.from('compliance-evidence').upload(path,file,{upsert:false,contentType:file.type});if(up.error)throw up.error;const user=await currentUser();const ins=await client().from('organization_compliance_evidence').insert({organization_id:org(),obligation_id:obligationId,storage_path:path,file_name:file.name,mime_type:file.type,file_size_bytes:file.size,uploaded_by:user.id});if(ins.error)throw ins.error;evidenceForm.reset();say(out,'Justificatif enregistré dans le stockage privé.');}catch(err){say(out,'Téléversement impossible : '+err.message,true);}
+   };}
+   $('ra-compliance-refresh').onclick=load;await load();
+  }
+ async function renderPage(page){if(!ready())return;try{if(page==='operations')await renderHR();if(page==='communication')await renderCalendar();if(page==='partners')await renderPartners();if(page==='impact')await renderImpact();if(page==='security')await renderBilling();if(page==='compliance')await renderCompliance();}catch(e){console.error('RAMASYS v2 module error',page,e);}}
  let moduleChannel=null;
- function bindModuleRealtime(){if(!ready())return;if(moduleChannel)client().removeChannel(moduleChannel);moduleChannel=client().channel('ramasys-modules-'+org());['hr_staff','hr_leave_requests','hr_trainings','organization_events','organization_partners','organization_impact_indicators','impact_collection_forms','impact_submissions','billing_invoices','billing_payments'].forEach(table=>moduleChannel.on('postgres_changes',{event:'*',schema:'public',table,filter:'organization_id=eq.'+org()},()=>{const active=document.querySelector('.page.active')?.id;if(['operations','communication','partners','impact','security'].includes(active))renderPage(active);}));moduleChannel.subscribe();}
+ function bindModuleRealtime(){if(!ready())return;if(moduleChannel)client().removeChannel(moduleChannel);moduleChannel=client().channel('ramasys-modules-'+org());['hr_staff','hr_leave_requests','hr_trainings','organization_events','organization_partners','organization_impact_indicators','impact_collection_forms','impact_submissions','billing_invoices','billing_payments','organization_compliance_profiles','organization_compliance_obligations','organization_compliance_evidence'].forEach(table=>moduleChannel.on('postgres_changes',{event:'*',schema:'public',table,filter:'organization_id=eq.'+org()},()=>{const active=document.querySelector('.page.active')?.id;if(['operations','communication','partners','impact','security','compliance'].includes(active))renderPage(active);}));moduleChannel.subscribe();}
  async function start(){if(!ready())return;navBind();bindModuleRealtime();const active=document.querySelector('.page.active')?.id;if(active)await renderPage(active);}
  document.addEventListener('DOMContentLoaded',()=>setTimeout(start,700));if(document.readyState!=='loading')setTimeout(start,700);
  if(typeof supabaseClient!=='undefined'&&supabaseClient){supabaseClient.auth.onAuthStateChange(()=>setTimeout(start,800));}
@@ -2021,5 +2068,80 @@ window.sendAssistantPrompt=function(){return false;};
 })();
 
 </script>
+<script id="ramasys-supabase-only-guard">
+(function(){
+  window.RAMASYS_LOCAL_MODE=false;
+  window.openLocalRecordForm=function(label){
+    alert('Cette fonction locale est désactivée. Le module doit être connecté à sa table Supabase avant toute saisie.');
+    return false;
+  };
+  document.addEventListener('DOMContentLoaded',function(){
+    document.querySelectorAll('button[onclick*="openLocalRecordForm"],#btn-new-project,#btn-new-activity').forEach(function(button){
+      button.disabled=true;
+      button.title='Saisie désactivée : connexion Supabase du module à finaliser.';
+      button.setAttribute('aria-disabled','true');
+    });
+    document.querySelectorAll('.page').forEach(function(page){
+      /* Les modules projets, partenaires et impact sont rendus par leurs connecteurs Supabase. */
+    });
+  });
+})();
+</script>
+<script id="ramasys-supabase-projects-documents-v21">
+(function(){
+ 'use strict';
+ const $=id=>document.getElementById(id);
+ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const client=()=>{try{return typeof supabaseClient!=='undefined'?supabaseClient:null}catch(_){return null}};
+ const org=()=>window.currentOrganizationId||null;
+ const ready=()=>!!(client()&&org()&&!window.RAMASYS_LOCAL_MODE);
+ const canManage=()=>['admin','manager'].includes(window.currentOrganizationRole);
+ const fmt=n=>new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0}).format(Number(n)||0);
+ const date=v=>v?new Date(v+'T00:00:00').toLocaleDateString('fr-FR'):'—';
+ const say=(id,t,bad=false)=>{const e=$(id);if(e){e.textContent=t;e.style.color=bad?'#b42318':'#35634a'}};
+ async function currentUser(){const r=await client().auth.getUser();if(r.error)throw r.error;return r.data.user}
+ async function renderProjects(){
+  const page=$('projects');if(!page||!ready())return;
+  page.innerHTML=`<div class="panel"><div class="panel-head"><div><h3>Projets & activités</h3><p class="module-intro">Gestion collaborative enregistrée dans Supabase. Les droits de lecture et de modification sont contrôlés par les politiques de l’organisation.</p></div><span class="pill">Données Supabase</span></div><div class="cards"><div class="card"><div class="metric-label">Projets</div><div class="metric" id="v21-project-count">—</div></div><div class="card"><div class="metric-label">Projets actifs</div><div class="metric" id="v21-project-active">—</div></div><div class="card"><div class="metric-label">Activités</div><div class="metric" id="v21-activity-count">—</div></div><div class="card"><div class="metric-label">Activités terminées</div><div class="metric" id="v21-activity-done">—</div></div></div></div>
+  ${canManage()?`<div class="panel"><h3>Créer un projet</h3><form id="v21-project-form" class="ra-form-grid"><label>Nom du projet<input name="name" required maxlength="220"></label><label>Code projet<input name="project_code" maxlength="60"></label><label>Type<input name="project_type" maxlength="100" placeholder="Programme, projet, initiative…"></label><label>Domaine thématique<input name="thematic_area" maxlength="120"></label><label>Date de début<input name="start_date" type="date"></label><label>Date de fin<input name="end_date" type="date"></label><label>Statut<select name="status"><option value="draft">Brouillon</option><option value="active">Actif</option><option value="on_hold">En pause</option><option value="completed">Terminé</option></select></label><label>Priorité<select name="priority"><option value="low">Basse</option><option value="medium" selected>Moyenne</option><option value="high">Haute</option><option value="critical">Critique</option></select></label><label>Budget prévisionnel (FCFA)<input name="estimated_budget" type="number" min="0" step="1"></label><label>Lieu<input name="location" maxlength="180"></label><label>Bénéficiaires ciblés<input name="target_beneficiaries" type="number" min="0" step="1"></label><label class="ra-wide">Résumé<textarea name="summary" rows="2"></textarea></label><label class="ra-wide">Objectifs<textarea name="objectives" rows="2"></textarea></label><label class="ra-wide">Résultats attendus<textarea name="expected_results" rows="2"></textarea></label><div><button class="btn" type="submit">Enregistrer le projet</button></div></form><div id="v21-project-status" class="subtle" role="status"></div></div>`:''}
+  ${canManage()?`<div class="panel"><h3>Ajouter une activité à un projet</h3><form id="v21-activity-form" class="ra-form-grid"><label>Projet<select name="project_id" id="v21-activity-project" required></select></label><label>Nom de l’activité<input name="name" required maxlength="220"></label><label>Type<input name="activity_type" maxlength="100"></label><label>Responsable<input name="responsible_name" maxlength="180"></label><label>Date de début<input name="start_date" type="date"></label><label>Date de fin<input name="end_date" type="date"></label><label>Statut<select name="status"><option value="planned">Planifiée</option><option value="in_progress">En cours</option><option value="completed">Terminée</option><option value="cancelled">Annulée</option></select></label><label>Priorité<select name="priority"><option value="low">Basse</option><option value="medium" selected>Moyenne</option><option value="high">Haute</option><option value="critical">Critique</option></select></label><label>Progression (%)<input name="progress_percentage" type="number" min="0" max="100" step="1" value="0"></label><label class="ra-wide">Description<textarea name="description" rows="2"></textarea></label><label class="ra-wide">Résultat attendu<textarea name="expected_output" rows="2"></textarea></label><div><button class="btn" type="submit">Enregistrer l’activité</button></div></form><div id="v21-activity-status" class="subtle" role="status"></div></div>`:''}
+  <div class="panel"><div class="panel-head"><h3>Portefeuille des projets</h3><button class="btn secondary" type="button" id="v21-project-refresh">Actualiser</button></div><div id="v21-project-status-read" class="subtle"></div><div id="v21-project-list"><p class="empty">Chargement depuis Supabase…</p></div></div>`;
+  const load=async()=>{
+   try{
+    const [pr,ar]=await Promise.all([client().from('projects').select('*').eq('organization_id',org()).order('created_at',{ascending:false}).limit(300),client().from('project_activities').select('*').eq('organization_id',org()).order('start_date',{ascending:true}).limit(800)]);
+    if(pr.error)throw pr.error;if(ar.error)throw ar.error;
+    const projects=pr.data||[],activities=ar.data||[];
+    $('v21-project-count').textContent=projects.length;$('v21-project-active').textContent=projects.filter(p=>p.status==='active').length;$('v21-activity-count').textContent=activities.length;$('v21-activity-done').textContent=activities.filter(a=>a.status==='completed').length;
+    const select=$('v21-activity-project');if(select)select.innerHTML=projects.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')||'<option value="">Créez d’abord un projet</option>';
+    $('v21-project-list').innerHTML=projects.length?projects.map(p=>{const acts=activities.filter(a=>a.project_id===p.id);return `<article class="ra-message" style="margin:12px 0"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><b>${esc(p.name)}</b><br><small>${esc(p.project_code||'Sans code')} · ${esc(p.project_type||'Projet')} · ${esc(p.thematic_area||'Domaine non précisé')}</small></div><span class="pill">${esc(p.status)}</span></div><p>${esc(p.summary||p.description||'Aucun résumé renseigné')}</p><div class="ra-report-grid"><div><small>Dates</small><br><b>${date(p.start_date)} – ${date(p.end_date)}</b></div><div><small>Budget prévu</small><br><b>${p.estimated_budget==null?'—':fmt(p.estimated_budget)+' FCFA'}</b></div><div><small>Progression</small><br><b>${fmt(p.progress_percentage)} %</b></div><div><small>Activités</small><br><b>${acts.length}</b></div></div>${acts.length?`<div style="margin-top:12px"><b>Activités</b>${acts.map(a=>`<div class="ra-chat-line"><b>${esc(a.name)}</b> · ${esc(a.status)} · ${fmt(a.progress_percentage)} %<br><small>${esc(a.responsible_name||'Sans responsable')} · ${date(a.start_date)} – ${date(a.end_date)}</small></div>`).join('')}</div>`:'<p class="subtle">Aucune activité rattachée.</p>'}${canManage()?`<div class="ra-toolbar"><button class="btn secondary" type="button" data-project-status="${esc(p.id)}" data-status="${p.status==='active'?'on_hold':'active'}">${p.status==='active'?'Mettre en pause':'Activer'}</button></div>`:''}</article>`}).join(''):'<p class="empty">Aucun projet enregistré dans cette organisation.</p>';
+    $('v21-project-list').querySelectorAll('[data-project-status]').forEach(b=>b.onclick=async()=>{const r=await client().from('projects').update({status:b.dataset.status}).eq('id',b.dataset.projectStatus).eq('organization_id',org());if(r.error)say('v21-project-status-read','Modification refusée : '+r.error.message,true);else await load()});
+    say('v21-project-status-read',`${projects.length} projet(s) et ${activities.length} activité(s) chargés depuis Supabase.`);
+   }catch(e){say('v21-project-status-read','Chargement impossible : '+e.message,true);$('v21-project-list').innerHTML='<p class="empty">Les données ne sont pas accessibles avec les permissions actuelles.</p>';}
+  };
+  if(canManage()){
+   $('v21-project-form').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.currentTarget),u=await currentUser(),o=Object.fromEntries(f.entries());o.organization_id=org();o.created_by=u.id;for(const k of ['start_date','end_date'])if(!o[k])o[k]=null;for(const k of ['estimated_budget','target_beneficiaries'])o[k]=o[k]?Number(o[k]):null;const r=await client().from('projects').insert(o);if(r.error)say('v21-project-status','Enregistrement refusé : '+r.error.message,true);else{e.currentTarget.reset();say('v21-project-status','Projet enregistré dans Supabase.');await load()}};
+   $('v21-activity-form').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.currentTarget),u=await currentUser(),o=Object.fromEntries(f.entries());o.organization_id=org();o.created_by=u.id;for(const k of ['start_date','end_date'])if(!o[k])o[k]=null;o.progress_percentage=Number(o.progress_percentage||0);const r=await client().from('project_activities').insert(o);if(r.error)say('v21-activity-status','Enregistrement refusé : '+r.error.message,true);else{e.currentTarget.reset();say('v21-activity-status','Activité enregistrée dans Supabase.');await load()}};
+  }
+  $('v21-project-refresh').onclick=load;await load();
+ }
+ async function renderDocuments(){
+  const page=$('documents');if(!page||!ready())return;
+  page.innerHTML=`<div class="panel"><div class="panel-head"><div><h3>Documents de l’organisation</h3><p class="module-intro">Fichiers stockés dans le bucket privé organization-documents. L’accès dépend de l’appartenance active à l’organisation.</p></div><span class="pill">Stockage privé Supabase</span></div>${canManage()?`<form id="v21-doc-form" class="ra-form-grid"><label>Nom du document<input name="document_name" required maxlength="240"></label><label>Catégorie<select name="document_type"><option value="general">Général</option><option value="administrative">Administratif</option><option value="financial">Financier</option><option value="project">Projet</option><option value="hr">Ressources humaines</option><option value="governance">Gouvernance</option></select></label><label class="ra-wide">Description<textarea name="description" rows="2"></textarea></label><label class="ra-wide">Fichier<input type="file" name="file" required></label><div><button class="btn" type="submit">Téléverser dans Supabase</button></div></form>`:''}<div id="v21-doc-status" class="subtle" role="status"></div></div><div class="panel"><div class="panel-head"><h3>Bibliothèque documentaire</h3><button class="btn secondary" type="button" id="v21-doc-refresh">Actualiser</button></div><div id="v21-doc-list"><p class="empty">Chargement des documents…</p></div></div>`;
+  const load=async()=>{try{const r=await client().from('organization_documents').select('*').eq('organization_id',org()).order('uploaded_at',{ascending:false}).limit(500);if(r.error)throw r.error;const docs=r.data||[];$('v21-doc-list').innerHTML=docs.length?docs.map(d=>`<article class="ra-message" style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><div><b>${esc(d.document_name)}</b><br><small>${esc(d.document_type)} · ${esc(d.mime_type||'Fichier')} · ${d.file_size?fmt(d.file_size/1024)+' Ko':'Taille inconnue'} · ${new Date(d.uploaded_at).toLocaleDateString('fr-FR')}</small>${d.description?`<p>${esc(d.description)}</p>`:''}</div><div class="ra-toolbar"><button class="btn secondary" type="button" data-doc-open="${esc(d.id)}">Consulter</button>${canManage()?`<button class="btn secondary" type="button" data-doc-delete="${esc(d.id)}">Supprimer</button>`:''}</div></article>`).join(''):'<p class="empty">Aucun document enregistré.</p>';
+   $('v21-doc-list').querySelectorAll('[data-doc-open]').forEach(b=>b.onclick=async()=>{const d=docs.find(x=>x.id===b.dataset.docOpen);if(!d)return;const s=await client().storage.from('organization-documents').createSignedUrl(d.file_path,90);if(s.error)say('v21-doc-status','Ouverture impossible : '+s.error.message,true);else window.open(s.data.signedUrl,'_blank','noopener')});
+   $('v21-doc-list').querySelectorAll('[data-doc-delete]').forEach(b=>b.onclick=async()=>{const d=docs.find(x=>x.id===b.dataset.docDelete);if(!d||!confirm('Supprimer définitivement ce document ?'))return;const del=await client().from('organization_documents').delete().eq('id',d.id).eq('organization_id',org());if(del.error){say('v21-doc-status','Suppression refusée : '+del.error.message,true);return}const rm=await client().storage.from('organization-documents').remove([d.file_path]);if(rm.error)say('v21-doc-status','Référence supprimée, mais le fichier doit être nettoyé : '+rm.error.message,true);else say('v21-doc-status','Document supprimé.');await load()});
+   say('v21-doc-status',`${docs.length} document(s) chargé(s) depuis Supabase.`);
+  }catch(e){say('v21-doc-status','Lecture des documents impossible : '+e.message,true);$('v21-doc-list').innerHTML='<p class="empty">La bibliothèque documentaire est indisponible avec les permissions actuelles.</p>'}};
+  if(canManage())$('v21-doc-form').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.currentTarget),file=f.get('file');if(!file||!file.size)return;if(file.size>20*1024*1024){say('v21-doc-status','Fichier trop volumineux : limite de 20 Mo.',true);return}const button=e.currentTarget.querySelector('button[type=submit]');button.disabled=true;try{const u=await currentUser(),safe=file.name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9._-]/g,'_'),path=org()+'/'+Date.now()+'_'+safe;const up=await client().storage.from('organization-documents').upload(path,file,{upsert:false,contentType:file.type||'application/octet-stream'});if(up.error)throw up.error;const ins=await client().from('organization_documents').insert({organization_id:org(),document_name:String(f.get('document_name')).trim(),document_type:f.get('document_type'),description:String(f.get('description')||'').trim()||null,file_path:path,file_size:file.size,mime_type:file.type||null,uploaded_by:u.id});if(ins.error){await client().storage.from('organization-documents').remove([path]);throw ins.error}e.currentTarget.reset();say('v21-doc-status','Document téléversé et indexé dans Supabase.');await load()}catch(err){say('v21-doc-status','Téléversement impossible : '+err.message,true)}finally{button.disabled=false}};
+  $('v21-doc-refresh').onclick=load;await load();
+ }
+ function bind(){document.querySelectorAll('.nav button[data-page]').forEach(b=>{if(b.dataset.v21Bound)return;b.dataset.v21Bound='1';b.addEventListener('click',()=>setTimeout(()=>{if(b.dataset.page==='projects')renderProjects();if(b.dataset.page==='documents')renderDocuments()},250))})}
+ async function start(){bind();let n=0;const tick=async()=>{if(ready()){const active=document.querySelector('.page.active')?.id;if(active==='projects')await renderProjects();if(active==='documents')await renderDocuments();return}if(++n<80)setTimeout(tick,500)};tick()}
+ document.addEventListener('DOMContentLoaded',()=>setTimeout(start,500));if(document.readyState!=='loading')setTimeout(start,500);
+ if(client())client().auth.onAuthStateChange(()=>setTimeout(start,600));
+ window.RAMASYS_REMOTE_PROJECTS_DOCUMENTS={version:'2.1',refresh:()=>{const p=document.querySelector('.page.active')?.id;return p==='projects'?renderProjects():p==='documents'?renderDocuments():Promise.resolve()}};
+})();
+</script>
+
 </body>
 </html>
