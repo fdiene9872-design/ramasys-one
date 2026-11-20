@@ -3620,5 +3620,116 @@ body.ra-readonly .page:not(#settings) button[type=submit],body.ra-readonly .page
   document.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('.nav button[data-page="settings"]'))setTimeout(history,600);});
 })();
 </script>
+
+<script id="ramasys-contract-integration-v1">
+(function(){
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const endpoint = 'contract-decision';
+  const kinds = {free:'FREE',essentiel:'ESSENTIEL',professionnel:'PROFESSIONNEL',institutionnel:'INSTITUTIONNEL'};
+  const categories = ['Association/ONG','Entreprise/PME','Collectif communautaire','Institution/Structure publique'];
+  const money = n => Number(n || 0).toLocaleString('fr-FR') + ' FCFA';
+  async function callContract(payload){
+    const {data,error}=await supabaseClient.functions.invoke(endpoint,{body:payload});
+    if(error) throw error;
+    if(data?.error) throw new Error(data.error);
+    return data;
+  }
+  function contractPrint(contract, organization){
+    const w=window.open('','_blank');
+    if(!w){alert('Autorisez les fenêtres contextuelles pour imprimer le contrat.');return;}
+    const html='<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>'+esc(contract.title)+'</title><style>body{font:14px/1.65 Arial,sans-serif;color:#172b22;max-width:850px;margin:40px auto;padding:0 24px}h1{font-size:24px;color:#075b3b}h2{font-size:17px;margin-top:26px}pre{white-space:pre-wrap;font:inherit} .meta{background:#f3f8f4;padding:16px;border-radius:10px;margin:20px 0}@media print{button{display:none}body{margin:15mm auto}}</style></head><body><h1>RAMASYS ONE</h1><h2>'+esc(contract.title)+'</h2><div class="meta"><b>Organisation :</b> '+esc(organization?.name||'')+'<br><b>Référence :</b> '+esc(contract.contract_reference)+'<br><b>Version :</b> '+esc(contract.version)+'<br><b>Formule :</b> '+esc(kinds[contract.contract_kind]||contract.contract_kind)+'<br><b>Tarif :</b> '+(contract.billing_interval==='quote'?'Sur devis':money(contract.price_amount))+'</div><pre>'+esc(contract.body_markdown)+'</pre><p>Document consulté dans RAMASYS One. La décision électronique est enregistrée séparément dans la plateforme.</p><button onclick="window.print()">Imprimer / Enregistrer en PDF</button></body></html>';
+    w.document.open();w.document.write(html);w.document.close();
+  }
+  async function loadOrganizationContracts(){
+    const host=$('ramasys-contract-list'); if(!host) return;
+    const context=window.RAMASYS_CONTEXT?.()||{};
+    const orgId=context.organizationId||window.currentOrganizationId;
+    if(!orgId||!window.supabaseClient){host.innerHTML='<p class="subtle">Connectez-vous à votre espace organisation pour consulter les contrats.</p>';return;}
+    host.innerHTML='<p class="subtle">Chargement des contrats et de leur historique…</p>';
+    try{
+      const result=await callContract({action:'list_for_organization',organization_id:orgId});
+      const contracts=result.contracts||[], decisions=result.decisions||[];
+      if(!contracts.length){host.innerHTML='<div class="empty">Aucun contrat n’est encore publié pour votre catégorie d’organisation. L’administratrice de RAMASYS One doit publier les modèles applicables.</div>';return;}
+      host.innerHTML=contracts.map(c=>{
+        const decision=decisions.find(d=>d.contract_id===c.id);
+        const status=decision?'<span class="pill">'+(decision.decision==='accepted'?'Contrat accepté':'Contrat refusé')+' · '+esc(new Date(decision.decision_at).toLocaleDateString('fr-FR'))+'</span>':'<span class="pill">En attente de décision</span>';
+        const form=result.can_decide&&!decision?'<form class="ra-contract-decision-form" data-contract-id="'+esc(c.id)+'" style="display:grid;gap:10px;margin-top:14px"><div class="ra-form-grid"><label>Nom complet du représentant<input name="signer_full_name" required maxlength="160" placeholder="Nom et prénom"></label><label>Fonction / qualité<input name="signer_title" required maxlength="160" placeholder="Ex. : Directeur, Présidente, Gérant"></label></div><label style="display:flex;gap:9px;align-items:flex-start"><input type="checkbox" name="accepted_terms" style="width:auto;margin-top:4px"><span>Je confirme avoir lu le contrat dans son intégralité et être habilité(e) à engager cette organisation.</span></label><label>Motif de refus (facultatif)<textarea name="decision_reason" rows="2" maxlength="1000" placeholder="À compléter uniquement en cas de refus"></textarea></label><div style="display:flex;gap:9px;flex-wrap:wrap"><button type="button" class="btn" data-contract-accept="'+esc(c.id)+'">Accepter le contrat</button><button type="button" class="btn secondary" data-contract-reject="'+esc(c.id)+'">Refuser le contrat</button></div></form>':(!result.can_decide&&!decision?'<p class="subtle">Seul l’administrateur actif de l’organisation peut enregistrer une décision contractuelle.</p>':'');
+        return '<article class="panel" style="margin:12px 0;padding:18px"><div class="panel-head"><div><h3>'+esc(c.title)+'</h3><p class="subtle">'+esc(kinds[c.contract_kind]||c.contract_kind)+' · Réf. '+esc(c.contract_reference)+' · Version '+esc(c.version)+'</p></div>'+status+'</div><p><b>Tarif :</b> '+(c.billing_interval==='quote'?'Sur devis':money(c.price_amount)+(c.billing_interval==='month'?' / mois':''))+'</p><details style="margin:12px 0"><summary style="cursor:pointer;font-weight:700">Lire le contrat intégral</summary><pre style="white-space:pre-wrap;font:inherit;line-height:1.6;background:#f7faf8;padding:14px;border-radius:9px">'+esc(c.body_markdown)+'</pre></details><button type="button" class="btn secondary" data-contract-print="'+esc(c.id)+'">Imprimer / Enregistrer en PDF</button>'+form+'</article>';
+      }).join('');
+      host.querySelectorAll('[data-contract-print]').forEach(btn=>btn.addEventListener('click',()=>{const c=contracts.find(x=>x.id===btn.dataset.contractPrint);if(c)contractPrint(c,result.organization);}));
+      host.querySelectorAll('[data-contract-accept]').forEach(btn=>btn.addEventListener('click',()=>submitDecision(btn,'accepted',orgId,host)));
+      host.querySelectorAll('[data-contract-reject]').forEach(btn=>btn.addEventListener('click',()=>submitDecision(btn,'rejected',orgId,host)));
+    }catch(e){host.innerHTML='<div class="ra-note">Impossible de charger les contrats : '+esc(e.message||e)+'</div>';}
+  }
+  async function submitDecision(button,decision,organizationId,host){
+    const form=button.closest('form'); if(!form)return;
+    const data=new FormData(form);
+    const acceptedTerms=data.get('accepted_terms')==='on';
+    if(decision==='accepted'&&!acceptedTerms){alert('Cochez la confirmation de lecture et d’acceptation avant de continuer.');return;}
+    const label=decision==='accepted'?'accepter ce contrat':'refuser ce contrat';
+    if(!window.confirm('Confirmez-vous votre décision : '+label+' ? Cette décision sera horodatée et conservée.'))return;
+    const payload={action:'submit_decision',organization_id:organizationId,contract_id:button.dataset.contractAccept||button.dataset.contractReject,decision,signer_full_name:String(data.get('signer_full_name')||'').trim(),signer_title:String(data.get('signer_title')||'').trim(),accepted_terms:decision==='accepted'&&acceptedTerms,decision_reason:String(data.get('decision_reason')||'').trim()};
+    const buttons=form.querySelectorAll('button');buttons.forEach(b=>b.disabled=true);
+    try{
+      const result=await callContract(payload);
+      alert(result.message+(result.notification_status==='attention_required'?' Les notifications sont enregistrées mais nécessitent une vérification dans le Super Admin.':''));
+      await loadOrganizationContracts();
+    }catch(e){alert('Décision non enregistrée : '+(e.message||e));buttons.forEach(b=>b.disabled=false);}
+  }
+
+  function renderAdminContracts(result,decisionsResult){
+    const content=$('platform-admin-content');if(!content)return;
+    const contracts=result.contracts||[],decisions=decisionsResult?.decisions||[];
+    const drafts=contracts.filter(c=>c.status==='draft');
+    content.innerHTML='<div class="ra-section-title"><div><h2>Contrats et décisions</h2><p>Créez les versions, vérifiez les modèles et publiez uniquement les contrats validés.</p></div><button class="ra-action" id="ra-contract-new">+ Nouveau contrat</button></div>'+
+      '<div class="ra-note">Les modèles restent en brouillon jusqu’à leur publication. Faites valider juridiquement les textes avant toute publication commerciale. Une version publiée est immuable : créez une nouvelle version pour toute modification.</div>'+ 
+      '<section class="ra-panel"><h3>Modèles contractuels ('+contracts.length+')</h3><div class="ra-table-wrap"><table><thead><tr><th>Formule</th><th>Catégorie</th><th>Référence / version</th><th>Tarif</th><th>Statut</th><th>Action</th></tr></thead><tbody>'+(contracts.length?contracts.map(c=>'<tr><td><b>'+esc(kinds[c.contract_kind]||c.contract_kind)+'</b></td><td>'+esc(c.organization_type||'Toutes catégories')+'</td><td>'+esc(c.contract_reference)+'<div class="ra-muted">V'+esc(c.version)+' · '+esc(c.title)+'</div></td><td>'+(c.billing_interval==='quote'?'Sur devis':money(c.price_amount)+(c.billing_interval==='month'?' / mois':''))+'</td><td><span class="ra-state '+(c.status==='published'?'active':c.status==='draft'?'pending':'suspended')+'">'+esc(c.status)+'</span></td><td>'+(c.status==='draft'?'<button class="ra-action" data-contract-publish="'+esc(c.id)+'">Publier</button>':'<button class="ra-action secondary" data-contract-preview="'+esc(c.id)+'">Consulter</button>')+'</td></tr>').join(''):'<tr><td colspan="6">Aucun modèle. Créez le premier contrat.</td></tr>')+'</tbody></table></div></section>'+ 
+      '<section class="ra-panel"><h3>Décisions enregistrées ('+decisions.length+')</h3><div class="ra-table-wrap"><table><thead><tr><th>Date</th><th>Organisation</th><th>Formule</th><th>Représentant</th><th>Décision</th><th>Notifications</th></tr></thead><tbody>'+(decisions.length?decisions.map(d=>'<tr><td>'+esc(d.decision_at?new Date(d.decision_at).toLocaleString('fr-FR'):'—')+'</td><td>'+esc(d.organization?.name||d.organization_id)+'</td><td>'+esc(d.contract_reference)+' · V'+esc(d.contract_version)+'</td><td>'+esc(d.signer_full_name)+'<div class="ra-muted">'+esc(d.signer_title)+'</div></td><td><span class="ra-state '+(d.decision==='accepted'?'active':'suspended')+'">'+(d.decision==='accepted'?'Accepté':'Refusé')+'</span></td><td>'+((d.platform_contract_notifications||[]).map(n=>'<div>'+esc(n.event_type)+': '+esc(n.status)+' '+(n.status==='failed'?'<button class="ra-action secondary" data-contract-retry="'+esc(n.id)+'">Relancer</button>':'')+'</div>').join('')||'—')+'</td></tr>').join(''):'<tr><td colspan="6">Aucune décision enregistrée.</td></tr>')+'</tbody></table></div></section>'+ 
+      '<section class="ra-panel" id="ra-contract-editor" hidden><h3 id="ra-contract-editor-title">Nouveau contrat</h3><form id="ra-contract-form"><input type="hidden" name="id"><div class="ra-form-grid"><label>Formule<select name="contract_kind" required><option value="free">FREE</option><option value="essentiel">ESSENTIEL</option><option value="professionnel">PROFESSIONNEL</option><option value="institutionnel">INSTITUTIONNEL</option></select></label><label>Catégorie<select name="organization_type"><option value="">Toutes les catégories</option>'+categories.map(c=>'<option>'+esc(c)+'</option>').join('')+'</select></label><label>Version<input type="number" name="version" min="1" value="1" required></label><label>Tarif en FCFA<input type="number" name="price_amount" min="0" value="0" required></label><label>Périodicité<select name="billing_interval"><option value="none">Sans périodicité</option><option value="month">Mensuelle</option><option value="quote">Sur devis</option></select></label><label>Titre<input name="title" required maxlength="240" placeholder="Contrat d’accès RAMASYS One"></label></div><label>Texte intégral du contrat<textarea name="body_markdown" rows="16" required minlength="100" placeholder="Rédigez les clauses, les quotas, les modules, les obligations et les conditions…"></textarea></label><p class="ra-muted">La référence est générée automatiquement si elle n’est pas renseignée. Le contenu doit être juridiquement relu avant publication.</p><div style="display:flex;gap:10px"><button class="ra-action" type="submit">Enregistrer le brouillon</button><button class="ra-action secondary" type="button" id="ra-contract-cancel">Annuler</button></div></form></section>';
+    $('ra-contract-new')?.addEventListener('click',()=>{const editor=$('ra-contract-editor');editor.hidden=false;$('ra-contract-editor-title').textContent='Nouveau contrat';$('ra-contract-form').reset();$('ra-contract-form').elements.id.value='';editor.scrollIntoView({behavior:'smooth'});});
+    $('ra-contract-cancel')?.addEventListener('click',()=>{$('ra-contract-editor').hidden=true;});
+    $('ra-contract-form')?.addEventListener('submit',async e=>{e.preventDefault();const form=e.currentTarget,button=form.querySelector('[type=submit]');const values=Object.fromEntries(new FormData(form).entries());values.price_amount=Number(values.price_amount);values.version=Number(values.version);button.disabled=true;try{await callContract({action:'admin_save_contract',...values});platformAdminNotify('Brouillon enregistré.');await loadPlatformAdminSection('contracts');}catch(err){platformAdminNotify(err.message,true);button.disabled=false;}});
+    content.querySelectorAll('[data-contract-publish]').forEach(btn=>btn.addEventListener('click',async()=>{if(!confirm('Publier ce contrat ? Il deviendra visible aux organisations concernées et ne pourra plus être modifié.'))return;btn.disabled=true;try{await callContract({action:'admin_publish_contract',contract_id:btn.dataset.contractPublish});platformAdminNotify('Contrat publié.');await loadPlatformAdminSection('contracts');}catch(e){platformAdminNotify(e.message,true);btn.disabled=false;}}));
+    content.querySelectorAll('[data-contract-preview]').forEach(btn=>btn.addEventListener('click',()=>{const c=contracts.find(x=>x.id===btn.dataset.contractPreview);if(c)contractPrint(c,{name:'Modèle RAMASYS One'});}));
+    content.querySelectorAll('[data-contract-retry]').forEach(btn=>btn.addEventListener('click',async()=>{btn.disabled=true;try{await callContract({action:'retry_notification',notification_id:btn.dataset.contractRetry});platformAdminNotify('Notification relancée.');await loadPlatformAdminSection('contracts');}catch(e){platformAdminNotify(e.message,true);btn.disabled=false;}}));
+  }
+
+  // Renomme le module existant sans remplacer son fonctionnement documentaire.
+  const docsNav=document.querySelector('.nav [data-page="documents"]');if(docsNav)docsNav.innerHTML='<span>▤</span>Documents & contrats';
+  const docsPage=$('documents');
+  if(docsPage&&!$('ramasys-contract-space')){
+    const section=document.createElement('div');section.className='panel';section.id='ramasys-contract-space';section.style.marginTop='16px';section.innerHTML='<div class="panel-head"><div><h3>Contrats RAMASYS One</h3><p class="module-intro">Consultez les conditions de votre formule et enregistrez la décision de votre organisation.</p></div><span class="pill">Signature électronique</span></div><div id="ramasys-contract-list"><p class="subtle">Les contrats publiés apparaîtront ici.</p></div>';
+    docsPage.appendChild(section);
+  }
+  document.querySelectorAll('[data-page="documents"]').forEach(btn=>btn.addEventListener('click',()=>setTimeout(loadOrganizationContracts,250)));
+  const orgName=$('organization-name');if(orgName&&window.MutationObserver){new MutationObserver(()=>{if($('documents')?.classList.contains('active'))loadOrganizationContracts();}).observe(orgName,{childList:true,subtree:true,characterData:true});}
+  setTimeout(loadOrganizationContracts,900);
+
+  // Ajoute la section Contrats à la console Super Admin existante.
+  const adminNav=document.querySelector('#platform-admin-panel .ra-nav');
+  if(adminNav&&!adminNav.querySelector('[data-platform-section="contracts"]')){
+    const b=document.createElement('button');b.type='button';b.dataset.platformSection='contracts';b.textContent='▤  Contrats';adminNav.appendChild(b);
+    b.addEventListener('click',()=>loadPlatformAdminSection('contracts'));
+  }
+  if(typeof window.loadPlatformAdminSection==='undefined'){
+    // Le script historique déclare la fonction au niveau global ; elle est disponible ici après son exécution.
+  }
+  const originalLoad=window.loadPlatformAdminSection;
+  // Le nom global de fonction est disponible dans les scripts classiques ; on remplace le chargeur pour traiter la nouvelle section.
+  if(typeof originalLoad==='function'){
+    window.loadPlatformAdminSection=async function(section){
+      if(section!=='contracts')return originalLoad(section);
+      const content=$('platform-admin-content');if(!content)return;
+      platformAdminNotify('Chargement des contrats…');content.innerHTML='';
+      document.querySelectorAll('[data-platform-section]').forEach(b=>b.classList.toggle('active',b.dataset.platformSection===section));
+      try{const [contracts,decisions]=await Promise.all([callContract({action:'admin_list_contracts'}),callContract({action:'admin_list'})]);platformAdminNotify('');renderAdminContracts(contracts,decisions);}
+      catch(e){platformAdminNotify(e.message,true);content.innerHTML='<div class="ra-panel ra-empty">Impossible de charger les contrats : '+esc(e.message)+'</div>';}
+    };
+  }
+})();
+
+</script>
 </body>
 </html>
