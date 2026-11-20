@@ -187,9 +187,10 @@ main{background:linear-gradient(135deg,#f7faf6 0%,#f1f7f1 100%)}
 @media(max-width:850px){.top{align-items:flex-start;flex-wrap:wrap}.user.ramasys-top-user{width:100%;justify-content:flex-end;flex-wrap:wrap}.ra-notification-popover{right:130px}}
 </style>
 
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer onload="window.ramasysTurnstileApiLoaded=true;window.ramasysTurnstileReady?.()"></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=ramasysTurnstileReady&render=explicit" async defer></script>
 <style id="ramasys-captcha-style">#ramasys-turnstile{margin:14px 0;min-height:65px}.ra-captcha-note{font-size:12px;color:#66756d;margin:6px 0 12px}.ra-wave-review{margin-top:16px;padding:16px;border:1px solid #d6e6da;border-radius:12px;background:#f8fcf8}.ra-wave-review label{display:block;margin:9px 0 5px;font-weight:600}.ra-wave-review input{width:100%;padding:10px;border:1px solid #cbd8ce;border-radius:8px}.ra-wave-admin-actions{display:flex;gap:8px;flex-wrap:wrap}.ra-wave-admin-actions button{padding:8px 12px;border:0;border-radius:7px;cursor:pointer}.ra-wave-approve{background:#16834a;color:white}.ra-wave-reject{background:#fff0ed;color:#a43d2e}</style>
 <meta name="ramasys-upgrade" content="v2.23-prepared-2026-11-19">
+<meta name="ramasys-build" content="v2.24-portails-corriges">
 </head>
 <body>
 
@@ -925,9 +926,6 @@ window.ramasysTurnstileReady = function(){
     'error-callback':function(){ramasysTurnstileToken='';if(button)button.disabled=true;if(status)status.textContent='Vérification indisponible. Rechargez le défi.';}
   });
 };
-// Le script Turnstile est chargé de façon asynchrone : il peut terminer
-// avant OU après la déclaration de la fonction. Ces deux chemins couvrent les deux cas.
-if (window.ramasysTurnstileApiLoaded && window.turnstile) window.ramasysTurnstileReady();
 
 document.getElementById('signup-button').addEventListener('click', async () => {
   if (!supabaseClient) { showMessage('Le service de connexion n’a pas été chargé. Rechargez la page.', true); return; }
@@ -938,15 +936,18 @@ document.getElementById('signup-button').addEventListener('click', async () => {
   }
   const button = document.getElementById('signup-button'); button.disabled = true; button.textContent = 'Création…';
   try {
-    const selectedType=document.getElementById('signup-org-type')?.value||'';
-    if (!selectedType) {
-      showMessage('Veuillez revenir à la première étape et sélectionner le type de votre organisation.', true);
-      return;
+    const selectedType=String(document.getElementById('signup-org-type')?.value||'').trim();
+    const allowedOrganizationTypes = [
+      'Association/ONG',
+      'Entreprise/PME',
+      'Collectif communautaire',
+      'Institution/Structure publique'
+    ];
+    if (!allowedOrganizationTypes.includes(selectedType)) {
+      throw new Error('Choisissez une catégorie d’organisation valide avant de créer votre compte.');
     }
     if (!ramasysTurnstileToken) {
-      showMessage('La vérification anti-robot n’est pas terminée. Validez Cloudflare Turnstile avant de créer votre compte.', true);
-      if (window.ramasysTurnstileReady) window.ramasysTurnstileReady();
-      return;
+      throw new Error('Validez la vérification anti-robot avant de créer votre compte.');
     }
     const selectedPlan=document.getElementById('signup-plan')?.value||'free';
     const billingInterval=document.getElementById('signup-interval')?.value||'month';
