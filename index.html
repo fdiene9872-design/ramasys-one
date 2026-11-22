@@ -208,6 +208,14 @@ main{background:linear-gradient(135deg,#f7faf6 0%,#f1f7f1 100%)}
 @media(max-width:520px){.ra-welcome-hero{padding:18px!important}.ra-dashboard-org-brand{gap:14px;align-items:flex-start}.ra-dashboard-logo-frame{width:78px;height:78px;flex-basis:78px;border-radius:18px;padding:8px}.ra-dashboard-welcome-copy h2{font-size:20px!important}.ra-dashboard-welcome-copy p{font-size:12px}.ra-dashboard-logo-frame #dashboard-org-logo-fallback{font-size:22px}.ra-clean-footer{flex-direction:column}}
 </style>
 
+
+<!-- RAMASYS One PWA -->
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#16a648">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="RAMASYS">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" sizes="180x180" href="./icons/ramasys-180.png">
 </head>
 <body>
 
@@ -3957,6 +3965,16 @@ body.ra-readonly .page:not(#settings) button[type=submit],body.ra-readonly .page
   var link=document.getElementById('ra-forgot-link');if(link)link.onclick=forgot;
   if(typeof supabaseClient!=='undefined'&&supabaseClient){supabaseClient.auth.onAuthStateChange(function(ev){if(ev==='PASSWORD_RECOVERY')setTimeout(reset,0);});}
 })();
+</script>
+
+<!-- RAMASYS One PWA service worker -->
+<script>
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("./service-worker.js", { scope: "./" })
+      .catch(function (error) { console.error("RAMASYS PWA : enregistrement impossible", error); });
+  });
+}
 </script>
 </body>
 </html>
