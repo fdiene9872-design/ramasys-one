@@ -877,6 +877,9 @@ function showAuth() {
 document.getElementById('show-signup').addEventListener('click', () => {
   document.getElementById('login-form').style.display = 'none';
   document.getElementById('signup-form').style.display = 'block';
+  // Un jeton Turnstile est à usage unique : préparer un nouveau défi
+  // uniquement lorsque l'utilisateur revient volontairement au formulaire.
+  resetRamasysTurnstile('signup');
   showMessage('');
 });
 
@@ -985,6 +988,7 @@ document.getElementById('signup-button').addEventListener('click', async () => {
     showMessage('Saisissez un e-mail valide et un mot de passe de 8 caractères minimum.', true); return;
   }
   const button = document.getElementById('signup-button'); button.disabled = true; button.textContent = 'Création…';
+  let signupSucceeded = false;
   try {
     const selectedType=String(document.getElementById('signup-org-type')?.value||'').trim();
     const allowedOrganizationTypes = [
@@ -1020,6 +1024,10 @@ document.getElementById('signup-button').addEventListener('click', async () => {
       }
     });
     if (error) throw error;
+    signupSucceeded = true;
+    // Supabase a consommé le jeton : l'effacer sans relancer immédiatement
+    // un nouveau défi après une création de compte réussie.
+    ramasysTurnstileToken = '';
     if (data.session?.user) {
       showMessage('Compte créé. Préparation de votre espace…');
     } else {
@@ -1027,7 +1035,8 @@ document.getElementById('signup-button').addEventListener('click', async () => {
     }
   } catch (error) { showMessage(error.message || 'Création du compte impossible.', true); }
   finally {
-    resetRamasysTurnstile('signup');
+    if (!signupSucceeded) resetRamasysTurnstile('signup');
+    else button.disabled = true;
     button.textContent='Vérifier puis créer mon compte';
   }
 });
@@ -1039,12 +1048,21 @@ document.getElementById('login-button').addEventListener('click', async () => {
   if (!email || !password) { showMessage('Veuillez saisir votre e-mail et votre mot de passe.', true); return; }
   if (!ramasysLoginTurnstileToken || ramasysLoginTurnstileToken.length > 2048) { showMessage('Validez la vérification anti-robot avant de vous connecter.', true); return; }
   const button = document.getElementById('login-button'); button.disabled = true; button.textContent = 'Connexion…';
+  let loginSucceeded = false;
   try {
     const { error } = await supabaseClient.auth.signInWithPassword({ email, password, options: { captchaToken: ramasysLoginTurnstileToken } });
     if (error) throw error;
+    loginSucceeded = true;
+    // Le jeton a été consommé par Supabase. Ne pas réinitialiser le widget
+    // pendant la transition vers l'espace connecté.
+    ramasysLoginTurnstileToken = '';
     showMessage('Connexion réussie. Chargement de votre espace…');
   } catch (error) { showMessage(error.message || 'Connexion impossible.', true); }
-  finally { resetRamasysTurnstile('login'); button.textContent = 'Valider puis se connecter'; }
+  finally {
+    if (!loginSucceeded) resetRamasysTurnstile('login');
+    else button.disabled = true;
+    button.textContent = 'Valider puis se connecter';
+  }
 });
 
 let currentOrganizationId = null;
