@@ -189,8 +189,25 @@ main{background:linear-gradient(135deg,#f7faf6 0%,#f1f7f1 100%)}
 
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer onload="if(window.ramasysTurnstileReady)window.ramasysTurnstileReady()"></script>
 <style id="ramasys-captcha-style">#ramasys-turnstile{margin:14px 0;min-height:65px}.ra-captcha-note{font-size:12px;color:#66756d;margin:6px 0 12px}.ra-wave-review{margin-top:16px;padding:16px;border:1px solid #d6e6da;border-radius:12px;background:#f8fcf8}.ra-wave-review label{display:block;margin:9px 0 5px;font-weight:600}.ra-wave-review input{width:100%;padding:10px;border:1px solid #cbd8ce;border-radius:8px}.ra-wave-admin-actions{display:flex;gap:8px;flex-wrap:wrap}.ra-wave-admin-actions button{padding:8px 12px;border:0;border-radius:7px;cursor:pointer}.ra-wave-approve{background:#16834a;color:white}.ra-wave-reject{background:#fff0ed;color:#a43d2e}</style>
-<meta name="ramasys-upgrade" content="v2.23-prepared-2026-11-19">
-<meta name="ramasys-build" content="v2.24-portails-corriges">
+<meta name="ramasys-upgrade" content="v2.32-centre-documentaire-supabase">
+<meta name="ramasys-build" content="v2.32-centre-documentaire-classement-liens-versions">
+
+<style id="ramasys-v231-welcome-dashboard">
+:root{--ra-green:#087a48;--ra-green-deep:#064b38;--ra-orange:#f28a00;--ra-blue:#2775bd;--ra-violet:#7652b5;--ra-teal:#0f8b83}
+.ra-welcome-hero{display:flex;align-items:center;justify-content:space-between;gap:22px;padding:26px 30px!important;min-height:190px;background:linear-gradient(112deg,#e4f5e9 0%,#f1f8ed 48%,#fff0dc 100%)!important;border:1px solid #d5e9d9!important;position:relative;overflow:hidden}
+.ra-dashboard-org-brand{display:flex;align-items:center;gap:24px;min-width:0}
+.ra-dashboard-logo-frame{width:142px;height:142px;flex:0 0 142px;border-radius:26px;background:#fff;border:1px solid rgba(8,90,53,.12);box-shadow:0 12px 28px rgba(6,75,56,.12);display:grid;place-items:center;padding:12px}
+.ra-dashboard-logo-frame img{width:100%!important;height:100%!important;max-width:100%;max-height:100%;object-fit:contain;border:0!important;border-radius:14px!important;padding:0!important;background:transparent!important}
+#dashboard-org-logo-fallback{width:100%;height:100%;border-radius:18px;background:linear-gradient(145deg,#087a48,#064b38);color:#fff;display:grid;place-items:center;font-size:34px;font-weight:900;letter-spacing:2px}
+.ra-dashboard-welcome-copy{max-width:650px}.ra-dashboard-org-name{font-size:13px!important;font-weight:850!important;letter-spacing:1.2px!important;text-transform:uppercase;color:#087a48!important;margin-bottom:8px!important}.ra-dashboard-welcome-copy h2{font-size:30px!important;line-height:1.15;margin:0 0 8px!important;color:#064b38!important}.ra-dashboard-welcome-copy p{font-size:14px;line-height:1.6;color:#496657;max-width:600px}
+.ra-welcome-side{display:flex;flex-direction:column;align-items:flex-end;gap:9px;min-width:150px;color:#315b43;font-size:13px}.ra-welcome-side strong{font-size:17px;color:#064b38;text-align:right}.ra-welcome-chip{background:#fff;border:1px solid #d7e8d9;color:#087a48;border-radius:99px;padding:7px 12px;font-size:10px;font-weight:850;letter-spacing:.8px}
+.cards .card{position:relative;overflow:hidden;min-height:118px;padding:20px!important}.cards .card:after{content:"";position:absolute;width:82px;height:82px;right:-26px;top:-26px;border-radius:50%;background:rgba(22,163,74,.08)}.cards .card:nth-child(4n+1){border-top:4px solid #16a34a}.cards .card:nth-child(4n+2){border-top:4px solid #f28a00}.cards .card:nth-child(4n+3){border-top:4px solid #2775bd}.cards .card:nth-child(4n+4){border-top:4px solid #7652b5}.cards .metric{font-size:30px!important;font-weight:850!important;color:#123b2d!important}.ra-dashboard-charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:16px 0}.ra-chart-panel{min-width:0}.ra-chart-caption{font-size:11px;color:#718176;margin:4px 0 0}.ra-chart-icon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:20px;font-weight:800}.ra-chart-icon-green{background:#e4f5e9;color:#087a48}.ra-chart-icon-orange{background:#fff0dc;color:#c56a00}.ra-chart-content{display:grid;gap:13px;padding-top:10px}.ra-chart-row{display:grid;gap:7px}.ra-chart-label{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px;color:#40584a}.ra-chart-label b{color:#153d2c;font-size:13px}.ra-chart-track{height:10px;border-radius:99px;background:#edf2ee;overflow:hidden}.ra-chart-track span{display:block;height:100%;border-radius:99px;min-width:6px}.ra-chart-empty{padding:18px;border-radius:13px;background:linear-gradient(120deg,#f4faf5,#fff7ec);color:#607267;font-size:12px;line-height:1.6}
+.ra-clean-footer{display:flex;justify-content:space-between;gap:12px;padding:18px 4px!important;color:#718176;font-size:10px;font-weight:700;letter-spacing:.7px;border:0!important;background:transparent!important}
+#ra-sync-state{display:none!important}
+@media(max-width:850px){.ra-welcome-hero{align-items:flex-start;flex-direction:column}.ra-welcome-side{align-items:flex-start}.ra-welcome-side strong{text-align:left}.ra-dashboard-logo-frame{width:104px;height:104px;flex-basis:104px}.ra-dashboard-welcome-copy h2{font-size:24px!important}.ra-dashboard-charts{grid-template-columns:1fr}}
+@media(max-width:520px){.ra-welcome-hero{padding:18px!important}.ra-dashboard-org-brand{gap:14px;align-items:flex-start}.ra-dashboard-logo-frame{width:78px;height:78px;flex-basis:78px;border-radius:18px;padding:8px}.ra-dashboard-welcome-copy h2{font-size:20px!important}.ra-dashboard-welcome-copy p{font-size:12px}.ra-dashboard-logo-frame #dashboard-org-logo-fallback{font-size:22px}.ra-clean-footer{flex-direction:column}}
+</style>
+
 </head>
 <body>
 
@@ -348,7 +365,7 @@ main{background:linear-gradient(135deg,#f7faf6 0%,#f1f7f1 100%)}
 </script>
 
 <section class="page active" id="dashboard">
-  <div class="welcome"><div class="ra-dashboard-org-brand"><img id="dashboard-org-logo" alt="Logo de l’organisation" style="display:none"><div><div class="ra-dashboard-org-name" id="dashboard-org-name">Votre organisation</div><h2>Bienvenue dans RAMASYS One</h2><p>Pilotez votre organisation depuis un espace unique.</p></div></div><div class="date"><strong>Tableau de bord</strong><br><span>Vos données réelles apparaîtront ici.</span></div></div>
+  <div class="welcome ra-welcome-hero"><div class="ra-dashboard-org-brand"><div class="ra-dashboard-logo-frame"><img id="dashboard-org-logo" alt="Logo de votre organisation" style="display:none"><div id="dashboard-org-logo-fallback" aria-hidden="true">ONE</div></div><div class="ra-dashboard-welcome-copy"><div class="ra-dashboard-org-name" id="dashboard-org-name">Votre organisation</div><h2>Bienvenue dans votre espace</h2><p>Votre organisation dispose maintenant de son espace de pilotage. Retrouvez ici vos équipes, projets, activités et indicateurs.</p></div></div><div class="ra-welcome-side"><span class="ra-welcome-chip">ESPACE ORGANISATION</span><strong id="dashboard-org-type">Gestion unifiée</strong><span id="dashboard-org-country">Sénégal</span></div></div>
   <div class="cards">
     <div class="card">
   <div class="metric-label">Membres & bénévoles</div>
@@ -376,6 +393,10 @@ main{background:linear-gradient(135deg,#f7faf6 0%,#f1f7f1 100%)}
   <div class="metric-note">Activités effectivement réalisées</div>
 </div>
 
+  </div>
+  <div class="ra-dashboard-charts">
+    <div class="panel ra-chart-panel"><div class="panel-head"><div><h3>Répartition des projets</h3><p class="ra-chart-caption">État des six derniers projets chargés</p></div><span class="ra-chart-icon ra-chart-icon-green">▥</span></div><div id="ra-dashboard-project-chart" class="ra-chart-content"><p class="empty">Les indicateurs apparaîtront avec vos projets.</p></div></div>
+    <div class="panel ra-chart-panel"><div class="panel-head"><div><h3>Suivi des activités</h3><p class="ra-chart-caption">État des six dernières activités chargées</p></div><span class="ra-chart-icon ra-chart-icon-orange">◷</span></div><div id="ra-dashboard-activity-chart" class="ra-chart-content"><p class="empty">Les indicateurs apparaîtront avec vos activités.</p></div></div>
   </div>
   <div class="content-grid">
     <div class="panel"><div class="panel-head"><h3>Suivi des projets</h3></div><div id="dashboard-projects" class="empty">Aucun projet enregistré.</div></div><div class="panel"><div class="panel-head"><h3>Activité récente</h3></div><div id="dashboard-activity" class="empty">Aucune activité enregistrée.</div></div>
@@ -672,9 +693,7 @@ main{background:linear-gradient(135deg,#f7faf6 0%,#f1f7f1 100%)}
    <div class="panel"><h4>Enregistrements récents</h4><div style="overflow-x:auto"><table class="table"><thead id="ramasys-business-head"></thead><tbody id="ramasys-business-rows"><tr><td>Chargement…</td></tr></tbody></table></div></div>
   </div></div></section>
 
-<footer>
-  Bienvenue sur RAMASYS One — Votre espace de travail est connecté et prêt à être utilisé. Certaines fonctionnalités complémentaires seront disponibles après configuration de leurs services associés.
-</footer>
+<footer class="ra-clean-footer"><span>RAMASYS ONE</span><span>ONE SYSTEM. EVERY ORGANIZATION.</span></footer>
 </main>
 </div>
 <script>
@@ -2342,12 +2361,23 @@ window.sendAssistantPrompt=function(){return false;};
  }
 
  function setupRealtime(){
-  if(!remoteReady())return;if(liveChannel){supabaseClient.removeChannel(liveChannel);liveChannel=null;}
-  const sync=$('ra-sync-state')||document.createElement('div');sync.id='ra-sync-state';sync.className='ra-muted-note';sync.style.cssText='padding:8px 14px;border-top:1px solid #e2e9e4';sync.textContent='Synchronisation distante active · en attente d’événement';document.querySelector('footer')?.before(sync);
-  const tables=['organization_messages','members','projects','project_activities','finance_incomes','finance_expenses','organization_branches','organization_units'];
-  liveChannel=supabaseClient.channel('ramasys-org-'+currentOrganizationId);
-  tables.forEach(table=>{liveChannel.on('postgres_changes',{event:'*',schema:'public',table,filter:'organization_id=eq.'+currentOrganizationId},()=>{sync.textContent='Synchronisé avec Supabase · dernière mise à jour '+when(new Date().toISOString());if($('reports')?.classList.contains('active'))renderReports();if($('communication')?.classList.contains('active'))renderMessages();});});
-  liveChannel.subscribe((state)=>{sync.textContent=state==='SUBSCRIBED'?'Synchronisation distante active · temps réel connecté':'Synchronisation distante : '+state;});
+  // Le tableau de bord lit les données directement depuis Supabase.
+  // Le temps réel est facultatif : aucune erreur de canal ne doit polluer l’interface.
+  const oldSync=$('ra-sync-state');if(oldSync)oldSync.remove();
+  if(!remoteReady())return;
+  if(liveChannel){supabaseClient.removeChannel(liveChannel);liveChannel=null;}
+  try{
+   const tables=['organization_messages','members','projects','project_activities','finance_incomes','finance_expenses','organization_branches','organization_units'];
+   const channel=supabaseClient.channel('ramasys-org-'+currentOrganizationId);
+   tables.forEach(table=>{channel.on('postgres_changes',{event:'*',schema:'public',table,filter:'organization_id=eq.'+currentOrganizationId},()=>{if($('reports')?.classList.contains('active'))renderReports();if($('communication')?.classList.contains('active'))renderMessages();if($('dashboard')?.classList.contains('active'))window.RAMASYS_V30?.dashboard?.();});});
+   liveChannel=channel;
+   channel.subscribe(state=>{
+    if(state==='CHANNEL_ERROR'||state==='TIMED_OUT'||state==='CLOSED'){
+      // Repli silencieux : les lectures Supabase à l’ouverture/actualisation restent disponibles.
+      if(liveChannel===channel){liveChannel=null;try{supabaseClient.removeChannel(channel);}catch(_){}}
+    }
+   });
+  }catch(_){liveChannel=null;}
  }
  async function init(){if(!remoteReady())return;if(initializedOrg===currentOrganizationId)return;initializedOrg=currentOrganizationId;const auth=await supabaseClient.auth.getUser();window.currentUserId=auth.data?.user?.id||null;await Promise.allSettled([renderReports(),renderMessages(),renderAssistant(),renderSecurity()]);setupRealtime();}
  function start(){let tries=0;const tick=()=>{if(remoteReady()){init();return;}if(++tries<60)setTimeout(tick,500);};tick();}
@@ -2913,6 +2943,11 @@ document.getElementById('platform-admin-refresh')?.addEventListener('click',()=>
   .ra-v3-form textarea{min-height:76px;resize:vertical}
   .ra-v3-wide{grid-column:1/-1}
   .ra-v3-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}
+  .ra-v3-record{border:1px solid #e1eae3;border-radius:12px;padding:13px;background:#fff}
+  .ra-v3-record-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+  .ra-v3-muted{font-size:12px;color:#718579;margin-top:5px;line-height:1.5}
+  .ra-v3-hidden{display:none}
+  @media(max-width:650px){.ra-v3-record-head{display:block}}
   .ra-v3-record{border:1px solid #e2eae4;border-radius:12px;padding:13px 15px;margin:9px 0;background:#fff}
   .ra-v3-record-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
   .ra-v3-muted{color:#6b7b70;font-size:12px}
@@ -2939,11 +2974,15 @@ document.getElementById('platform-admin-refresh')?.addEventListener('click',()=>
    if(orgName)orgName.textContent=organization.name||organization.acronym||'Votre organisation';
    if(logo){
     const logoUrl=organization.logo_url||null;
-    if(logoUrl){logo.src=logoUrl;logo.style.display='block';logo.onerror=()=>{logo.removeAttribute('src');logo.style.display='none';};}
+    if(logoUrl){logo.src=logoUrl;logo.style.display='block';logo.onerror=()=>{logo.removeAttribute('src');logo.style.display='none';if(logoFallback)logoFallback.style.display='grid';};}
     else{logo.removeAttribute('src');logo.style.display='none';}
    }
    const topOrgLogo=document.getElementById('ramasys-top-org-logo');
    if(topOrgLogo){const logoUrl=organization.logo_url||null;if(logoUrl){topOrgLogo.src=logoUrl;topOrgLogo.style.display='block';topOrgLogo.onerror=()=>{topOrgLogo.removeAttribute('src');topOrgLogo.style.display='none';};}else{topOrgLogo.removeAttribute('src');topOrgLogo.style.display='none';}}
+   const logoFallback=$('dashboard-org-logo-fallback');
+   if(logoFallback)logoFallback.style.display=organization.logo_url?'none':'grid';
+   if($('dashboard-org-type'))$('dashboard-org-type').textContent=organization.organization_type||'Espace de gestion';
+   if($('dashboard-org-country'))$('dashboard-org-country').textContent=organization.city||organization.country||'Sénégal';
    const jobs=[
     client().from('members').select('id',{count:'exact',head:true}).eq('organization_id',id).eq('status','active'),
     client().from('projects').select('id,name,status,progress_percentage,created_at').eq('organization_id',id).order('created_at',{ascending:false}).limit(6),
@@ -2969,6 +3008,22 @@ document.getElementById('platform-admin-refresh')?.addEventListener('click',()=>
    }else if($('overview-mobilized-budget')){$('overview-mobilized-budget').textContent='Réservé';}
    if($('dashboard-projects'))$('dashboard-projects').innerHTML=projects.length?projects.map(p=>`<div class="activity"><i class="dot"></i><div><b>${esc(p.name)}</b><small>${esc(p.status)} · ${Math.round(Number(p.progress_percentage)||0)} %</small></div></div>`).join(''):'Aucun projet enregistré dans Supabase.';
    if($('dashboard-activity'))$('dashboard-activity').innerHTML=activities.length?activities.map(a=>`<div class="activity"><i class="dot"></i><div><b>${esc(a.name)}</b><small>${esc(a.status)} · ${stamp(a.created_at)}</small></div></div>`).join(''):'Aucune activité enregistrée dans Supabase.';
+   const projectChart=$('ra-dashboard-project-chart');
+   if(projectChart){
+    const labels={draft:'Brouillon',planned:'Planifié',active:'En cours',on_hold:'En pause',completed:'Terminé',cancelled:'Annulé'};
+    const colors={draft:'#94a3b8',planned:'#3b82f6',active:'#16a34a',on_hold:'#f59e0b',completed:'#0f766e',cancelled:'#ef4444'};
+    const counts=Object.entries(labels).map(([key,label])=>({label,count:projects.filter(x=>x.status===key).length,color:colors[key]})).filter(x=>x.count>0);
+    const max=Math.max(1,...counts.map(x=>x.count));
+    projectChart.innerHTML=counts.length?counts.map(x=>`<div class="ra-chart-row"><div class="ra-chart-label"><span>${x.label}</span><b>${x.count}</b></div><div class="ra-chart-track"><span style="width:${Math.max(7,x.count/max*100)}%;background:${x.color}"></span></div></div>`).join(''):'<div class="ra-chart-empty">Aucun projet à représenter pour le moment. Créez un projet pour commencer à suivre votre portefeuille.</div>';
+   }
+   const activityChart=$('ra-dashboard-activity-chart');
+   if(activityChart){
+    const labels={planned:'Planifiée',in_progress:'En cours',completed:'Terminée',on_hold:'En pause',cancelled:'Annulée'};
+    const colors={planned:'#3b82f6',in_progress:'#f28a00',completed:'#16a34a',on_hold:'#8b5cf6',cancelled:'#ef4444'};
+    const counts=Object.entries(labels).map(([key,label])=>({label,count:activities.filter(x=>x.status===key).length,color:colors[key]})).filter(x=>x.count>0);
+    const max=Math.max(1,...counts.map(x=>x.count));
+    activityChart.innerHTML=counts.length?counts.map(x=>`<div class="ra-chart-row"><div class="ra-chart-label"><span>${x.label}</span><b>${x.count}</b></div><div class="ra-chart-track"><span style="width:${Math.max(7,x.count/max*100)}%;background:${x.color}"></span></div></div>`).join(''):'<div class="ra-chart-empty">Aucune activité enregistrée pour le moment. Vos indicateurs évolueront avec vos données.</div>';
+   }
   }catch(e){console.error('RAMASYS dashboard',e);const h=$('dashboard');if(h&&!h.querySelector('#ra-v3-dashboard-error')){const el=document.createElement('p');el.id='ra-v3-dashboard-error';el.className='subtle';el.style.color='#b42318';el.textContent='Actualisation du tableau de bord impossible : '+e.message;h.prepend(el);}}
   finally{dashboardBusy=false;}
  }
@@ -3161,23 +3216,113 @@ document.getElementById('platform-admin-refresh')?.addEventListener('click',()=>
  function formatSize(bytes){const n=Number(bytes)||0;return n<1024?`${n} o`:n<1048576?`${(n/1024).toFixed(1)} Ko`:`${(n/1048576).toFixed(2)} Mo`;}
  async function renderDocuments(){
   const page=$('documents');if(!page||!ready())return;
-  page.innerHTML=`<div class="panel"><div class="panel-head"><div><h3>Documents de l’organisation</h3><p class="module-intro">Fichiers stockés dans Supabase Storage, dans un espace privé séparé pour chaque organisation. Taille maximale : 20 Mo par fichier.</p></div><span class="pill">Stockage Supabase</span></div>
-   <div class="ra-v3-toolbar">${admin()?'<label class="btn" for="ra-v3-document-file">＋ Ajouter un document</label><input id="ra-v3-document-file" type="file" class="ra-v3-hidden">':''}<button class="btn secondary" type="button" id="ra-v3-document-refresh">Actualiser</button></div>
-   <div id="ra-v3-document-message" class="subtle" role="status">Chargement des documents…</div><div id="ra-v3-document-list"></div></div>`;
-  const list=async()=>{msg('ra-v3-document-message','Lecture du stockage privé…');try{const r=await client().storage.from('organization-documents').list(org(),{limit:100,offset:0,sortBy:{column:'created_at',order:'desc'}});if(r.error)throw r.error;const files=(r.data||[]).filter(x=>x.name&&x.id);$('ra-v3-document-list').innerHTML=files.length?files.map(x=>{const path=org()+'/'+x.name;return `<article class="ra-v3-record"><div class="ra-v3-record-head"><div><b>${esc(x.name)}</b><div class="ra-v3-muted">${formatSize(x.metadata?.size)} · ${esc(x.metadata?.mimetype||'Type non précisé')} · ${stamp(x.created_at||x.updated_at)}</div></div><div class="ra-v3-toolbar"><button class="btn secondary" type="button" data-doc-download="${esc(x.name)}">Télécharger</button>${admin()?`<button class="btn secondary" type="button" data-doc-delete="${esc(x.name)}">Supprimer</button>`:''}</div></div></article>`;}).join(''):'<p class="empty">Aucun document enregistré dans le stockage de cette organisation.</p>';msg('ra-v3-document-message',files.length+' document(s) retrouvé(s) dans Supabase Storage.');}catch(e){msg('ra-v3-document-message','Lecture impossible : '+e.message,true);}};
-  if(admin())$('ra-v3-document-file').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;const btn=$('ra-v3-document-file');try{RAMASYS_SECURITY.validateDocumentFile(file,20*1024*1024);}catch(validationError){msg('ra-v3-document-message',validationError.message,true);btn.value='';return;}const clean=file.name.normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'_').replace(/^_+|_+$/g,'').slice(-120)||'document';const path=org()+'/'+Date.now()+'_'+clean;msg('ra-v3-document-message','Envoi du fichier vers Supabase Storage…');try{const r=await client().storage.from('organization-documents').upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type||'application/octet-stream'});if(r.error)throw r.error;msg('ra-v3-document-message','Document envoyé et enregistré.');await list();}catch(err){msg('ra-v3-document-message','Téléversement impossible : '+err.message,true);}finally{btn.value='';}};
-  $('ra-v3-document-list').addEventListener('click',async e=>{const dl=e.target.closest('[data-doc-download]'),del=e.target.closest('[data-doc-delete]');if(dl){try{const r=await client().storage.from('organization-documents').createSignedUrl(org()+'/'+dl.dataset.docDownload,120);if(r.error)throw r.error;window.open(r.data.signedUrl,'_blank','noopener');}catch(err){msg('ra-v3-document-message','Téléchargement impossible : '+err.message,true);}}if(del){if(!admin()||!confirm('Supprimer définitivement ce document ?'))return;try{const r=await client().storage.from('organization-documents').remove([org()+'/'+del.dataset.docDelete]);if(r.error)throw r.error;await list();}catch(err){msg('ra-v3-document-message','Suppression impossible : '+err.message,true);}}});
-  $('ra-v3-document-refresh').onclick=list;await list();
+  const categories=[['general','Document général'],['report','Rapport / compte rendu'],['project','Document de projet'],['activity','Document d’activité'],['financial','Finance / comptabilité'],['legal','Juridique / administratif'],['governance','Gouvernance / statuts'],['hr','Ressources humaines'],['communication','Communication'],['compliance','Conformité / justificatif'],['other','Autre']];
+  const categoryLabel=value=>categories.find(x=>x[0]===value)?.[1]||value||'Document';
+  page.innerHTML=`
+   <div class="panel">
+    <div class="panel-head"><div><h3>Centre documentaire</h3><p class="module-intro">Importez vos documents existants, décrivez-les et rattachez-les aux projets, activités, rapports ou membres de votre organisation. Les fichiers restent dans un stockage privé.</p></div><span class="pill">Bibliothèque sécurisée</span></div>
+    <div class="ra-v3-grid"><div class="ra-v3-record"><b id="ra-doc-count">—</b><div class="ra-v3-muted">Documents enregistrés</div></div><div class="ra-v3-record"><b id="ra-doc-linked">—</b><div class="ra-v3-muted">Documents rattachés</div></div><div class="ra-v3-record"><b id="ra-doc-archived">—</b><div class="ra-v3-muted">Documents archivés</div></div></div>
+   </div>
+   <div class="panel">
+    <div class="panel-head"><div><h3>Importer des documents existants</h3><p class="module-intro">Sélectionnez un ou plusieurs fichiers. Taille maximale : 20 Mo par fichier. Le classement est confirmé par vous avant l’enregistrement.</p></div></div>
+    ${admin()?`<form id="ra-doc-upload-form" class="ra-v3-form">
+      <label class="ra-v3-wide">Fichiers à importer<input id="ra-doc-files" type="file" multiple required accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.odt,.ods,.odp,.jpg,.jpeg,.png,.webp,.txt,.csv"></label>
+      <label>Catégorie du document<select id="ra-doc-category">${categories.map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}</select></label>
+      <label>Date du document<input id="ra-doc-date" type="date"></label>
+      <label>Rattacher à<select id="ra-doc-target-type"><option value="">Aucun rattachement pour le moment</option><option value="project">Projet</option><option value="activity">Activité</option><option value="report">Rapport</option><option value="member">Membre</option></select></label>
+      <label id="ra-doc-target-wrap" style="display:none">Élément concerné<select id="ra-doc-target-id"><option value="">Choisir un élément</option></select></label>
+      <label class="ra-v3-wide">Description / contexte<textarea id="ra-doc-description" placeholder="Ex. Rapport final d’une activité déjà réalisée, période concernée, informations utiles…"></textarea></label>
+      <label class="ra-v3-wide">Mots-clés (séparés par des virgules)<input id="ra-doc-tags" type="text" placeholder="rapport, activité passée, bilan, 2025"></label>
+      <div class="ra-v3-wide"><button class="btn" type="submit" id="ra-doc-upload-submit">Importer et enregistrer</button><span class="ra-v3-muted" id="ra-doc-upload-hint">Les fichiers sont conservés tels quels. Aucune information du document n’est inventée ou extraite automatiquement à ce stade.</span></div>
+     </form>`:`<p class="subtle">L’importation est actuellement réservée à l’administrateur de l’organisation. Les membres autorisés peuvent consulter les documents selon leurs permissions.</p>`}
+    <div id="ra-v3-document-message" class="subtle" role="status" style="margin-top:12px">Chargement de la bibliothèque…</div>
+   </div>
+   <div class="panel"><div class="panel-head"><div><h3>Bibliothèque de l’organisation</h3><p class="module-intro">Retrouvez les documents enregistrés, leurs catégories et leurs rattachements.</p></div><button class="btn secondary" type="button" id="ra-v3-document-refresh">Actualiser</button></div>
+    <div class="ra-v3-form"><label>Rechercher<input id="ra-doc-search" type="search" placeholder="Nom, description ou mot-clé"></label><label>Filtrer par catégorie<select id="ra-doc-filter"><option value="">Toutes les catégories</option>${categories.map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}</select></label></div>
+    <div id="ra-v3-document-list" style="margin-top:14px"></div>
+   </div>`;
+
+  let docs=[], links=[], legacyFiles=[], targets={project:[],activity:[],report:[],member:[]};
+  const safeError=e=>String(e?.message||e||'Erreur inconnue');
+  const digest=async file=>{try{if(!crypto?.subtle)return null;const bytes=await file.arrayBuffer();const hash=await crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(hash)].map(b=>b.toString(16).padStart(2,'0')).join('');}catch(_){return null;}};
+  const loadTargets=async()=>{
+    const specs={project:['projects','id,name'],activity:['project_activities','id,name'],report:['project_reports','id,report_title'],member:['members','id,full_name']};
+    for(const [kind,[table,cols]] of Object.entries(specs)){
+      try{const r=await client().from(table).select(cols).eq('organization_id',org()).order(kind==='report'?'report_title':kind==='member'?'full_name':'name',{ascending:true}).limit(300);if(!r.error)targets[kind]=r.data||[];}catch(_){targets[kind]=[];}
+    }
+  };
+  const targetType=$('ra-doc-target-type'),targetSelect=$('ra-doc-target-id');
+  const fillTargets=()=>{const kind=targetType.value;const items=targets[kind]||[];$('ra-doc-target-wrap').style.display=kind?'grid':'none';targetSelect.innerHTML='<option value="">Choisir un élément</option>'+items.map(x=>`<option value="${esc(x.id)}">${esc(x.name||x.report_title||x.full_name||'Élément')}</option>`).join('');};
+  if(targetType){targetType.addEventListener('change',fillTargets);await loadTargets();}
+  const renderList=()=>{
+    const q=String($('ra-doc-search')?.value||'').trim().toLocaleLowerCase('fr'),cat=$('ra-doc-filter')?.value||'';
+    const filtered=docs.filter(d=>!d.archived_at&&(!cat||d.category===cat)&&(!q||[d.document_name,d.description,d.original_filename,...(d.tags||[])].join(' ').toLocaleLowerCase('fr').includes(q)));
+    $('ra-doc-count').textContent=docs.filter(d=>!d.archived_at).length;
+    $('ra-doc-archived').textContent=docs.filter(d=>!!d.archived_at).length;
+    $('ra-doc-linked').textContent=links.length;
+    const legacyHtml=legacyFiles.map(f=>`<article class="ra-v3-record" style="margin:10px 0;border-style:dashed"><div class="ra-v3-record-head"><div><b>${esc(f.name)}</b><div class="ra-v3-muted">Fichier déjà présent dans le stockage · ${formatSize(f.metadata?.size)} · À classer dans la bibliothèque</div></div><button class="btn secondary" type="button" data-doc-index="${esc(f.name)}">Indexer ce fichier</button></div></article>`).join('');
+    $('ra-v3-document-list').innerHTML=(filtered.length?filtered.map(d=>{
+      const dlinks=links.filter(l=>l.document_id===d.id);
+      const tagHtml=(d.tags||[]).map(t=>`<span class="pill">${esc(t)}</span>`).join(' ');
+      return `<article class="ra-v3-record" style="margin:10px 0"><div class="ra-v3-record-head"><div style="min-width:0"><b>${esc(d.document_name||d.original_filename||'Document sans titre')}</b><div class="ra-v3-muted">${esc(categoryLabel(d.category))} · ${formatSize(d.file_size)} · ${date(d.document_date)} · Importé le ${stamp(d.uploaded_at)}</div><div class="ra-v3-muted">${esc(d.description||'Aucune description')}</div><div class="ra-v3-toolbar">${tagHtml}<span class="pill">${d.classification_status==='confirmed'?'Classement confirmé':'À vérifier'}</span>${dlinks.map(l=>`<span class="pill">${esc(l.relationship_label||l.target_type)}</span>`).join('')}</div></div><div class="ra-v3-toolbar"><button class="btn secondary" type="button" data-doc-open="${esc(d.id)}">Ouvrir</button>${admin()?`<button class="btn secondary" type="button" data-doc-archive="${esc(d.id)}">Archiver</button>`:''}</div></div></article>`;
+    }).join(''):'<p class="empty">Aucun document classé ne correspond à votre recherche.</p>')+legacyHtml;
+  };
+  const load=async()=>{
+    msg('ra-v3-document-message','Lecture des fiches documentaires…');
+    try{
+      const [dr,lr,sr]=await Promise.all([
+        client().from('organization_documents').select('*').eq('organization_id',org()).order('uploaded_at',{ascending:false}).limit(500),
+        client().from('organization_document_links').select('id,document_id,target_type,target_id,relationship_label').eq('organization_id',org()).limit(1000),
+        client().storage.from('organization-documents').list(org(),{limit:200,offset:0,sortBy:{column:'created_at',order:'desc'}})
+      ]);
+      if(dr.error)throw dr.error;if(lr.error)throw lr.error;if(sr.error)throw sr.error;
+      docs=dr.data||[];links=lr.data||[];const known=new Set(docs.map(d=>d.file_path));legacyFiles=(sr.data||[]).filter(x=>x.name&&x.id&&!known.has(org()+'/'+x.name));renderList();
+      msg('ra-v3-document-message',docs.length+' fiche(s) documentaire(s) chargée(s).');
+    }catch(e){msg('ra-v3-document-message','Lecture impossible : '+safeError(e),true);}
+  };
+  $('ra-doc-search').addEventListener('input',renderList);$('ra-doc-filter').addEventListener('change',renderList);
+  $('ra-v3-document-refresh').onclick=load;
+  $('ra-v3-document-list').addEventListener('click',async e=>{
+    const open=e.target.closest('[data-doc-open]'),archive=e.target.closest('[data-doc-archive]'),index=e.target.closest('[data-doc-index]');
+    if(index){const f=legacyFiles.find(x=>x.name===index.dataset.docIndex);if(f){try{const u=await user(),path=org()+'/'+f.name;const ins=await client().from('organization_documents').insert({organization_id:org(),document_name:f.name,document_type:'general',description:'Fichier préexistant indexé dans le centre documentaire.',file_path:path,file_size:f.metadata?.size||null,mime_type:f.metadata?.mimetype||null,uploaded_by:u.id,notes:'Fichier préexistant indexé.',storage_bucket:'organization-documents',original_filename:f.name,category:'general',classification_status:'pending',metadata:{source:'legacy_storage_index'}}).select('id').single();if(ins.error)throw ins.error;const ver=await client().from('organization_document_versions').insert({document_id:ins.data.id,organization_id:org(),version_number:1,storage_bucket:'organization-documents',file_path:path,original_filename:f.name,file_size:f.metadata?.size||null,mime_type:f.metadata?.mimetype||null,uploaded_by:u.id,change_note:'Indexation d’un fichier déjà stocké'});if(ver.error)throw ver.error;await load();msg('ra-v3-document-message','Fichier existant indexé dans la bibliothèque. Vous pourrez compléter sa catégorie et ses informations dans une prochaine étape.');}catch(err){msg('ra-v3-document-message','Indexation impossible : '+safeError(err),true);}}}
+    if(open){const d=docs.find(x=>x.id===open.dataset.docOpen);if(!d)return;try{const r=await client().storage.from(d.storage_bucket||'organization-documents').createSignedUrl(d.file_path,300);if(r.error)throw r.error;window.open(r.data.signedUrl,'_blank','noopener,noreferrer');}catch(err){msg('ra-v3-document-message','Ouverture impossible : '+safeError(err),true);}}
+    if(archive){if(!admin()||!confirm('Archiver ce document ? Le fichier original sera conservé.'))return;try{const r=await client().from('organization_documents').update({archived_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',archive.dataset.docArchive).eq('organization_id',org());if(r.error)throw r.error;await load();}catch(err){msg('ra-v3-document-message','Archivage impossible : '+safeError(err),true);}}
+  });
+  const form=$('ra-doc-upload-form');
+  if(form)form.addEventListener('submit',async e=>{
+    e.preventDefault();if(!admin()){msg('ra-v3-document-message','Seul l’administrateur peut importer des documents.',true);return;}
+    const files=[...($('ra-doc-files').files||[])];if(!files.length)return;
+    const submit=$('ra-doc-upload-submit');submit.disabled=true;let done=0,errors=[];
+    const category=$('ra-doc-category').value,docDate=$('ra-doc-date').value||null,description=$('ra-doc-description').value.trim()||null,tags=$('ra-doc-tags').value.split(',').map(x=>x.trim()).filter(Boolean).slice(0,20);
+    const targetKind=$('ra-doc-target-type').value,targetId=$('ra-doc-target-id').value;
+    if(targetKind&&!targetId){msg('ra-v3-document-message','Choisissez l’élément auquel rattacher les documents, ou sélectionnez « Aucun rattachement ».',true);submit.disabled=false;return;}
+    try{
+      for(const file of files){let path=null,uploaded=false,recordId=null;
+        try{
+          RAMASYS_SECURITY.validateDocumentFile(file,20*1024*1024);
+          const clean=file.name.normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'_').replace(/^_+|_+$/g,'').slice(-100)||'document';
+          path=org()+'/'+crypto.randomUUID()+'_'+clean;
+          msg('ra-v3-document-message',`Import de ${file.name} (${done+1}/${files.length})…`);
+          const up=await client().storage.from('organization-documents').upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type||'application/octet-stream'});if(up.error)throw up.error;uploaded=true;
+          const hash=await digest(file),u=await user();
+          const row={organization_id:org(),document_name:file.name,document_type:category,description,file_path:path,file_size:file.size,mime_type:file.type||'application/octet-stream',uploaded_by:u.id,notes:description,storage_bucket:'organization-documents',original_filename:file.name,category,document_date:docDate,classification_status:'confirmed',tags,metadata:{source:'manual_import',mime_type:file.type||null,last_modified:file.lastModified||null},sha256:hash};
+          const ins=await client().from('organization_documents').insert(row).select('id').single();if(ins.error)throw ins.error;recordId=ins.data.id;
+          const ver=await client().from('organization_document_versions').insert({document_id:recordId,organization_id:org(),version_number:1,storage_bucket:'organization-documents',file_path:path,original_filename:file.name,file_size:file.size,mime_type:file.type||'application/octet-stream',sha256:hash,change_note:'Import initial',uploaded_by:u.id});if(ver.error)throw ver.error;
+          if(targetKind&&targetId){const link=await client().from('organization_document_links').insert({document_id:recordId,organization_id:org(),target_type:targetKind,target_id:targetId,relationship_label:'Document associé',created_by:u.id});if(link.error)throw link.error;}
+          done++;
+        }catch(err){errors.push(file.name+': '+safeError(err));if(recordId){try{await client().from('organization_document_versions').delete().eq('document_id',recordId);await client().from('organization_documents').delete().eq('id',recordId).eq('organization_id',org());}catch(_){}}if(uploaded&&path){try{await client().storage.from('organization-documents').remove([path]);}catch(_){}}}
+      }
+      $('ra-doc-upload-form').reset();fillTargets();await load();
+      msg('ra-v3-document-message',`${done} document(s) importé(s) et indexé(s). ${errors.length?errors.length+' échec(s) : '+errors.join(' | '):'Les fiches et versions initiales sont enregistrées.'}`,errors.length>0);
+    }finally{submit.disabled=false;}
+  });
+  await load();
  }
- // The inline legacy input calls this global function; replace its localStorage implementation.
+ // Compatibilité avec l'ancien champ d'importation présent dans le HTML initial.
  window.handleDocumentSelection=async function(event){
-  const file=event?.target?.files?.[0];if(!file)return;
-  if(!ready()){msg('document-message','Connectez-vous à un espace pour déposer un document.',true);event.target.value='';return;}
-  if(!admin()){msg('document-message','Seuls les administrateurs peuvent ajouter des documents.',true);event.target.value='';return;}
-  if(file.size>20*1024*1024){msg('document-message','Fichier trop volumineux : maximum 20 Mo.',true);event.target.value='';return;}
-  const clean=file.name.normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'_').replace(/^_+|_+$/g,'').slice(-120)||'document';
-  const path=org()+'/'+Date.now()+'_'+clean;msg('document-message','Envoi vers Supabase Storage…');
-  try{const r=await client().storage.from('organization-documents').upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type||'application/octet-stream'});if(r.error)throw r.error;msg('document-message','Document envoyé dans Supabase Storage.');await renderDocuments();}catch(e){msg('document-message','Envoi impossible : '+e.message,true);}finally{event.target.value='';}
+  if(event?.target)event.target.value='';
+  if(document.getElementById('ra-doc-files')){document.getElementById('ra-doc-files').click();return;}
+  msg('document-message','Ouvrez le Centre documentaire pour importer et classer vos fichiers.');
  };
 
  // --------------------------- NAVIGATION / REALTIME ---------------------------
