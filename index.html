@@ -187,10 +187,9 @@ main{background:linear-gradient(135deg,#f7faf6 0%,#f1f7f1 100%)}
 @media(max-width:850px){.top{align-items:flex-start;flex-wrap:wrap}.user.ramasys-top-user{width:100%;justify-content:flex-end;flex-wrap:wrap}.ra-notification-popover{right:130px}}
 </style>
 
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer onload="if(window.ramasysTurnstileReady)window.ramasysTurnstileReady()"></script>
-<style id="ramasys-captcha-style">#ramasys-turnstile{margin:14px 0;min-height:65px}.ra-captcha-note{font-size:12px;color:#66756d;margin:6px 0 12px}.ra-wave-review{margin-top:16px;padding:16px;border:1px solid #d6e6da;border-radius:12px;background:#f8fcf8}.ra-wave-review label{display:block;margin:9px 0 5px;font-weight:600}.ra-wave-review input{width:100%;padding:10px;border:1px solid #cbd8ce;border-radius:8px}.ra-wave-admin-actions{display:flex;gap:8px;flex-wrap:wrap}.ra-wave-admin-actions button{padding:8px 12px;border:0;border-radius:7px;cursor:pointer}.ra-wave-approve{background:#16834a;color:white}.ra-wave-reject{background:#fff0ed;color:#a43d2e}</style>
-<meta name="ramasys-upgrade" content="v2.34-auth-turnstile-pwa">
-<meta name="ramasys-build" content="v2.34-auth-turnstile-pwa-document-center">
+<style id="ramasys-wave-review-style">.ra-wave-review{margin-top:16px;padding:16px;border:1px solid #d6e6da;border-radius:12px;background:#f8fcf8}.ra-wave-review label{display:block;margin:9px 0 5px;font-weight:600}.ra-wave-review input{width:100%;padding:10px;border:1px solid #cbd8ce;border-radius:8px}.ra-wave-admin-actions{display:flex;gap:8px;flex-wrap:wrap}.ra-wave-admin-actions button{padding:8px 12px;border:0;border-radius:7px;cursor:pointer}.ra-wave-approve{background:#16834a;color:white}.ra-wave-reject{background:#fff0ed;color:#a43d2e}</style>
+<meta name="ramasys-upgrade" content="v2.35-auth-no-third-party-captcha">
+<meta name="ramasys-build" content="v2.35-auth-no-third-party-captcha-document-center">
 
 <style id="ramasys-v231-welcome-dashboard">
 :root{--ra-green:#087a48;--ra-green-deep:#064b38;--ra-orange:#f28a00;--ra-blue:#2775bd;--ra-violet:#7652b5;--ra-teal:#0f8b83}
@@ -234,9 +233,7 @@ main{background:linear-gradient(135deg,#f7faf6 0%,#f1f7f1 100%)}
 
       <label for="login-password">Mot de passe</label>
       <input type="password" id="login-password" placeholder="Votre mot de passe">
-      <div id="ramasys-login-turnstile" aria-label="Vérification anti-robot pour la connexion"></div>
-      <p class="ra-captcha-note" id="ramasys-login-captcha-status">Validez la vérification de sécurité pour vous connecter.</p>
-      <button class="auth-button" id="login-button" disabled>Valider puis se connecter</button>
+      <button class="auth-button" id="login-button">Se connecter</button>
         <div class="auth-switch"><button type="button" id="ra-forgot-link">Mot de passe oublié ?</button></div>
 
       <div class="auth-switch">
@@ -281,9 +278,7 @@ main{background:linear-gradient(135deg,#f7faf6 0%,#f1f7f1 100%)}
         <input type="email" id="signup-email" placeholder="nom@organisation.sn">
         <label for="signup-password">Mot de passe</label>
         <input type="password" id="signup-password" placeholder="Au moins 8 caractères">
-        <div id="ramasys-turnstile" aria-label="Vérification anti-robot"></div>
-        <p class="ra-captcha-note" id="ramasys-captcha-status">Vérification de sécurité obligatoire avant la création du compte.</p>
-        <button class="auth-button" id="signup-button" disabled>Vérifier puis créer mon compte</button>
+        <button class="auth-button" id="signup-button">Créer mon compte</button>
         <div class="auth-switch">Vous avez déjà un compte ? <button type="button" id="show-login-credentials">Se connecter</button></div>
       </div>
     </div>
@@ -879,8 +874,6 @@ document.getElementById('show-signup').addEventListener('click', () => {
   document.getElementById('login-form').style.display = 'none';
   document.getElementById('signup-form').style.display = 'block';
   showMessage('');
-  // Une nouvelle tentative volontaire reçoit un nouveau jeton, jamais l'ancien.
-  if(typeof ramasysTurnstileWidgetId!=='undefined' && ramasysTurnstileWidgetId!==null && !ramasysTurnstileToken){resetRamasysTurnstile('signup',true);}
 });
 
 // Inscription en deux étapes : catégorie d'abord, identifiants ensuite.
@@ -914,7 +907,6 @@ document.getElementById('signup-type-continue').addEventListener('click', () => 
   if(planField&&planField.value==='enterprise'&&intervalField)intervalField.disabled=true;
   signupTypeStep.style.display = 'none';
   signupCredentialsStep.style.display = 'block';
-  if(window.ramasysTurnstileReady)window.ramasysTurnstileReady();
   showMessage('');
 });
 document.getElementById('signup-change-type').addEventListener('click', () => {
@@ -926,120 +918,15 @@ document.getElementById('signup-change-type').addEventListener('click', () => {
 document.getElementById('show-login').addEventListener('click', () => {
   document.getElementById('signup-form').style.display = 'none';
   document.getElementById('login-form').style.display = 'block';
-  if(window.ramasysTurnstileReady)window.ramasysTurnstileReady();
   showMessage('');
 });
 document.getElementById('show-login-credentials').addEventListener('click', () => {
   document.getElementById('signup-form').style.display = 'none';
   document.getElementById('login-form').style.display = 'block';
-  if(window.ramasysTurnstileReady)window.ramasysTurnstileReady();
   showMessage('');
 });
 
-// Cloudflare Turnstile — widgets séparés, mode Managed discret et reprise manuelle en cas d'incident.
-// Les jetons sont à usage unique : ils sont transmis à Supabase puis effacés.
-const RAMASYS_TURNSTILE_SITE_KEY = '0x4AAAAAAGNq3MhO4357EkyA';
-let ramasysTurnstileToken = '';
-let ramasysLoginTurnstileToken = '';
-let ramasysTurnstileWidgetId = null;
-let ramasysLoginTurnstileWidgetId = null;
-
-function ramasysTurnstileParts(mode){
-  const signup=mode==='signup';
-  return {
-    signup,
-    host:document.getElementById(signup?'ramasys-turnstile':'ramasys-login-turnstile'),
-    button:document.getElementById(signup?'signup-button':'login-button'),
-    status:document.getElementById(signup?'ramasys-captcha-status':'ramasys-login-captcha-status'),
-    widgetId:signup?ramasysTurnstileWidgetId:ramasysLoginTurnstileWidgetId,
-    retryId:signup?'ramasys-signup-captcha-retry':'ramasys-login-captcha-retry'
-  };
-}
-function ramasysTurnstileRetryControl(mode){
-  const p=ramasysTurnstileParts(mode);
-  if(!p.status)return null;
-  let retry=document.getElementById(p.retryId);
-  if(!retry){
-    retry=document.createElement('button');
-    retry.type='button'; retry.id=p.retryId; retry.className='btn secondary';
-    retry.textContent='Relancer la vérification';
-    retry.style.cssText='display:none;margin:8px 0 12px;padding:9px 14px;font-size:13px;';
-    p.status.insertAdjacentElement('afterend',retry);
-    retry.addEventListener('click',()=>resetRamasysTurnstile(mode,true));
-  }
-  return retry;
-}
-function ramasysTurnstileErrorText(code){
-  const c=String(code||'').trim();
-  if(c==='110200')return 'Ce domaine n’est pas autorisé dans Cloudflare Turnstile. Ajoutez ramasys-one.vercel.app dans Hostname Management.';
-  if(c==='110100'||c==='110110'||c==='400020'||c==='400021'||c==='400070')return 'La configuration de la clé Cloudflare est incorrecte ou désactivée. Vérifiez le widget et son domaine autorisé.';
-  if(c==='200500')return 'Le composant Cloudflare ne se charge pas. Vérifiez que challenges.cloudflare.com n’est pas bloqué par le navigateur, une extension ou le réseau.';
-  if(c==='110600'||c==='110620')return 'La vérification a expiré. Relancez-la lorsque vous êtes prêt.';
-  if(/^300|^600/.test(c))return 'Cloudflare n’a pas pu terminer le contrôle de sécurité. Évitez les clics répétés ; essayez une fenêtre privée sans extensions, puis un autre réseau si nécessaire.';
-  return 'La vérification Cloudflare a rencontré une erreur ('+(c||'inconnue')+'). Vous pouvez la relancer manuellement.';
-}
-function ramasysSetTurnstileError(mode,code){
-  const p=ramasysTurnstileParts(mode);
-  if(p.signup)ramasysTurnstileToken='';else ramasysLoginTurnstileToken='';
-  if(p.button)p.button.disabled=true;
-  if(p.status)p.status.textContent=ramasysTurnstileErrorText(code);
-  const retry=ramasysTurnstileRetryControl(mode); if(retry)retry.style.display='inline-block';
-  console.warn('RAMASYS Turnstile error', {mode, code:String(code||'unknown')});
-}
-function renderRamasysTurnstile(hostId, mode){
-  const p=ramasysTurnstileParts(mode);
-  const currentId=p.signup?ramasysTurnstileWidgetId:ramasysLoginTurnstileWidgetId;
-  if(!p.host||!window.turnstile||p.host.offsetParent===null||currentId!==null)return;
-  if(!RAMASYS_TURNSTILE_SITE_KEY){if(p.status)p.status.textContent='Protection anti-robot non configurée.';if(p.button)p.button.disabled=true;return;}
-  try{
-    const id=window.turnstile.render(p.host,{
-      sitekey:RAMASYS_TURNSTILE_SITE_KEY,
-      theme:'light',
-      language:'fr',
-      appearance:'interaction-only',
-      execution:'render',
-      retry:'never',
-      'refresh-expired':'manual',
-      'refresh-timeout':'manual',
-      callback:function(token){
-        const value=String(token||'');
-        const valid=value.length>0&&value.length<=2048;
-        if(p.signup)ramasysTurnstileToken=valid?value:'';else ramasysLoginTurnstileToken=valid?value:'';
-        if(p.button)p.button.disabled=!valid;
-        if(p.status)p.status.textContent=valid?'Protection validée. Vous pouvez continuer.':'Jeton de vérification invalide. Relancez le contrôle.';
-        const retry=ramasysTurnstileRetryControl(mode);if(retry)retry.style.display='none';
-      },
-      'expired-callback':function(){ramasysSetTurnstileError(mode,'expired');},
-      'timeout-callback':function(){ramasysSetTurnstileError(mode,'timeout');},
-      'error-callback':function(code){ramasysSetTurnstileError(mode,code);return true;},
-      'unsupported-callback':function(){ramasysSetTurnstileError(mode,'unsupported-browser');}
-    });
-    if(p.signup)ramasysTurnstileWidgetId=id;else ramasysLoginTurnstileWidgetId=id;
-    ramasysTurnstileRetryControl(mode);
-    if(p.status)p.status.textContent='Protection anti-robot en cours de préparation…';
-  }catch(error){
-    if(p.button)p.button.disabled=true;
-    if(p.status)p.status.textContent='Impossible de charger Cloudflare. Vérifiez votre connexion puis relancez la vérification.';
-    console.error('RAMASYS Turnstile render error:',error);
-    const retry=ramasysTurnstileRetryControl(mode);if(retry)retry.style.display='inline-block';
-  }
-}
-window.ramasysTurnstileReady=function(){
-  renderRamasysTurnstile('ramasys-turnstile','signup');
-  renderRamasysTurnstile('ramasys-login-turnstile','login');
-};
-if(window.turnstile)window.ramasysTurnstileReady();
-function resetRamasysTurnstile(mode,manual){
-  const p=ramasysTurnstileParts(mode);
-  if(p.signup)ramasysTurnstileToken='';else ramasysLoginTurnstileToken='';
-  if(p.button)p.button.disabled=true;
-  const retry=ramasysTurnstileRetryControl(mode);if(retry)retry.style.display='none';
-  if(window.turnstile&&p.widgetId!==null){
-    try{window.turnstile.reset(p.widgetId);}
-    catch(error){console.warn('Turnstile reset error:',error);ramasysSetTurnstileError(mode,'reset-failed');return;}
-  }
-  if(p.status)p.status.textContent=manual?'Nouvelle vérification demandée…':'Jeton utilisé. Une nouvelle vérification sera nécessaire pour une autre tentative.';
-}
+// Authentification Supabase sans CAPTCHA tiers.
 function ramasysAuthErrorMessage(error,action){
   const code=String(error?.code||error?.error_code||'');
   const status=error?.status||error?.statusCode||'';
@@ -1048,7 +935,7 @@ function ramasysAuthErrorMessage(error,action){
   const known={
     invalid_credentials:'Adresse e-mail ou mot de passe incorrect. Vérifiez vos identifiants.',
     email_not_confirmed:'Votre adresse e-mail n’est pas encore confirmée. Ouvrez le message de confirmation envoyé par RAMASYS ONE.',
-    captcha_failed:'Supabase n’a pas accepté le jeton Cloudflare. Vérifiez que la protection CAPTCHA est activée, que le fournisseur est Turnstile et que la clé secrète correspond à ce widget.',
+    captcha_failed:'La protection CAPTCHA est encore active dans Supabase. Désactivez-la dans les paramètres Auth avant de réessayer.',
     email_exists:'Cette adresse e-mail possède déjà un compte. Utilisez Connexion ou Mot de passe oublié.',
     user_already_exists:'Cette adresse e-mail possède déjà un compte. Utilisez Connexion ou Mot de passe oublié.',
     email_provider_disabled:'Les inscriptions par e-mail sont désactivées dans Supabase Auth.',
@@ -1059,24 +946,9 @@ function ramasysAuthErrorMessage(error,action){
     user_banned:'Ce compte est temporairement suspendu. Contactez l’administration RAMASYS ONE.'
   };
   if(known[code])return known[code];
-  if(/captcha/i.test(msg))return 'La vérification anti-robot n’a pas été acceptée. Relancez-la ; si le problème persiste, la configuration du secret Turnstile dans Supabase doit être vérifiée.';
+  if(/captcha/i.test(msg))return 'La protection CAPTCHA est encore active dans Supabase. Vérifiez ses paramètres Auth.';
   return (msg||('Opération '+action+' impossible.'))+(code?' [Code : '+code+']':'')+(status?' [HTTP '+status+']':'');
 }
-// Si le script Cloudflare ne charge jamais, ne laisser pas les formulaires bloqués sans explication.
-window.addEventListener('load',function(){
-  window.setTimeout(function(){
-    if(window.turnstile)return;
-    ['signup','login'].forEach(function(mode){
-      const p=ramasysTurnstileParts(mode);
-      if(p.host&&p.host.offsetParent!==null){
-        if(p.button)p.button.disabled=true;
-        if(p.status)p.status.textContent='Le service Cloudflare ne répond pas. Vérifiez votre réseau ou les extensions du navigateur, puis rechargez la page.';
-        const retry=ramasysTurnstileRetryControl(mode);
-        if(retry){retry.textContent='Recharger la page';retry.style.display='inline-block';retry.onclick=function(){location.reload();};}
-      }
-    });
-  },10000);
-});
 
 document.getElementById('signup-button').addEventListener('click', async () => {
   if (!supabaseClient) { showMessage('Le service de connexion n’a pas été chargé. Rechargez la page.', true); return; }
@@ -1093,18 +965,16 @@ document.getElementById('signup-button').addEventListener('click', async () => {
     const selectedType=String(document.getElementById('signup-org-type')?.value||'').trim();
     const allowedOrganizationTypes = ['Association/ONG','Entreprise/PME','Collectif communautaire','Institution/Structure publique'];
     if (!allowedOrganizationTypes.includes(selectedType)) throw new Error('Choisissez une catégorie d’organisation valide avant de créer votre compte.');
-    if (!ramasysTurnstileToken || ramasysTurnstileToken.length > 2048) throw new Error('La vérification de sécurité est absente ou expirée. Relancez-la avant de créer votre compte.');
     const selectedPlan=document.getElementById('signup-plan')?.value||'free';
     const billingInterval=document.getElementById('signup-interval')?.value||'month';
     try{localStorage.setItem('ramasys_pending_plan_code',selectedPlan);localStorage.setItem('ramasys_pending_billing_interval',billingInterval);}catch(_){}
     const confirmationRedirect = window.location.origin + window.location.pathname;
     const { data, error } = await supabaseClient.auth.signUp({
       email,password,
-      options:{captchaToken:ramasysTurnstileToken,emailRedirectTo:confirmationRedirect,data:{organization_type:selectedType,selected_plan_code:selectedPlan,billing_interval:billingInterval}}
+      options:{emailRedirectTo:confirmationRedirect,data:{organization_type:selectedType,selected_plan_code:selectedPlan,billing_interval:billingInterval}}
     });
     if(error)throw error;
     authSucceeded=true;
-    ramasysTurnstileToken='';
     if(data.session?.user){
       showMessage('Compte créé. Préparation de votre espace…');
       button.textContent='Compte créé';
@@ -1114,8 +984,8 @@ document.getElementById('signup-button').addEventListener('click', async () => {
     }
   }catch(error){showMessage(ramasysAuthErrorMessage(error,'inscription'),true);}
   finally{
-    if(!authSucceeded){resetRamasysTurnstile('signup',false);button.textContent='Vérifier puis créer mon compte';}
-    else{button.disabled=true;const p=ramasysTurnstileParts('signup');if(p.status)p.status.textContent='Vérification utilisée pour cette inscription. Vous pouvez maintenant passer à la connexion.';}
+    if(!authSucceeded){button.disabled=false;button.textContent='Créer mon compte';}
+    else{button.disabled=true;button.textContent='Compte créé';}
   }
 });
 
@@ -1124,22 +994,20 @@ document.getElementById('login-button').addEventListener('click', async () => {
   const email = document.getElementById('login-email').value.trim().toLowerCase();
   const password = document.getElementById('login-password').value;
   if (!email || !password) { showMessage('Veuillez saisir votre e-mail et votre mot de passe.', true); return; }
-  if (!ramasysLoginTurnstileToken || ramasysLoginTurnstileToken.length > 2048) { showMessage('La vérification de sécurité est absente ou expirée. Relancez-la.', true); return; }
   const button = document.getElementById('login-button');
   if(button.disabled)return;
   button.disabled = true; button.textContent = 'Connexion…';
   let authSucceeded=false;
   try {
-    const { error } = await supabaseClient.auth.signInWithPassword({email,password,options:{captchaToken:ramasysLoginTurnstileToken}});
+    const { error } = await supabaseClient.auth.signInWithPassword({email,password});
     if(error)throw error;
     authSucceeded=true;
-    ramasysLoginTurnstileToken='';
     showMessage('Connexion réussie. Chargement de votre espace…');
     button.textContent='Connexion réussie';
   }catch(error){showMessage(ramasysAuthErrorMessage(error,'connexion'),true);}
   finally{
-    if(!authSucceeded){resetRamasysTurnstile('login',false);button.textContent='Valider puis se connecter';}
-    else{button.disabled=true;const p=ramasysTurnstileParts('login');if(p.status)p.status.textContent='Connexion validée. Chargement de votre espace…';}
+    if(!authSucceeded){button.disabled=false;button.textContent='Se connecter';}
+    else{button.disabled=true;button.textContent='Connexion réussie';}
   }
 });
 
@@ -4000,7 +3868,6 @@ body.ra-readonly .page:not(#settings) button[type=submit],body.ra-readonly .page
 </script>
 <script id="ramasys-password-reset">
 (function(){
-  var KEY=(typeof RAMASYS_TURNSTILE_SITE_KEY!=='undefined')?RAMASYS_TURNSTILE_SITE_KEY:'';
   var CARD='background:#fff;color:#123b2d;max-width:420px;width:100%;border-radius:18px;border-top:5px solid #F47C20;padding:26px 22px;box-shadow:0 20px 60px rgba(0,0,0,.4);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif';
   var INP='width:100%;padding:12px;border:1px solid #dce5df;border-radius:8px;margin:6px 0 12px;font:inherit;box-sizing:border-box';
   var BTN='font:inherit;font-weight:700;border:0;border-radius:99px;padding:11px 20px;cursor:pointer;';
@@ -4015,32 +3882,22 @@ body.ra-readonly .page:not(#settings) button[type=submit],body.ra-readonly .page
     var o=overlay('<h2 style="margin:0 0 8px;font-size:1.25rem">Mot de passe oublié</h2>'
       +'<p style="margin:0 0 12px;color:#4d6b5d;line-height:1.5;font-size:.95rem">Saisissez l’adresse e-mail de votre compte : nous vous enverrons un lien pour choisir un nouveau mot de passe.</p>'
       +'<label for="ra-fp-email" style="font-weight:600;font-size:.9rem">Adresse e-mail</label><input id="ra-fp-email" type="email" autocomplete="email" style="'+INP+'">'
-      +'<div id="ra-fp-ts"></div><p data-msg style="min-height:1.2em;margin:6px 0 12px;font-size:.88rem;color:#4d6b5d">Validez la vérification de sécurité.</p>'
-      +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button id="ra-fp-send" type="button" disabled style="'+BTN+'background:#0B6B3F;color:#fff;opacity:.5">Envoyer le lien</button>'
-      +'<button id="ra-fp-retry" type="button" style="'+BTN+'background:#fff4dc;color:#754d00;display:none">Relancer la vérification</button>'
+      +'<p data-msg style="min-height:1.2em;margin:6px 0 12px;font-size:.88rem;color:#4d6b5d"></p>'
+      +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button id="ra-fp-send" type="button" style="'+BTN+'background:#0B6B3F;color:#fff">Envoyer le lien</button>'
       +'<button id="ra-fp-cancel" type="button" style="'+BTN+'background:#eaf6ee;color:#123b2d">Annuler</button></div>');
     var login=document.getElementById('login-email');if(login&&login.value)o.querySelector('#ra-fp-email').value=login.value;
-    var token='',wid=null,send=o.querySelector('#ra-fp-send'),retry=o.querySelector('#ra-fp-retry');
+    var send=o.querySelector('#ra-fp-send');
     o.querySelector('#ra-fp-cancel').onclick=close;
-    function setToken(t){token=String(t||'');var ok=token.length>0&&token.length<=2048;send.disabled=!ok;send.style.opacity=ok?'1':'.5';if(ok)retry.style.display='none';say(o,ok?'Protection validée. Vous pouvez continuer.':'Validez la vérification de sécurité.',false);}
-    function fail(code){setToken('');say(o,ramasysTurnstileErrorText(code),true);retry.style.display='inline-block';}
-    function render(){
-      if(!window.turnstile||!KEY){say(o,'Protection anti-robot indisponible : vérifiez votre connexion et rechargez la page.',true);retry.style.display='inline-block';return;}
-      wid=window.turnstile.render(o.querySelector('#ra-fp-ts'),{sitekey:KEY,theme:'light',language:'fr',appearance:'interaction-only',execution:'render',retry:'never','refresh-expired':'manual','refresh-timeout':'manual',callback:setToken,'expired-callback':function(){fail('expired');},'timeout-callback':function(){fail('timeout');},'error-callback':function(code){fail(code);return true;},'unsupported-callback':function(){fail('unsupported-browser');}});
-    }
-    retry.onclick=function(){token='';send.disabled=true;send.style.opacity='.5';retry.style.display='none';try{if(window.turnstile&&wid!==null)window.turnstile.reset(wid);}catch(e){fail('reset-failed');}};
-    if(window.turnstile)render();else{var n=0,t=setInterval(function(){if(window.turnstile||++n>40){clearInterval(t);render();}},250);}
     send.onclick=async function(){
       var email=o.querySelector('#ra-fp-email').value.trim();
-      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){say(o,'Saisissez une adresse e-mail valide.',true);return;}
-      if(!token){say(o,'La vérification de sécurité est absente ou expirée. Relancez-la.',true);return;}
-      send.disabled=true;send.style.opacity='.5';
+      if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)){say(o,'Saisissez une adresse e-mail valide.',true);return;}
+      send.disabled=true;send.style.opacity='.6';
       try{
-        var r=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname,captchaToken:token});
+        var r=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
         if(r.error){say(o,ramasysAuthErrorMessage(r.error,'réinitialisation du mot de passe'),true);}
         else{say(o,'Si un compte existe avec cette adresse, un e-mail de réinitialisation vient d’être envoyé. Pensez à vérifier vos courriers indésirables.',false);}
       }catch(e){say(o,ramasysAuthErrorMessage(e,'réinitialisation du mot de passe'),true);}
-      token='';try{if(window.turnstile&&wid!==null)window.turnstile.reset(wid);}catch(e){}
+      finally{send.disabled=false;send.style.opacity='1';}
     };
   }
   function reset(){
